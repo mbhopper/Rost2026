@@ -94,8 +94,9 @@ export function LoginPage() {
           className="font-semibold text-cyan-300 hover:text-cyan-200"
           to={routes.register}
         >
-          Зарегистрируйтесь
-        </Link>
+          Оставьте заявку
+        </Link>{' '}
+        или <Link className="font-semibold text-cyan-300 hover:text-cyan-200" to={routes.support}>напишите в поддержку</Link>.
       </p>
     </Card>
   );

@@ -2,14 +2,19 @@ export const routes = {
   root: '/',
   login: '/auth/login',
   register: '/auth/register',
+  registerSuccess: '/auth/register/success',
+  support: '/support',
+  supportSuccess: '/support/success',
   dashboard: '/dashboard',
   pass: '/pass',
+  qrGenerate: '/pass/qr',
   profile: '/profile',
   settings: '/settings',
   unauthorized: '/unauthorized',
   adminLogin: '/admin/login',
   adminDashboard: '/admin/dashboard',
   adminEmployees: '/admin/employees',
+  adminOnboarding: '/admin/onboarding',
   adminEmployeeDetails: (employeeId: string) => `/admin/employees/${employeeId}`,
 } as const;
 
@@ -36,7 +41,7 @@ export const primaryNavigation = [
   {
     href: routes.settings,
     label: 'Настройки',
-    description: 'Тема, уведомления и secure mode.',
+    description: 'Тема, уведомления и secure-view.',
   },
 ] as const;
 
@@ -50,5 +55,10 @@ export const adminNavigation = [
     href: routes.adminEmployees,
     label: 'Сотрудники',
     description: 'Поиск, фильтрация и просмотр пропусков.',
+  },
+  {
+    href: routes.adminOnboarding,
+    label: 'Онбординг',
+    description: 'Оформление заявок и выпуск пропусков.',
   },
 ] as const;

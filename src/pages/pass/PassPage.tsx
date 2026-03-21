@@ -1,5 +1,8 @@
+import { Link } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
 import { QrSessionPanel } from '../../features/qr-session/QrSessionPanel';
+import { routes } from '../../shared/config/routes';
+import { Button } from '../../shared/ui/button/Button';
 import { PassCard } from '../../widgets/pass-card/PassCard';
 
 export function PassPage() {
@@ -13,7 +16,7 @@ export function PassPage() {
 
   if (!primaryPass) {
     return (
-      <div className="poster-page">
+      <div className="poster-page motion-page-fade">
         <div className="poster-page__copy poster-page__copy--centered">
           <p className="poster-page__eyebrow">Digital pass</p>
           <h1>ТОЧКА ВХОДА</h1>
@@ -24,7 +27,7 @@ export function PassPage() {
   }
 
   return (
-    <div className="poster-page">
+    <div className="poster-page motion-page-fade">
       <div className="poster-page__copy poster-page__copy--centered">
         <p className="poster-page__eyebrow">Digital pass</p>
         <h1>ТОЧКА ВХОДА</h1>
@@ -38,6 +41,7 @@ export function PassPage() {
       <div className="poster-pedestal poster-pedestal--live">
         <span>Сгенерировать QR-code</span>
         <QrSessionPanel compact />
+        <Link to={routes.qrGenerate}><Button variant="secondary">Отдельная страница QR</Button></Link>
       </div>
     </div>
   );

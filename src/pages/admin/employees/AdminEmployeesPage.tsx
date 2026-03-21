@@ -1,9 +1,10 @@
-import { QrCode } from 'lucide-react';
+import { QrCode, Ticket } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { mockApi } from '../../../shared/api/mockApi';
 import type { AdminEmployeeRecord, AdminPassStatusFilter } from '../../../shared/api/admin/types';
 import { routes } from '../../../shared/config/routes';
+import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 import { Input } from '../../../shared/ui/input/Input';
 
@@ -28,13 +29,14 @@ export function AdminEmployeesPage() {
 
   return (
     <div className="page-stack">
-      <Card className="panel-card">
+      <Card className="panel-card motion-rise-in">
         <div className="section-heading section-heading--spread">
           <div>
             <p className="section-heading__eyebrow">Directory</p>
             <h1>Сотрудники и пропуска</h1>
             <p className="section-copy">Поиск, фильтрация и просмотр карточек без обращения к backend.</p>
           </div>
+          <Link to={routes.adminOnboarding}><Button><Ticket size={16} /> Новый сотрудник</Button></Link>
         </div>
         <div className="toolbar-grid">
           <label className="field-block">
@@ -65,7 +67,7 @@ export function AdminEmployeesPage() {
           {items.map((item) => {
             const primaryPass = item.passes[0];
             return (
-              <Card key={item.user.employeeId} className="employee-card">
+              <Card key={item.user.employeeId} className="employee-card motion-rise-in">
                 <div className="employee-card__top">
                   <div>
                     <h3>{item.user.fullName}</h3>

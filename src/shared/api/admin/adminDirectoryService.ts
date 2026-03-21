@@ -1,7 +1,13 @@
+import { PASS_STATUSES } from '../../../entities/pass/model';
+import { USER_ROLES, USER_STATUSES } from '../../../entities/user/model';
 import type { AdminDirectoryService } from '../contracts';
-import type { AdminDirectoryFilters } from './types';
+import type {
+  AdminDirectoryFilters,
+  AdminEmployeeRegistrationPayload,
+} from './types';
 import { adminEmployeeDirectory, adminOverviewMock } from '../../mocks/admin/directory';
 import { createMockDelayController, type MockApiConfig } from '../mockUtils';
+import { requestRuntimeStore } from '../../mocks/requests/runtime';
 
 const matchesQuery = (value: string, query: string) =>
   value.toLowerCase().includes(query.toLowerCase());
@@ -31,6 +37,54 @@ const matchesFilters = (
   return queryMatch && statusMatch;
 };
 
+const createEmployeeId = () => `EMP-${Math.floor(1000 + Math.random() * 9000)}`;
+const createPassId = () => `PASS-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+
+const createAvatarSeed = (firstName: string, lastName: string) =>
+  `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+    `${firstName} ${lastName}`,
+  )}`;
+
+const createRecord = (payload: AdminEmployeeRegistrationPayload) => {
+  const employeeId = createEmployeeId();
+  const passId = createPassId();
+  const fullName = [payload.lastName, payload.firstName, payload.middleName ?? '']
+    .filter(Boolean)
+    .join(' ');
+
+  return {
+    user: {
+      id: `user-${employeeId.toLowerCase()}`,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      middleName: payload.middleName ?? '',
+      fullName,
+      email: payload.email,
+      phone: payload.phone,
+      department: payload.department,
+      position: payload.position,
+      employeeId,
+      avatarUrl: createAvatarSeed(payload.firstName, payload.lastName),
+      status: USER_STATUSES.ACTIVE,
+      role: USER_ROLES.USER,
+    },
+    passes: [
+      {
+        passId,
+        employeeId,
+        issuedAt: new Date().toISOString(),
+        expiresAt: new Date('2026-12-31T23:59:00.000Z').toISOString(),
+        accessLevel: payload.accessLevel,
+        status: PASS_STATUSES.ACTIVE,
+        facilityName: payload.facilityName,
+        isBlocked: false,
+      },
+    ],
+    lastEntryAt: new Date().toISOString(),
+    location: `${payload.facilityName} · Регистрация администратором`,
+  };
+};
+
 export const createMockAdminDirectoryService = (
   config: MockApiConfig = {},
 ): AdminDirectoryService => {
@@ -51,6 +105,27 @@ export const createMockAdminDirectoryService = (
         adminEmployeeDirectory.find((item) => item.user.employeeId === employeeId) ??
         null
       );
+    },
+    async registerEmployee(payload) {
+      await delay.wait('admin.registerEmployee');
+
+      const record = createRecord(payload as AdminEmployeeRegistrationPayload);
+      adminEmployeeDirectory.unshift(record);
+      adminOverviewMock.activeEmployees += 1;
+      adminOverviewMock.activePasses += 1;
+      adminOverviewMock.recentAlerts.unshift({
+        id: `alert-${Date.now()}`,
+        title: `Зарегистрирован ${record.user.employeeId}`,
+        detail: `${record.user.fullName} добавлен в каталог и получил активный пропуск.`,
+        tone: 'info',
+      });
+      adminOverviewMock.recentAlerts = adminOverviewMock.recentAlerts.slice(0, 5);
+
+      if (payload.requestId) {
+        requestRuntimeStore.approveRegistrationRequest(payload.requestId, record.user.employeeId);
+      }
+
+      return record;
     },
   };
 };

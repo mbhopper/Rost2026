@@ -55,6 +55,17 @@ describe('AppRouter', () => {
     ).toBeInTheDocument();
   });
 
+
+  it('opens the standalone support page for guests without redirecting', async () => {
+    resetAppStore({ authStatus: 'guest', isAuthBootstrapped: true, currentRole: null, user: null, passes: [], qrSession: null });
+    window.location.hash = `#${routes.support}`;
+
+    renderWithRouter(<AppRouter />);
+
+    expect(screen.getByRole('heading', { name: /обратная связь/i })).toBeInTheDocument();
+    expect(window.location.hash).toBe(`#${routes.support}`);
+  });
+
   it('redirects guests away from protected user routes to login', async () => {
     resetAppStore({
       ...createAuthenticatedState(),

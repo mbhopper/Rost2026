@@ -15,6 +15,19 @@ export interface AdminEmployeeRecord {
   location: string;
 }
 
+export interface AdminEmployeeRegistrationPayload {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
+  phone: string;
+  department: string;
+  position: string;
+  facilityName: string;
+  accessLevel: string;
+  requestId?: string;
+}
+
 export interface AdminOverview {
   activeEmployees: number;
   activePasses: number;

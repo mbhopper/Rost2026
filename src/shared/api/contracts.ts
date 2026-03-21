@@ -4,9 +4,16 @@ import type { QrSession } from '../../entities/qr/model';
 import type { UserProfile } from '../../entities/user/model';
 import type {
   AdminDirectoryFilters,
+  AdminEmployeeRegistrationPayload,
   AdminEmployeeRecord,
   AdminOverview,
 } from './admin/types';
+import type {
+  RegistrationRequest,
+  RegistrationRequestPayload,
+  SupportRequest,
+  SupportRequestPayload,
+} from './requests/types';
 
 export interface AuthSessionResult {
   token: string;
@@ -58,6 +65,15 @@ export interface AdminDirectoryService {
   getOverview(): Promise<AdminOverview>;
   getEmployees(filters?: AdminDirectoryFilters): Promise<AdminEmployeeRecord[]>;
   getEmployeeById(employeeId: string): Promise<AdminEmployeeRecord | null>;
+  registerEmployee(payload: AdminEmployeeRegistrationPayload): Promise<AdminEmployeeRecord>;
+}
+
+export interface RequestService {
+  submitRegistrationRequest(
+    payload: RegistrationRequestPayload,
+  ): Promise<RegistrationRequest>;
+  submitSupportRequest(payload: SupportRequestPayload): Promise<SupportRequest>;
+  getRegistrationRequests(): Promise<RegistrationRequest[]>;
 }
 
 export interface ApiServices {
@@ -67,4 +83,5 @@ export interface ApiServices {
   passService: PassService;
   qrSessionService: QrSessionService;
   adminDirectoryService: AdminDirectoryService;
+  requestService: RequestService;
 }

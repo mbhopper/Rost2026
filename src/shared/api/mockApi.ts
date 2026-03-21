@@ -3,6 +3,7 @@ import { createMockAdminDirectoryService } from './admin/adminDirectoryService';
 import { createMockAdminAuthService, createMockAuthService } from './authService';
 import { createMockPassService } from './passService';
 import { createMockQrSessionService } from './qrSessionService';
+import { createMockRequestService } from './requests/requestService';
 import { createMockUserProfileService } from './userProfileService';
 import type { MockApiConfig } from './mockUtils';
 
@@ -15,6 +16,7 @@ export const createMockApiAdapters = (
   passService: createMockPassService(config),
   qrSessionService: createMockQrSessionService(config),
   adminDirectoryService: createMockAdminDirectoryService(config),
+  requestService: createMockRequestService(config),
 });
 
 export const mockApi = createMockApiAdapters();

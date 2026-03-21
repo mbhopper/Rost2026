@@ -44,6 +44,35 @@ describe('mock API services', () => {
     expect(employee?.user.email).toBe('alex.ivanov@futurepass.app');
   });
 
+
+  it('stores registration requests and lets admin register employee from queue', async () => {
+    const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
+
+    const request = await api.requestService.submitRegistrationRequest({
+      firstName: 'Глеб',
+      lastName: 'Орлов',
+      middleName: '',
+      email: 'gleb.orlov@futurepass.app',
+      phone: '+7 (999) 555-55-55',
+      department: 'R&D',
+      position: 'Designer',
+      note: 'Нужен доступ в demo-зону.',
+    });
+
+    const requests = await api.requestService.getRegistrationRequests();
+    const record = await api.adminDirectoryService.registerEmployee({
+      ...request,
+      facilityName: 'Ростелеком · Demo Hall',
+      accessLevel: 'L1 · Demo',
+      requestId: request.id,
+    });
+    const refreshedRequests = await api.requestService.getRegistrationRequests();
+
+    expect(requests.some((item) => item.id === request.id)).toBe(true);
+    expect(record.user.email).toBe('gleb.orlov@futurepass.app');
+    expect(refreshedRequests.find((item) => item.id === request.id)?.status).toBe('approved');
+  });
+
   it('simulates common API failures with a shared error type', async () => {
     const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
 

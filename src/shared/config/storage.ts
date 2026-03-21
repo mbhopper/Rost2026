@@ -4,6 +4,7 @@ export const storageKeys = {
   authRole: 'auth_role',
   qrSession: 'qr_session',
   settings: 'app_settings',
+  requestStore: 'request_store',
 } as const;
 
 const isBrowser = typeof window !== 'undefined';

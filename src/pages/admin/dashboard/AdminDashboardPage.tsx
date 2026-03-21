@@ -1,7 +1,10 @@
 import { BellRing, Clock3, ShieldCheck, Ticket } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { mockApi } from '../../../shared/api/mockApi';
 import type { AdminOverview } from '../../../shared/api/admin/types';
+import { routes } from '../../../shared/config/routes';
+import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 
 const overviewIcons = [ShieldCheck, Ticket, BellRing, Clock3];
@@ -24,7 +27,7 @@ export function AdminDashboardPage() {
 
   return (
     <div className="page-stack">
-      <Card className="hero-card hero-card--admin">
+      <Card className="hero-card hero-card--admin motion-rise-in">
         <div className="hero-card__badge"><BellRing size={14} /> Admin dashboard</div>
         <div className="hero-card__content">
           <div>
@@ -34,6 +37,7 @@ export function AdminDashboardPage() {
               mock directory service и готовы к замене на backend adapter.
             </p>
           </div>
+          <Link to={routes.adminOnboarding}><Button><Ticket size={16} /> Оформить сотрудника</Button></Link>
         </div>
       </Card>
 
@@ -41,7 +45,7 @@ export function AdminDashboardPage() {
         {summary.map((item, index) => {
           const Icon = overviewIcons[index];
           return (
-            <Card key={item.label} className="stat-card">
+            <Card key={item.label} className="stat-card motion-rise-in">
               <span><Icon size={16} /> {item.label}</span>
               <strong>{item.value}</strong>
               <p>Mock KPI для MVP admin console.</p>
@@ -50,7 +54,7 @@ export function AdminDashboardPage() {
         })}
       </section>
 
-      <Card className="panel-card">
+      <Card className="panel-card motion-rise-in">
         <div className="section-heading">
           <div>
             <p className="section-heading__eyebrow">Alerts</p>

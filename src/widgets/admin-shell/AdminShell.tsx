@@ -8,6 +8,7 @@ import { Button } from '../../shared/ui/button/Button';
 const icons = {
   [routes.adminDashboard]: ShieldCheck,
   [routes.adminEmployees]: Ticket,
+  [routes.adminOnboarding]: Ticket,
 };
 
 export function AdminShell() {
@@ -21,7 +22,7 @@ export function AdminShell() {
   };
 
   return (
-    <div className="admin-shell">
+    <div className="admin-shell motion-page-fade">
       <aside className="admin-sidebar">
         <div className="admin-sidebar__brand">
           <div className="admin-sidebar__logo"><span className="poster-brand__mark" aria-hidden="true" /></div>

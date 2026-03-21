@@ -8,21 +8,26 @@ import {
 import { USER_ROLES } from '../../entities/user/model';
 import { LoginPage } from '../../pages/auth/login/LoginPage';
 import { RegisterPage } from '../../pages/auth/register/RegisterPage';
+import { RegisterSuccessPage } from '../../pages/auth/register-success/RegisterSuccessPage';
 import { AdminDashboardPage } from '../../pages/admin/dashboard/AdminDashboardPage';
 import { AdminEmployeeDetailsPage } from '../../pages/admin/employee-details/AdminEmployeeDetailsPage';
 import { AdminEmployeesPage } from '../../pages/admin/employees/AdminEmployeesPage';
 import { AdminLoginPage } from '../../pages/admin/login/AdminLoginPage';
+import { AdminOnboardingPage } from '../../pages/admin/onboarding/AdminOnboardingPage';
 import { DashboardPage } from '../../pages/dashboard/DashboardPage';
 import { NotFoundPage } from '../../pages/not-found/NotFoundPage';
 import { PassPage } from '../../pages/pass/PassPage';
+import { QrGenerationPage } from '../../pages/pass/qr/QrGenerationPage';
 import { ProfilePage } from '../../pages/profile/ProfilePage';
 import { SettingsPage } from '../../pages/settings/SettingsPage';
+import { SupportPage } from '../../pages/support/SupportPage';
+import { SupportSuccessPage } from '../../pages/support/SupportSuccessPage';
 import { UnauthorizedPage } from '../../pages/unauthorized/UnauthorizedPage';
-import { useAppStore } from '../store';
 import { defaultAdminRoute, defaultUserRoute, routes } from '../../shared/config/routes';
+import { Card } from '../../shared/ui/card/Card';
 import { AdminShell } from '../../widgets/admin-shell/AdminShell';
 import { UserShell } from '../../widgets/user-shell/UserShell';
-import { Card } from '../../shared/ui/card/Card';
+import { useAppStore } from '../store';
 
 function RouteLoader() {
   return (
@@ -102,7 +107,7 @@ function AuthLayout() {
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
-      <div className="poster-frame">
+      <div className="poster-frame motion-page-fade">
         <header className="poster-topbar">
           <div className="poster-brand">
             <span className="poster-brand__mark" aria-hidden="true" />
@@ -125,6 +130,14 @@ function AuthLayout() {
             >
               Регистрация
             </NavLink>
+            <NavLink
+              to={routes.support}
+              className={({ isActive }) =>
+                isActive ? 'poster-action poster-action--active' : 'poster-action'
+              }
+            >
+              Поддержка
+            </NavLink>
           </nav>
         </header>
 
@@ -134,7 +147,8 @@ function AuthLayout() {
             <h1>ТОЧКА ВХОДА</h1>
             <p>
               Frontend-only MVP цифрового пропуска сотрудника в визуальном стиле
-              Ростелеком с отдельной user/admin зонами и mock integration layer.
+              Ростелеком с отдельной user/admin зонами, заявками на регистрацию и
+              mock onboarding flow.
             </p>
           </div>
           <div className="poster-hero__panel">
@@ -162,11 +176,14 @@ const router = createHashRouter([
           { index: true, element: <Navigate to={routes.login} replace /> },
           { path: 'auth/login', element: <LoginPage /> },
           { path: 'auth/register', element: <RegisterPage /> },
+          { path: 'auth/register/success', element: <RegisterSuccessPage /> },
         ],
       },
       { path: 'admin/login', element: <AdminLoginPage /> },
     ],
   },
+  { path: '/support', element: <SupportPage /> },
+  { path: '/support/success', element: <SupportSuccessPage /> },
   {
     path: '/',
     element: <UserRouteGuard />,
@@ -176,6 +193,7 @@ const router = createHashRouter([
         children: [
           { path: 'dashboard', element: <DashboardPage /> },
           { path: 'pass', element: <PassPage /> },
+          { path: 'pass/qr', element: <QrGenerationPage /> },
           { path: 'profile', element: <ProfilePage /> },
           { path: 'settings', element: <SettingsPage /> },
         ],
@@ -192,6 +210,7 @@ const router = createHashRouter([
           { path: 'dashboard', element: <AdminDashboardPage /> },
           { path: 'employees', element: <AdminEmployeesPage /> },
           { path: 'employees/:employeeId', element: <AdminEmployeeDetailsPage /> },
+          { path: 'onboarding', element: <AdminOnboardingPage /> },
         ],
       },
     ],

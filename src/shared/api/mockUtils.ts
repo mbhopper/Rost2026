@@ -8,6 +8,10 @@ export type MockApiOperation =
   | 'admin.overview'
   | 'admin.directory'
   | 'admin.employee'
+  | 'admin.registerEmployee'
+  | 'request.registration'
+  | 'request.support'
+  | 'request.list'
   | 'userProfile.getCurrentProfile'
   | 'pass.getPasses'
   | 'qrSession.generate'
@@ -28,6 +32,10 @@ const DEFAULT_DELAYS: Record<MockApiOperation, number> = {
   'admin.overview': 180,
   'admin.directory': 220,
   'admin.employee': 140,
+  'admin.registerEmployee': 260,
+  'request.registration': 220,
+  'request.support': 180,
+  'request.list': 140,
   'userProfile.getCurrentProfile': 220,
   'pass.getPasses': 120,
   'qrSession.generate': 180,
