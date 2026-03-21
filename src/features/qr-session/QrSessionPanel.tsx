@@ -1,13 +1,13 @@
-import { BellRing, Clock3, QrCode, ShieldCheck } from 'lucide-react';
+import { BellRing, Clock3, QrCode, ShieldCheck, Ticket } from 'lucide-react';
 import { useQrSessionController } from './model';
 import { Button } from '../../shared/ui/button/Button';
 import { Card } from '../../shared/ui/card/Card';
 import { QrViewer } from '../../widgets/qr-viewer/QrViewer';
 
-const tips = [
-  'TTL mock QR-сессии ограничен 5 минутами, после чего код автоматически истечёт.',
-  'После reload активная mock-сессия восстанавливается из sessionStorage с пересчётом оставшегося TTL.',
-  'Demo scan и revoke используются только для UX-проверки состояний scanned / blocked.',
+const compactTips = [
+  'QR-сессия живёт ограниченное время и автоматически истекает без ручного обновления.',
+  'После перезагрузки активная demo-сессия восстанавливается из sessionStorage.',
+  'Demo scan и revoke нужны только для проверки UX-сценариев used / blocked.',
 ];
 
 export function QrSessionPanel() {
@@ -24,50 +24,117 @@ export function QrSessionPanel() {
   } = useQrSessionController();
 
   const canGenerate = state === 'inactive';
-  const canRegenerate = state === 'active' || state === 'expired' || state === 'scanned';
+  const canRegenerate =
+    state === 'active' || state === 'expired' || state === 'scanned';
   const canDemoScan = state === 'active';
-  const canRevoke = state === 'active' || state === 'expired' || state === 'scanned';
+  const canRevoke =
+    state === 'active' || state === 'expired' || state === 'scanned';
+
+  const primaryAction = canGenerate
+    ? () => void generate()
+    : () => void regenerate();
+  const primaryLabel = canGenerate
+    ? 'Открыть QR-пропуск'
+    : 'Обновить и открыть новый QR';
+  const primaryIcon = canGenerate ? <QrCode size={18} /> : <Clock3 size={18} />;
+  const secondaryLabel =
+    state === 'active'
+      ? 'QR активен и готов к сканированию'
+      : 'Откройте код прямо перед турникетом';
 
   return (
-    <div className="space-y-6">
+    <div className="pass-cta-stack">
+      <Card className="qr-cta-card">
+        <div className="qr-cta-card__header">
+          <div>
+            <p className="qr-cta-card__eyebrow">Primary action</p>
+            <h2>Откройте QR только в момент прохода.</h2>
+            <p className="qr-cta-card__copy">
+              Основной сценарий экрана — быстро показать статус пропуска и
+              вывести QR без лишнего шума.
+            </p>
+          </div>
+          <div className="qr-cta-card__icon">
+            <Ticket size={22} />
+          </div>
+        </div>
+
+        <div className="qr-cta-card__summary">
+          <div>
+            <span className="qr-cta-card__label">Активный пропуск</span>
+            <strong>
+              {activePass
+                ? `${activePass.passId} · ${activePass.facilityName}`
+                : 'Доступный пропуск не найден'}
+            </strong>
+          </div>
+          <div>
+            <span className="qr-cta-card__label">Статус QR</span>
+            <strong>{secondaryLabel}</strong>
+            <p>
+              {state === 'active'
+                ? `Осталось ${remainingSeconds} сек.`
+                : 'Система создаст новую безопасную сессию.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="qr-cta-card__actions">
+          <Button
+            variant="primary"
+            fullWidth
+            onClick={primaryAction}
+            disabled={!canGenerate && !canRegenerate}
+          >
+            {primaryIcon}
+            {primaryLabel}
+          </Button>
+          <div className="qr-cta-card__secondary-actions">
+            <Button
+              variant="ghost"
+              onClick={() => void regenerate()}
+              disabled={!canRegenerate}
+            >
+              <Clock3 size={16} /> Обновить
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => void scanDemo()}
+              disabled={!canDemoScan}
+            >
+              <ShieldCheck size={16} /> Demo scan
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => void revoke()}
+              disabled={!canRevoke}
+            >
+              <BellRing size={16} /> Block session
+            </Button>
+          </div>
+        </div>
+      </Card>
+
       <QrViewer
         isScreenMasked={isScreenMasked}
         remainingSeconds={remainingSeconds}
         session={qrSession}
         state={state}
       />
-      <Card className="space-y-4">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-cyan-300">
-          <BellRing size={14} /> Session tips
+
+      <Card className="pass-info-block">
+        <div className="pass-info-block__header">
+          <span>
+            <BellRing size={14} /> Access notes
+          </span>
+          <strong>Вторичные советы сведены в компактный блок</strong>
         </div>
-        <ul className="space-y-3 text-sm leading-6 text-slate-400">
-          {tips.map((item) => (
-            <li key={item} className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">{item}</li>
+        <div className="pass-info-block__grid">
+          {compactTips.map((item) => (
+            <div key={item} className="pass-info-block__item">
+              {item}
+            </div>
           ))}
-        </ul>
-
-        <div className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3 text-sm text-slate-300">
-          <p className="font-semibold text-white">Активный пропуск для mock QR</p>
-          <p className="mt-1 text-slate-400">
-            {activePass
-              ? `${activePass.passId} · ${activePass.facilityName}`
-              : 'Нет доступного активного пропуска — QR недоступен.'}
-          </p>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <Button variant="primary" onClick={() => void generate()} disabled={!canGenerate}>
-            <QrCode size={16} /> Сгенерировать QR
-          </Button>
-          <Button variant="ghost" onClick={() => void regenerate()} disabled={!canRegenerate}>
-            <Clock3 size={16} /> Обновить QR
-          </Button>
-          <Button variant="secondary" onClick={() => void scanDemo()} disabled={!canDemoScan}>
-            <ShieldCheck size={16} /> Demo: сканировать
-          </Button>
-          <Button variant="secondary" onClick={() => void revoke()} disabled={!canRevoke}>
-            <BellRing size={16} /> Mock: revoke
-          </Button>
         </div>
       </Card>
     </div>

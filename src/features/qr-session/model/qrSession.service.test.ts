@@ -1,3 +1,4 @@
+/// <reference path="../../../test/vitest.d.ts" />
 import { describe, expect, it } from 'vitest';
 import { QR_SESSION_TTL_SECONDS } from '../../../shared/config/qr';
 import { QR_STATUSES } from '../../../entities/qr/model';
