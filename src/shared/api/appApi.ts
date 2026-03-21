@@ -27,6 +27,8 @@ export interface AppApiErrorOptions {
 export class AppApiError extends Error {
   code: AppApiErrorCode;
 
+  cause?: unknown;
+
   details?: Record<string, unknown>;
 
   constructor(
@@ -34,9 +36,10 @@ export class AppApiError extends Error {
     message = appApiErrorMessages[code],
     options: AppApiErrorOptions = {},
   ) {
-    super(message, { cause: options.cause });
+    super(message);
     this.name = 'AppApiError';
     this.code = code;
+    this.cause = options.cause;
     this.details = options.details;
   }
 }
