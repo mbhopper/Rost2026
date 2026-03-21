@@ -2249,15 +2249,16 @@ body {
 .poster-brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .poster-brand__mark {
-  width: 11px;
-  height: 11px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
   display: inline-block;
   background: center / contain no-repeat url('/rostelecom-mark.svg');
 }
@@ -3291,15 +3292,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 35px;
-  padding: 6px 10px;
-  background: rgba(69, 21, 16, 0.78);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+  min-height: 44px;
+  padding: 0 10px 0 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 83, 40, 0.86) 0%,
+    rgba(223, 63, 127, 0.84) 52%,
+    rgba(140, 0, 255, 0.88) 100%
+  );
+  border-bottom: 1px solid rgba(9, 4, 18, 0.45);
+  box-shadow: 0 10px 24px rgba(15, 3, 29, 0.18);
 }
 
 .rt-topbar__brand {
-  font-size: 0.65rem;
-  font-weight: 600;
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .rt-topbar__actions {
@@ -3343,37 +3350,82 @@ body {
 .poster-shell__blob {
   position: absolute;
   z-index: 1;
-  background: center / contain no-repeat url('/rt-blob.svg');
-  opacity: 0.92;
-  filter: blur(0.4px) drop-shadow(0 16px 26px rgba(77, 12, 87, 0.24));
+  border-radius: 999px;
+  opacity: 0.8;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 104, 64, 0.68),
+    rgba(214, 58, 127, 0.54) 48%,
+    rgba(105, 81, 255, 0.5) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 48px rgba(27, 6, 45, 0.22);
+  backdrop-filter: blur(18px);
+  transform: rotate(var(--blob-rotate, -18deg));
+  overflow: hidden;
+}
+
+.poster-shell__blob::before,
+.poster-shell__blob::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border-radius: inherit;
+}
+
+.poster-shell__blob::before {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.4),
+    transparent 55%
+  );
+  opacity: 0.8;
+}
+
+.poster-shell__blob::after {
+  inset: auto;
+  width: 42%;
+  height: 42%;
+  right: 14%;
+  top: 18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.48) 0%,
+    rgba(255, 255, 255, 0) 72%
+  );
 }
 
 .poster-shell__blob--one {
-  width: 170px;
-  height: 170px;
-  left: 3%;
-  top: 8%;
+  --blob-rotate: -24deg;
+  width: 220px;
+  height: 108px;
+  left: -48px;
+  top: 88px;
 }
 
 .poster-shell__blob--two {
-  width: 122px;
-  height: 122px;
-  right: 22%;
-  top: 10%;
+  --blob-rotate: 28deg;
+  width: 154px;
+  height: 76px;
+  right: 8%;
+  top: 112px;
 }
 
 .poster-shell__blob--three {
-  width: 200px;
-  height: 200px;
-  right: 10%;
-  bottom: 12%;
+  --blob-rotate: -22deg;
+  width: 244px;
+  height: 118px;
+  right: -52px;
+  bottom: 108px;
 }
 
 .poster-shell__blob--four {
-  width: 116px;
-  height: 116px;
-  left: 20%;
-  bottom: 18%;
+  --blob-rotate: 26deg;
+  width: 136px;
+  height: 68px;
+  left: 12%;
+  bottom: 140px;
 }
 
 .rt-screen {
@@ -3835,31 +3887,31 @@ body {
   }
 
   .poster-shell__blob--one {
-    width: 136px;
-    height: 136px;
-    left: -30px;
-    top: 12%;
+    width: 156px;
+    height: 82px;
+    left: -44px;
+    top: 78px;
   }
 
   .poster-shell__blob--two {
-    width: 108px;
-    height: 108px;
+    width: 116px;
+    height: 60px;
     right: -18px;
-    top: 6%;
+    top: 108px;
   }
 
   .poster-shell__blob--three {
-    width: 154px;
-    height: 154px;
-    right: -34px;
-    bottom: 22%;
+    width: 168px;
+    height: 86px;
+    right: -42px;
+    bottom: 100px;
   }
 
   .poster-shell__blob--four {
-    width: 96px;
-    height: 96px;
-    left: -18px;
-    bottom: 24%;
+    width: 104px;
+    height: 54px;
+    left: -22px;
+    bottom: 128px;
   }
 
   .rt-screen {
