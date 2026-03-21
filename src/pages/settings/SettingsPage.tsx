@@ -1,27 +1,27 @@
-import { Monitor, Moon, Settings, Shield, Sun } from 'lucide-react';
+import { BellRing, Clock3, Settings, ShieldCheck } from 'lucide-react';
 import { useAppStore } from '../../app/store';
 import type { ThemeMode } from '../../app/store';
 import { Card } from '../../shared/ui/card/Card';
 import { cn } from '../../shared/lib/cn';
 
-const themeOptions: Array<{ value: ThemeMode; label: string; description: string; icon: typeof Monitor }> = [
+const themeOptions: Array<{ value: ThemeMode; label: string; description: string; icon: typeof Settings }> = [
   {
     value: 'system',
     label: 'Системная',
     description: 'Следовать параметрам устройства пользователя.',
-    icon: Monitor,
+    icon: Settings,
   },
   {
     value: 'dark',
     label: 'Темная',
     description: 'Основной контрастный режим для рабочего интерфейса.',
-    icon: Moon,
+    icon: ShieldCheck,
   },
   {
     value: 'light',
     label: 'Светлая',
     description: 'Упрощенный режим для демонстраций и печати.',
-    icon: Sun,
+    icon: Clock3,
   },
 ];
 
@@ -177,7 +177,7 @@ export function SettingsPage() {
 
       <Card className="space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
-          <Shield size={14} /> Доступность и безопасность
+          <BellRing size={14} /> Доступность и безопасность
         </div>
         <p className="text-sm leading-6 text-slate-400">
           Все переключатели имеют <code>aria-label</code>, заметные состояния фокуса и сгруппированы по семантическим секциям для клавиатурной навигации.

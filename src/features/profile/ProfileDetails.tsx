@@ -1,4 +1,4 @@
-import { BadgeCheck, Clock3, Laptop2, ShieldCheck, Smartphone, UserRound } from 'lucide-react';
+import { BellRing, QrCode, ShieldCheck, Ticket, UserRound } from 'lucide-react';
 import { PASS_STATUSES } from '../../entities/pass/model';
 import { useAppStore } from '../../app/store';
 import { Card } from '../../shared/ui/card/Card';
@@ -22,8 +22,8 @@ const systemInfo = {
   lastLogin: '21 марта 2026, 08:42 · Chrome на macOS',
   lastPassRefresh: '21 марта 2026, 09:05 · синхронизация с ACS Gateway',
   sessions: [
-    { label: 'Ноутбук · текущая сессия', detail: 'Chrome 134 · Москва · активна 1 ч 12 мин', icon: Laptop2 },
-    { label: 'Телефон', detail: 'iPhone 15 · iOS 19 · последняя активность 14 мин назад', icon: Smartphone },
+    { label: 'Ноутбук · текущая сессия', detail: 'Chrome 134 · Москва · активна 1 ч 12 мин', icon: ShieldCheck },
+    { label: 'Телефон', detail: 'iPhone 15 · iOS 19 · последняя активность 14 мин назад', icon: QrCode },
   ],
 };
 
@@ -73,7 +73,7 @@ export function ProfileDetails() {
                 <ShieldCheck size={14} /> {user ? accountStatusLabels[user.status] : 'Статус аккаунта неизвестен'}
               </span>
               <span className="profile-badge profile-badge--info">
-                <BadgeCheck size={14} /> {passStatus}
+                <Ticket size={14} /> {passStatus}
               </span>
             </div>
           </div>
@@ -104,7 +104,7 @@ export function ProfileDetails() {
             <h2 className="mt-2 text-2xl font-semibold text-white">Сводка по последним событиям</h2>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-cyan-300" aria-hidden="true">
-            <Clock3 size={20} />
+            <BellRing size={20} />
           </div>
         </div>
 
