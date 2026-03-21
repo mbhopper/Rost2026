@@ -9,8 +9,8 @@ export const mockUserDto: UserDto = {
   middle_name: 'Сергеевич',
   email: 'alex.ivanov@futurepass.app',
   phone: '+7 (999) 555-01-42',
-  department: 'Platform Engineering',
-  position: 'Senior Frontend Engineer',
-  avatar_url: 'https://api.dicebear.com/9.x/initials/svg?seed=Alexander%20Ivanov',
+  department: 'Отдел цифровых платформ',
+  position: 'Старший frontend-разработчик',
+  avatar_url: 'https://api.dicebear.com/9.x/initials/svg?seed=%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%20%D0%98%D0%B2%D0%B0%D0%BD%D0%BE%D0%B2',
   status: USER_STATUSES.ACTIVE,
 };

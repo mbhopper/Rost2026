@@ -93,6 +93,7 @@ export const mapRegisterPayloadToUserDto = (payload: RegisterPayload, template: 
   phone: payload.phone,
   department: payload.department,
   position: payload.position,
+  avatar_url: `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(`${payload.firstName} ${payload.lastName}`.trim())}`,
 });
 
 export const mapEmailToUserDto = (email: string, template: UserDto): UserDto => {
@@ -108,5 +109,6 @@ export const mapEmailToUserDto = (email: string, template: UserDto): UserDto => 
     last_name: lastName,
     middle_name: template.middle_name,
     email,
+    avatar_url: `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(`${firstName} ${lastName}`.trim())}`,
   };
 };

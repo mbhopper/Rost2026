@@ -39,33 +39,16 @@ function SettingsEffects() {
   const settings = useAppStore((state) => state.settings);
 
   useEffect(() => {
-    const root = document.documentElement;
-    const body = document.body;
-    const resolvedTheme = resolveTheme(settings.themeMode);
-
-    root.dataset.themeMode = settings.themeMode;
-    root.dataset.theme = resolvedTheme;
-    root.style.colorScheme = resolvedTheme;
-    root.dataset.secureScreen = String(settings.secureScreenMode);
-    body.dataset.demoMode = String(settings.demoMode);
-
-    if (settings.themeMode !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    if (typeof document === 'undefined') {
       return;
     }
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const updateTheme = () => {
-      const nextTheme = mediaQuery.matches ? 'dark' : 'light';
-      root.dataset.theme = nextTheme;
-      root.style.colorScheme = nextTheme;
-    };
+    const root = document.documentElement;
+    const body = document.body;
 
-    updateTheme();
-    mediaQuery.addEventListener('change', updateTheme);
-
-    return () => {
-      mediaQuery.removeEventListener('change', updateTheme);
-    };
+    root.dataset.theme = settings.themeMode;
+    body.dataset.secureScreen = String(settings.secureScreenMode);
+    body.dataset.demoMode = String(settings.demoMode);
   }, [settings.demoMode, settings.secureScreenMode, settings.themeMode]);
 
   return null;
