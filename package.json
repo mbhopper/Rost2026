@@ -8,9 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "vitest watch",
     "lint": "eslint .",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@hookform/resolvers": "file:vendor/@hookform/resolvers",
@@ -43,6 +44,7 @@
     "typescript": "^5.6.2",
     "typescript-eslint": "file:vendor/typescript-eslint",
     "vite": "^5.4.8",
-    "vitest": "file:vendor/vitest"
+    "vitest": "file:vendor/vitest",
+    "@testing-library/jest-dom": "file:vendor/@testing-library/jest-dom"
   }
 }
