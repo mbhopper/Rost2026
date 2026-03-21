@@ -6,6 +6,7 @@ import {
   type RegistrationRequestFormValues,
 } from '../../../features/auth/lib/schemas';
 import { api } from '../../../shared/api/auth';
+import { mapAppApiErrorToMessage } from '../../../shared/api/appApi';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
@@ -45,15 +46,18 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<RegistrationRequestFormValues>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof RegistrationRequestFormValues, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (field: keyof RegistrationRequestFormValues, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
+    setSubmitError(null);
   };
 
   const onSubmit = async (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
+    setSubmitError(null);
     const parsed = registrationRequestSchema.safeParse(form);
 
     if (!parsed.success) {
@@ -66,6 +70,8 @@ export function RegisterPage() {
     try {
       const result = await api.requestService.submitRegistrationRequest(parsed.data);
       navigate(`${routes.registerSuccess}?requestId=${encodeURIComponent(result.id)}`);
+    } catch (error) {
+      setSubmitError(mapAppApiErrorToMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -136,6 +142,11 @@ export function RegisterPage() {
           />
           {errors.note && <span className="field-error">{errors.note}</span>}
         </label>
+        {submitError && (
+          <div className="field-error" role="alert" aria-live="polite">
+            {submitError}
+          </div>
+        )}
         <Button type="submit" fullWidth disabled={isSubmitting} aria-busy={isSubmitting}>
           {isSubmitting ? 'Отправляем заявку…' : 'Отправить заявку'}
         </Button>

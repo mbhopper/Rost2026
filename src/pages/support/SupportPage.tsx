@@ -7,6 +7,7 @@ import {
   type SupportRequestFormValues,
 } from '../../features/auth/lib/schemas';
 import { api } from '../../shared/api/auth';
+import { mapAppApiErrorToMessage } from '../../shared/api/appApi';
 import { routes } from '../../shared/config/routes';
 import { Button } from '../../shared/ui/button/Button';
 import { Card } from '../../shared/ui/card/Card';
@@ -50,15 +51,18 @@ export function SupportPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<SupportRequestFormValues>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof SupportRequestFormValues, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (field: keyof SupportRequestFormValues, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
+    setSubmitError(null);
   };
 
   const onSubmit = async (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
+    setSubmitError(null);
     const parsed = supportRequestSchema.safeParse(form);
 
     if (!parsed.success) {
@@ -71,6 +75,8 @@ export function SupportPage() {
     try {
       const result = await api.requestService.submitSupportRequest(parsed.data);
       navigate(`${routes.supportSuccess}?requestId=${encodeURIComponent(result.id)}`);
+    } catch (error) {
+      setSubmitError(mapAppApiErrorToMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -134,7 +140,12 @@ export function SupportPage() {
                 />
                 {errors.message && <span className="field-error">{errors.message}</span>}
               </label>
-              <Button type="submit" fullWidth disabled={isSubmitting}>
+              {submitError && (
+                <div className="field-error" role="alert" aria-live="polite">
+                  {submitError}
+                </div>
+              )}
+              <Button type="submit" fullWidth disabled={isSubmitting} aria-busy={isSubmitting}>
                 <BellRing size={16} /> {isSubmitting ? 'Отправляем…' : 'Отправить'}
               </Button>
             </form>
