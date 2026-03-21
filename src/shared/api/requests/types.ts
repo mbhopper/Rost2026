@@ -1,3 +1,10 @@
+export type RegistrationRequestStatus = 'new' | 'approved';
+
+export const registrationRequestStatusLabels: Record<RegistrationRequestStatus, string> = {
+  new: 'Новая',
+  approved: 'Оформлена',
+};
+
 export interface RegistrationRequestPayload {
   firstName: string;
   lastName: string;
@@ -12,7 +19,7 @@ export interface RegistrationRequestPayload {
 export interface RegistrationRequest extends RegistrationRequestPayload {
   id: string;
   submittedAt: string;
-  status: 'new' | 'approved';
+  status: RegistrationRequestStatus;
   processedAt?: string;
   employeeId?: string;
 }

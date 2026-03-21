@@ -6,8 +6,12 @@ import {
   type AdminOnboardingFormValues,
 } from '../../../features/auth/lib/schemas';
 import { api } from '../../../shared/api/auth';
+import { mapAppApiErrorToMessage } from '../../../shared/api/appApi';
 import type { AdminEmployeeRecord } from '../../../shared/api/admin/types';
-import type { RegistrationRequest } from '../../../shared/api/requests/types';
+import {
+  registrationRequestStatusLabels,
+  type RegistrationRequest,
+} from '../../../shared/api/requests/types';
 import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 import { Input } from '../../../shared/ui/input/Input';
@@ -50,10 +54,11 @@ export function AdminOnboardingPage() {
   const [createdRecord, setCreatedRecord] = useState<AdminEmployeeRecord | null>(null);
   const [form, setForm] = useState<AdminOnboardingFormValues>(defaultValues);
   const [errors, setErrors] = useState<Partial<Record<keyof AdminOnboardingFormValues, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadRequests = useCallback(async () => {
-    const nextRequests = await api.requestService.getRegistrationRequests();
+    const nextRequests = await api.adminDirectoryService.getRegistrationRequests();
     setRequests(nextRequests);
   }, []);
 
@@ -64,6 +69,7 @@ export function AdminOnboardingPage() {
   const updateField = (field: keyof AdminOnboardingFormValues, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
+    setSubmitError(null);
   };
 
   const fillFromRequest = (request: RegistrationRequest) => {
@@ -80,10 +86,12 @@ export function AdminOnboardingPage() {
       requestId: request.id,
     }));
     setErrors({});
+    setSubmitError(null);
   };
 
   const onSubmit = async (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
+    setSubmitError(null);
     const parsed = adminOnboardingSchema.safeParse(form);
 
     if (!parsed.success) {
@@ -94,19 +102,19 @@ export function AdminOnboardingPage() {
     setIsSubmitting(true);
 
     try {
-      const record = await api.adminDirectoryService.registerEmployee(parsed.data);
-
-      if (parsed.data.requestId) {
-        await api.requestService.processRegistrationRequest({
-          requestId: parsed.data.requestId,
-          employeeId: record.user.employeeId,
-        });
-      }
+      const record = parsed.data.requestId
+        ? await api.adminDirectoryService.approveRegistrationRequest({
+            ...parsed.data,
+            requestId: parsed.data.requestId,
+          })
+        : await api.adminDirectoryService.registerEmployee(parsed.data);
 
       setCreatedRecord(record);
       setForm(defaultValues);
       setErrors({});
       await loadRequests();
+    } catch (error) {
+      setSubmitError(mapAppApiErrorToMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -190,8 +198,13 @@ export function AdminOnboardingPage() {
               <textarea className="textarea-field" value={form.note ?? ''} onChange={(event) => updateField('note', event.target.value)} />
               {errors.note && <span className="field-error">{errors.note}</span>}
             </label>
+            {submitError && (
+              <div className="field-error" role="alert" aria-live="polite">
+                {submitError}
+              </div>
+            )}
             <Button type="submit" disabled={isSubmitting}>
-              <UserRound size={16} /> {isSubmitting ? 'Создаём запись…' : 'Зарегистрировать сотрудника'}
+              <UserRound size={16} /> {isSubmitting ? 'Оформляем сотрудника…' : 'Оформить сотрудника'}
             </Button>
           </div>
 
@@ -203,24 +216,28 @@ export function AdminOnboardingPage() {
               </div>
             </div>
             <div className="request-queue">
-              {requests.map((request) => (
-                <article key={request.id} className={`request-card request-card--${request.status}`}>
-                  <div className="request-card__top">
-                    <div>
-                      <strong>{request.lastName} {request.firstName}</strong>
-                      <p>{request.position} · {request.department}</p>
+              {requests.map((request) => {
+                const isApproved = request.status === 'approved';
+
+                return (
+                  <article key={request.id} className={`request-card request-card--${request.status}`}>
+                    <div className="request-card__top">
+                      <div>
+                        <strong>{request.lastName} {request.firstName}</strong>
+                        <p>{request.position} · {request.department}</p>
+                      </div>
+                      <span className={`status-pill status-pill--${isApproved ? 'active' : 'pending'}`}>
+                        {registrationRequestStatusLabels[request.status]}
+                      </span>
                     </div>
-                    <span className={`status-pill status-pill--${request.status === 'approved' ? 'active' : 'pending'}`}>
-                      {request.status}
-                    </span>
-                  </div>
-                  <p>{request.note || 'Без комментария.'}</p>
-                  <small>{format(new Date(request.submittedAt), 'dd.MM.yyyy HH:mm')}</small>
-                  <Button type="button" variant="secondary" onClick={() => fillFromRequest(request)} disabled={request.status === 'approved'}>
-                    {request.status === 'approved' ? 'Уже оформлен' : 'Подставить в форму'}
-                  </Button>
-                </article>
-              ))}
+                    <p>{request.note || 'Без комментария.'}</p>
+                    <small>{format(new Date(request.submittedAt), 'dd.MM.yyyy HH:mm')}</small>
+                    <Button type="button" variant="secondary" onClick={() => fillFromRequest(request)} disabled={isApproved}>
+                      {isApproved ? 'Уже оформлен' : 'Подставить в форму'}
+                    </Button>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </form>

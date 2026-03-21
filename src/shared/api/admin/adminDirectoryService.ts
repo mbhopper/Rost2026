@@ -2,16 +2,19 @@ import { PASS_STATUSES } from '../../../entities/pass/model';
 import { USER_ROLES, USER_STATUSES } from '../../../entities/user/model';
 import type { AdminDirectoryService } from '../contracts';
 import type {
+  AdminApproveRegistrationPayload,
   AdminDirectoryFilters,
   AdminEmployeeRegistrationPayload,
   AdminEmployeeRecord,
   AdminOverview,
 } from './types';
+import type { RegistrationRequest } from '../requests/types';
 import { adminEmployeeDirectory, adminOverviewMock } from '../../mocks/admin/directory';
 import { createMockDelayController, type MockApiConfig } from '../mockUtils';
 import { apiConfig, createAuthorizedRequestInit } from '../config';
 import { httpClient } from '../httpClient';
 import { readLocalStorage, storageKeys } from '../../config/storage';
+import { requestRuntimeStore } from '../../mocks/requests/runtime';
 
 const matchesQuery = (value: string, query: string) =>
   value.toLowerCase().includes(query.toLowerCase());
@@ -104,31 +107,77 @@ const createQueryString = (filters: AdminDirectoryFilters = {}) => {
   return query ? `?${query}` : '';
 };
 
+const buildQueueActionPath = (requestId: string) =>
+  `${apiConfig.endpoints.adminRegistrationQueue}/${encodeURIComponent(requestId)}/process`;
+
+const createAuthInit = (init: RequestInit = {}) =>
+  createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken), init);
+
+const persistRegisteredRecord = (record: AdminEmployeeRecord) => {
+  adminEmployeeDirectory.unshift(record);
+  adminOverviewMock.activeEmployees += 1;
+  adminOverviewMock.activePasses += 1;
+  adminOverviewMock.recentAlerts.unshift({
+    id: `alert-${Date.now()}`,
+    title: `Зарегистрирован ${record.user.employeeId}`,
+    detail: `${record.user.fullName} добавлен в каталог и получил активный пропуск.`,
+    tone: 'info',
+  });
+  adminOverviewMock.recentAlerts = adminOverviewMock.recentAlerts.slice(0, 5);
+};
+
+const processRegistrationRequest = async (
+  requestId: string,
+  employeeId: string,
+): Promise<RegistrationRequest> =>
+  httpClient.post<RegistrationRequest>(
+    buildQueueActionPath(requestId),
+    {
+      employeeId,
+      status: 'approved',
+    },
+    createAuthInit(),
+  );
+
 export const createHttpAdminDirectoryService = (): AdminDirectoryService => ({
   getOverview() {
-    return httpClient.get<AdminOverview>(
-      apiConfig.endpoints.adminOverview,
-      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
-    );
+    return httpClient.get<AdminOverview>(apiConfig.endpoints.adminOverview, createAuthInit());
   },
   getEmployees(filters = {}) {
     return httpClient.get<AdminEmployeeRecord[]>(
       `${apiConfig.endpoints.adminEmployees}${createQueryString(filters)}`,
-      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+      createAuthInit(),
     );
   },
   getEmployeeById(employeeId) {
     return httpClient.get<AdminEmployeeRecord | null>(
       `${apiConfig.endpoints.adminEmployees}/${encodeURIComponent(employeeId)}`,
-      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+      createAuthInit(),
+    );
+  },
+  getRegistrationRequests() {
+    return httpClient.get<RegistrationRequest[]>(
+      apiConfig.endpoints.adminRegistrationQueue,
+      createAuthInit(),
     );
   },
   registerEmployee(payload) {
     return httpClient.post<AdminEmployeeRecord>(
       apiConfig.endpoints.adminEmployees,
       payload,
-      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+      createAuthInit(),
     );
+  },
+  async approveRegistrationRequest(payload) {
+    const record = await httpClient.post<AdminEmployeeRecord>(
+      apiConfig.endpoints.adminEmployees,
+      payload,
+      createAuthInit(),
+    );
+
+    await processRegistrationRequest(payload.requestId, record.user.employeeId);
+
+    return record;
   },
 });
 
@@ -153,20 +202,32 @@ export const createMockAdminDirectoryService = (
         null
       );
     },
+    async getRegistrationRequests() {
+      await delay.wait('admin.registrationQueue');
+      return requestRuntimeStore.getRegistrationRequests();
+    },
     async registerEmployee(payload) {
       await delay.wait('admin.registerEmployee');
 
       const record = createRecord(payload as AdminEmployeeRegistrationPayload);
-      adminEmployeeDirectory.unshift(record);
-      adminOverviewMock.activeEmployees += 1;
-      adminOverviewMock.activePasses += 1;
-      adminOverviewMock.recentAlerts.unshift({
-        id: `alert-${Date.now()}`,
-        title: `Зарегистрирован ${record.user.employeeId}`,
-        detail: `${record.user.fullName} добавлен в каталог и получил активный пропуск.`,
-        tone: 'info',
-      });
-      adminOverviewMock.recentAlerts = adminOverviewMock.recentAlerts.slice(0, 5);
+      persistRegisteredRecord(record);
+
+      return record;
+    },
+    async approveRegistrationRequest(payload: AdminApproveRegistrationPayload) {
+      await delay.wait('admin.approveRegistrationRequest');
+
+      const record = createRecord(payload);
+      persistRegisteredRecord(record);
+
+      const request = requestRuntimeStore.processRegistrationRequest(
+        payload.requestId,
+        record.user.employeeId,
+      );
+
+      if (!request) {
+        throw new Error('Registration request not found');
+      }
 
       return record;
     },
