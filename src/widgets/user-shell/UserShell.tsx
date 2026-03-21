@@ -6,6 +6,8 @@ export function UserShell() {
     <div className="app-shell app-shell--user">
       <div className="ambient ambient--left" />
       <div className="ambient ambient--right" />
+      <div className="ambient ambient--center" />
+      <div className="ambient ambient--bottom" />
       <div className="app-shell__inner">
         <Header />
         <main className="app-shell__main">

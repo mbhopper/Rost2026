@@ -21,7 +21,6 @@ const icons = {
 export function Header() {
   const user = useAppStore((state) => state.user);
   const logout = useAppStore((state) => state.logout);
-  const demoMode = useAppStore((state) => state.settings.demoMode);
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -30,20 +29,12 @@ export function Header() {
   };
 
   return (
-    <header className="topbar">
-      <div className="topbar__brand">
-        <div className="topbar__logo">
-          <ShieldCheck size={20} />
-        </div>
-        <div>
-          <p className="topbar__title">Ростелеком Pass MVP</p>
-          <div className="topbar__subtitle-row">
-            <span>Сотрудник · frontend-only этап</span>
-            {demoMode ? <span className="demo-badge">mock data</span> : null}
-          </div>
-        </div>
+    <header className="poster-topbar poster-topbar--private">
+      <div className="poster-brand">
+        <span className="poster-brand__mark" aria-hidden="true" />
+        <span>Ростелеком</span>
       </div>
-      <nav className="topbar__nav" aria-label="Основная навигация">
+      <nav className="poster-actions poster-actions--private" aria-label="Основная навигация">
         {primaryNavigation.map((item) => {
           const Icon = icons[item.href];
           return (
@@ -51,23 +42,27 @@ export function Header() {
               key={item.href}
               to={item.href}
               className={({ isActive }) =>
-                cn('nav-pill', isActive && 'nav-pill--active')
+                cn('poster-action poster-action--nav', isActive && 'poster-action--active')
               }
               title={item.description}
             >
-              <Icon size={16} />
+              <Icon size={14} />
               {item.label}
             </NavLink>
           );
         })}
       </nav>
-      <div className="topbar__account">
-        <div>
-          <p className="secure-sensitive topbar__account-name">{user?.fullName ?? 'Сотрудник'}</p>
-          <p className="topbar__account-meta">{user?.position ?? 'Доступ не назначен'}</p>
+      <div className="poster-userbox">
+        <div className="poster-userbox__avatar">
+          <UserRound size={14} />
+        </div>
+        <div className="poster-userbox__meta">
+          <strong>{user?.fullName ?? 'Профиль'}</strong>
+          <span>{user?.position ?? 'Сотрудник'}</span>
         </div>
         <Button variant="secondary" onClick={() => void onLogout()}>
-          <LogOut size={16} /> Выйти
+          <LogOut size={14} />
+          Выход
         </Button>
       </div>
     </header>

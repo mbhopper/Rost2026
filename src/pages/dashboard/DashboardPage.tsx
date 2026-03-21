@@ -1,86 +1,39 @@
-import { Clock3, QrCode, ShieldCheck, Ticket } from 'lucide-react';
-import { format } from 'date-fns';
+import { QrCode, ShieldCheck } from 'lucide-react';
 import { useAppStore } from '../../app/store';
-import { Card } from '../../shared/ui/card/Card';
 import { QrSessionPanel } from '../../features/qr-session/QrSessionPanel';
+import { Card } from '../../shared/ui/card/Card';
 
 export function DashboardPage() {
   const user = useAppStore((state) => state.user);
-  const passes = useAppStore((state) => state.passes);
-  const qrSession = useAppStore((state) => state.qrSession);
-
-  const primaryPass = passes.find((item) => item.status === 'active' && !item.isBlocked) ?? passes[0] ?? null;
 
   return (
-    <div className="page-stack">
-      <Card className="hero-card hero-card--user">
-        <div className="hero-card__badge"><QrCode size={14} /> Rostelecom pass</div>
-        <div className="hero-card__content">
-          <div>
-            <h1>{user ? `${user.firstName}, ваш цифровой пропуск готов.` : 'Цифровой пропуск сотрудника'}</h1>
-            <p>
-              MVP фронтенд подготовлен под будущую интеграцию с backend: auth, профиль,
-              QR-сессия и статусы пропуска уже изолированы через mock adapters.
-            </p>
-          </div>
-          <div className="hero-card__metrics">
-            <article>
-              <span>Сотрудник</span>
-              <strong>{user?.employeeId ?? '—'}</strong>
-            </article>
-            <article>
-              <span>Площадка</span>
-              <strong>{primaryPass?.facilityName ?? 'Не назначена'}</strong>
-            </article>
-            <article>
-              <span>Обновление</span>
-              <strong>{primaryPass ? format(new Date(primaryPass.issuedAt), 'dd.MM.yyyy') : '—'}</strong>
-            </article>
-          </div>
-        </div>
-      </Card>
+    <div className="poster-page">
+      <div className="poster-page__copy poster-page__copy--centered">
+        <p className="poster-page__eyebrow">Главный экран сотрудника</p>
+        <h1>ТОЧКА ВХОДА</h1>
+        <h2 className="poster-page__headline">{user ? `${user.firstName}, ваш цифровой пропуск готов.` : 'Цифровой пропуск сотрудника'}</h2>
+        <p>
+          {user
+            ? `${user.firstName}, здесь начинается проходной сценарий: статус пропуска, QR и защищённый показ.`
+            : 'Цифровой пропуск сотрудника.'}
+        </p>
+      </div>
 
-      <section className="stats-grid">
-        <Card className="stat-card">
-          <span><ShieldCheck size={16} /> Статус пропуска</span>
-          <strong>{primaryPass?.status ?? 'not_assigned'}</strong>
-          <p>{primaryPass?.isBlocked ? 'Требуется вмешательство администратора.' : 'Пропуск готов для ежедневного прохода.'}</p>
+      <div className="poster-dashboard-grid">
+        <Card className="poster-stat-card">
+          <span><ShieldCheck size={14} /> Статус доступа</span>
+          <strong>Готов к проходу</strong>
+          <p>Покажите QR-код сотруднику охраны непосредственно перед турникетом.</p>
         </Card>
-        <Card className="stat-card">
-          <span><Ticket size={16} /> Уровень доступа</span>
-          <strong>{primaryPass?.accessLevel ?? '—'}</strong>
-          <p>Используется на карточке пропуска и в mock admin панели.</p>
+        <Card className="poster-stat-card poster-stat-card--accent">
+          <span><QrCode size={14} /> Secure QR mode</span>
+          <strong>Best-effort защита</strong>
+          <p>Маскирование при blur, watermark и авто-скрытие при бездействии.</p>
         </Card>
-        <Card className="stat-card">
-          <span><Clock3 size={16} /> QR-сессия</span>
-          <strong>{qrSession?.status ?? 'inactive'}</strong>
-          <p>{qrSession ? 'Текущее состояние QR синхронизировано в sessionStorage.' : 'Сгенерируйте QR непосредственно перед проходом.'}</p>
-        </Card>
-      </section>
+      </div>
 
-      <div className="dashboard-grid">
-        <Card className="panel-card">
-          <div className="section-heading">
-            <div>
-              <p className="section-heading__eyebrow">Что нового</p>
-              <h2>Сценарий сотрудника</h2>
-            </div>
-          </div>
-          <div className="timeline-list">
-            <article>
-              <strong>1. Авторизация</strong>
-              <p>Публичная auth-зона и приватные user routes разделены роут-гардами.</p>
-            </article>
-            <article>
-              <strong>2. Цифровой пропуск</strong>
-              <p>Отдельный pass screen и secure QR-flow c таймером, watermark и авто-маскированием.</p>
-            </article>
-            <article>
-              <strong>3. Настройки</strong>
-              <p>Secure mode, тема и локальное сохранение параметров без backend.</p>
-            </article>
-          </div>
-        </Card>
+      <div className="poster-pedestal poster-pedestal--live">
+        <span>Сгенерировать QR-code</span>
         <QrSessionPanel compact />
       </div>
     </div>

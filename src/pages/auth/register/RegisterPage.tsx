@@ -51,21 +51,19 @@ export function RegisterPage() {
   });
 
   return (
-    <Card className="w-full max-w-[680px] space-y-6">
-      <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-cyan-200">
-        <Ticket size={14} /> Employee onboarding
+    <Card className="auth-form-card auth-form-card--register">
+      <div className="auth-form-card__badge">
+        <Ticket size={14} /> Регистрация
       </div>
-      <div className="space-y-3">
-        <h1 className="text-4xl font-semibold tracking-tight text-white">
-          Создайте пропуск сотрудника
-        </h1>
-        <p className="text-base leading-7 text-slate-400">
+      <div className="auth-form-card__intro">
+        <h2>Создайте пропуск сотрудника</h2>
+        <p>
           После регистрации вы сразу попадёте в приватную часть приложения и
           сможете использовать QR для прохода.
         </p>
       </div>
       <AuthStatusBanner status={authStatus} message={authMessage} />
-      <form className="space-y-4" onSubmit={onSubmit} noValidate>
+      <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="field-block">
             <span>Имя</span>
@@ -172,7 +170,7 @@ export function RegisterPage() {
             : 'Зарегистрироваться'}
         </Button>
       </form>
-      <p className="text-sm text-slate-400">
+      <p className="auth-form-card__footer">
         Уже есть аккаунт?{' '}
         <Link
           className="font-semibold text-cyan-300 hover:text-cyan-200"

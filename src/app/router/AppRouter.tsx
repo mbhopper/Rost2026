@@ -1,5 +1,6 @@
 import {
   Navigate,
+  NavLink,
   Outlet,
   RouterProvider,
   createHashRouter,
@@ -97,23 +98,55 @@ function AdminRouteGuard() {
 
 function AuthLayout() {
   return (
-    <main className="auth-shell">
-      <section className="auth-shell__promo">
-        <div className="auth-shell__copy">
-          <p className="section-heading__eyebrow">Корпоративный цифровой пропуск</p>
-          <h2>Мобильный доступ, QR-проход и единый UX в стиле Ростелеком.</h2>
-          <p>
-            Public auth zone отделена от приватных user routes. Backend появится позже,
-            а текущий UI уже работает через mock adapters.
-          </p>
+    <main className="poster-shell poster-shell--auth">
+      <div className="poster-shell__blob poster-shell__blob--one" />
+      <div className="poster-shell__blob poster-shell__blob--two" />
+      <div className="poster-shell__blob poster-shell__blob--three" />
+      <div className="poster-frame">
+        <header className="poster-topbar">
+          <div className="poster-brand">
+            <span className="poster-brand__mark" aria-hidden="true" />
+            <span>Ростелеком</span>
+          </div>
+          <nav className="poster-actions" aria-label="Авторизация">
+            <NavLink
+              to={routes.login}
+              className={({ isActive }) =>
+                isActive ? 'poster-action poster-action--active' : 'poster-action'
+              }
+            >
+              Вход
+            </NavLink>
+            <NavLink
+              to={routes.register}
+              className={({ isActive }) =>
+                isActive ? 'poster-action poster-action--active' : 'poster-action'
+              }
+            >
+              Регистрация
+            </NavLink>
+          </nav>
+        </header>
+
+        <section className="poster-hero">
+          <div className="poster-hero__copy">
+            <p className="poster-hero__eyebrow">Корпоративный цифровой пропуск</p>
+            <h1>ТОЧКА ВХОДА</h1>
+            <p>
+              Frontend-only MVP цифрового пропуска сотрудника в визуальном стиле
+              Ростелеком с отдельной user/admin зонами и mock integration layer.
+            </p>
+          </div>
+          <div className="poster-hero__panel">
+            <Outlet />
+          </div>
+        </section>
+
+        <div className="poster-pedestal">
+          <span>Сгенерировать QR-code</span>
+          <div className="poster-pedestal__badge">QR</div>
         </div>
-        <div className="hero-card__metrics">
-          <article><span>Зоны</span><strong>Public · User · Admin</strong></article>
-          <article><span>Secure mode</span><strong>Best-effort</strong></article>
-          <article><span>Responsive</span><strong>320 → 1280+</strong></article>
-        </div>
-      </section>
-      <Outlet />
+      </div>
     </main>
   );
 }
