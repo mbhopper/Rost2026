@@ -14,7 +14,13 @@ export interface RegisterPayload {
   confirmPassword: string;
 }
 
-export type AuthStatus = 'guest' | 'authenticated' | 'loading';
+export type AuthStatus =
+  | 'guest'
+  | 'authenticated'
+  | 'loading'
+  | 'auth_error'
+  | 'session_expired'
+  | 'service_unavailable';
 
 export interface SettingsState {
   securityAlerts: boolean;
@@ -24,10 +30,14 @@ export interface SettingsState {
 
 export interface AuthSlice {
   authStatus: AuthStatus;
+  authMessage: string | null;
+  isAuthBootstrapped: boolean;
   user: UserProfile | null;
   login: (email: string, password: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
-  logout: () => void;
+  bootstrapAuth: () => Promise<void>;
+  clearAuthFeedback: () => void;
+  logout: () => Promise<void>;
 }
 
 export interface PassSlice {
