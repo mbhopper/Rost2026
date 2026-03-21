@@ -1,13 +1,13 @@
 import { ShieldCheck } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
 import { routes } from '../../shared/config/routes';
-import { getRequestIdFromSearchParams } from '../../shared/lib/requestId';
+import { getRequestIdFromLocationSearch } from '../../shared/lib/requestId';
 
 export function SupportSuccessPage() {
   const authStatus = useAppStore((state) => state.authStatus);
-  const [searchParams] = useSearchParams();
-  const requestId = getRequestIdFromSearchParams(searchParams);
+  const location = useLocation();
+  const requestId = getRequestIdFromLocationSearch(location.search);
 
   return (
     <main className="rt-stage-shell rt-stage-shell--public">

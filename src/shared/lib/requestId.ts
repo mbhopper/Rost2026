@@ -13,3 +13,6 @@ export const buildRequestSuccessPath = (
 
 export const getRequestIdFromSearchParams = (searchParams: URLSearchParams) =>
   searchParams.get(REQUEST_ID_QUERY_PARAM);
+
+export const getRequestIdFromLocationSearch = (search: string) =>
+  getRequestIdFromSearchParams(new URLSearchParams(search));

@@ -169,26 +169,6 @@ export function useLocation() {
   return { pathname: context.pathname, search: context.search };
 }
 
-export function useSearchParams() {
-  const { search, pathname } = useLocation();
-  const navigate = useNavigate();
-  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
-
-  const setSearchParams = useMemo(
-    () =>
-      (nextInit, navigateOptions = {}) => {
-        const nextSearch = new URLSearchParams(nextInit).toString();
-        navigate(
-          `${pathname}${nextSearch ? `?${nextSearch}` : ''}`,
-          navigateOptions,
-        );
-      },
-    [navigate, pathname],
-  );
-
-  return [searchParams, setSearchParams];
-}
-
 function BaseLink(
   { to, onClick, children, className, ...props },
   resolveClassName,

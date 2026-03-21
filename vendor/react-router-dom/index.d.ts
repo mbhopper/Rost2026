@@ -20,13 +20,6 @@ export function useNavigate(): (
   options?: { replace?: boolean },
 ) => void;
 export function useLocation(): { pathname: string; search: string };
-export function useSearchParams(): [
-  URLSearchParams,
-  (
-    nextInit: string | URLSearchParams | Record<string, string>,
-    navigateOptions?: { replace?: boolean },
-  ) => void,
-];
 export function Link(
   props: PropsWithChildren<
     AnchorHTMLAttributes<HTMLAnchorElement> & { to: string }
