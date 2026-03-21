@@ -1,7 +1,6 @@
 import { PASS_STATUSES } from '../../entities/pass/model';
-import { QR_STATUSES } from '../../entities/qr/model';
 import { USER_STATUSES } from '../../entities/user/model';
-import type { PassDto, QrSessionDto, UserDto } from '../api/dto';
+import type { PassDto, UserDto } from '../api/dto';
 
 export const mockUserDto: UserDto = {
   id: 'user-alex-ivanov',
@@ -39,19 +38,3 @@ export const mockPassDtos: PassDto[] = [
     is_blocked: false,
   },
 ];
-
-export const createMockQrSessionDto = (): QrSessionDto => {
-  const createdAt = new Date();
-  const expiresAt = new Date(createdAt.getTime() + 10 * 60 * 1000);
-
-  return {
-    session_id: `qr-session-${Math.random().toString(36).slice(2, 8)}`,
-    qr_value: `FP-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
-    created_at: createdAt.toISOString(),
-    expires_at: expiresAt.toISOString(),
-    ttl_seconds: 600,
-    status: QR_STATUSES.ACTIVE,
-  };
-};
-
-export const mockQrSessionDto = createMockQrSessionDto();
