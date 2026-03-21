@@ -24,10 +24,19 @@ export type AuthStatus =
   | 'offline'
   | 'unknown_error';
 
+export type ThemeMode = 'system' | 'dark' | 'light';
+
+export interface NotificationSettings {
+  securityEvents: boolean;
+  passUpdates: boolean;
+  sessionAlerts: boolean;
+}
+
 export interface SettingsState {
-  securityAlerts: boolean;
-  weeklyDigest: boolean;
-  priorityReminders: boolean;
+  themeMode: ThemeMode;
+  demoMode: boolean;
+  secureScreenMode: boolean;
+  notifications: NotificationSettings;
 }
 
 export interface AuthSlice {
@@ -64,7 +73,9 @@ export interface QrSessionSlice {
 
 export interface SettingsSlice {
   settings: SettingsState;
-  toggleSetting: (key: keyof SettingsState) => void;
+  toggleSetting: (key: 'demoMode' | 'secureScreenMode') => void;
+  setThemeMode: (mode: ThemeMode) => void;
+  toggleNotification: (key: keyof NotificationSettings) => void;
 }
 
 export type AppStore = AuthSlice & PassSlice & QrSessionSlice & SettingsSlice;

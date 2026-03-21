@@ -23,10 +23,30 @@ function BootstrapStore() {
   return null;
 }
 
+function SettingsEffects() {
+  const settings = useAppStore((state) => state.settings);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.dataset.theme = settings.themeMode;
+    body.dataset.secureScreen = String(settings.secureScreenMode);
+    body.dataset.demoMode = String(settings.demoMode);
+  }, [settings.demoMode, settings.secureScreenMode, settings.themeMode]);
+
+  return null;
+}
+
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <>
       <BootstrapStore />
+      <SettingsEffects />
       {children}
     </>
   );
