@@ -11,6 +11,13 @@ const icons = {
   [routes.settings]: Settings,
 };
 
+const statusLabels = {
+  active: 'Активный сотрудник',
+  on_leave: 'В отпуске',
+  suspended: 'Доступ ограничен',
+  terminated: 'Доступ закрыт',
+} as const;
+
 export function Header() {
   const user = useAppStore((state) => state.user);
   const logout = useAppStore((state) => state.logout);
@@ -56,8 +63,8 @@ export function Header() {
         </nav>
         <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/8 bg-slate-950/30 px-4 py-3 lg:min-w-[280px]">
           <div>
-            <p className="text-sm font-semibold text-white">{user?.name ?? 'Гость'}</p>
-            <p className="text-sm text-slate-400">{user?.membershipLevel ?? 'Base'} access</p>
+            <p className="text-sm font-semibold text-white">{user?.fullName ?? 'Гость'}</p>
+            <p className="text-sm text-slate-400">{user ? statusLabels[user.status] : 'Доступ не выдан'}</p>
           </div>
           <Button variant="secondary" onClick={onLogout}>
             <LogOut size={16} />

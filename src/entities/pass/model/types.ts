@@ -1,17 +1,20 @@
 export const PASS_STATUSES = {
   ACTIVE: 'active',
-  PENDING: 'pending',
   EXPIRED: 'expired',
+  PENDING: 'pending',
+  REVOKED: 'revoked',
+  BLOCKED: 'blocked',
 } as const;
 
 export type PassStatus = (typeof PASS_STATUSES)[keyof typeof PASS_STATUSES];
 
 export interface DigitalPass {
-  id: string;
-  title: string;
-  zone: string;
+  passId: string;
+  employeeId: string;
+  issuedAt: string;
+  expiresAt: string;
+  accessLevel: string;
   status: PassStatus;
-  validUntil: string;
-  sessionsLeft: number;
-  format: 'NFC + QR' | 'QR only';
+  facilityName: string;
+  isBlocked: boolean;
 }

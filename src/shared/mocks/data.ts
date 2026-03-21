@@ -1,46 +1,57 @@
-import type { DigitalPass } from '../../entities/pass/model';
 import { PASS_STATUSES } from '../../entities/pass/model';
-import type { QrSession } from '../../entities/qr/model';
-import { QR_SESSION_STATUSES } from '../../entities/qr/model';
-import type { UserProfile } from '../../entities/user/model';
+import { QR_STATUSES } from '../../entities/qr/model';
 import { USER_STATUSES } from '../../entities/user/model';
+import type { PassDto, QrSessionDto, UserDto } from '../api/dto';
 
-export const mockUser: UserProfile = {
-  id: 'emp-1042',
-  name: 'Александр Иванов',
-  email: 'alex@futurepass.app',
-  city: 'Москва',
-  membershipLevel: 'Priority',
+export const mockUserDto: UserDto = {
+  id: 'user-alex-ivanov',
+  employee_id: 'EMP-1042',
+  first_name: 'Александр',
+  last_name: 'Иванов',
+  middle_name: 'Сергеевич',
+  email: 'alex.ivanov@futurepass.app',
+  phone: '+7 (999) 555-01-42',
   department: 'Platform Engineering',
-  position: 'Frontend engineer',
+  position: 'Senior Frontend Engineer',
+  avatar_url: 'https://api.dicebear.com/9.x/initials/svg?seed=Alexander%20Ivanov',
   status: USER_STATUSES.ACTIVE,
 };
 
-export const mockPasses: DigitalPass[] = [
+export const mockPassDtos: PassDto[] = [
   {
-    id: 'office-core',
-    title: 'Основной пропуск HQ',
-    zone: 'Башня А · 1-12 этажи',
+    pass_id: 'PASS-HQ-01',
+    employee_id: 'EMP-1042',
+    issued_at: '2026-01-10T08:00:00.000Z',
+    expires_at: '2026-12-31T23:59:00.000Z',
+    access_level: 'L3 · HQ Office / R&D Floor',
     status: PASS_STATUSES.ACTIVE,
-    validUntil: '2026-12-31T23:59:00.000Z',
-    sessionsLeft: 14,
-    format: 'NFC + QR',
+    facility_name: 'FuturePass HQ · Tower A',
+    is_blocked: false,
   },
   {
-    id: 'lab-night',
-    title: 'Лаборатория / вечерний доступ',
-    zone: 'R&D Lab · после 19:00',
+    pass_id: 'PASS-LAB-07',
+    employee_id: 'EMP-1042',
+    issued_at: '2026-02-01T17:30:00.000Z',
+    expires_at: '2026-09-15T20:30:00.000Z',
+    access_level: 'L2 · Evening Lab Access',
     status: PASS_STATUSES.PENDING,
-    validUntil: '2026-09-15T20:30:00.000Z',
-    sessionsLeft: 4,
-    format: 'QR only',
+    facility_name: 'R&D Lab · Sector C',
+    is_blocked: false,
   },
 ];
 
-export const mockQrSession: QrSession = {
-  id: 'qr-session-1',
-  code: 'FP-2026-ALX-77A1',
-  expiresAt: new Date(Date.now() + 12 * 60 * 1000).toISOString(),
-  location: 'Checkpoint C / turnstile 04',
-  status: QR_SESSION_STATUSES.ACTIVE,
+export const createMockQrSessionDto = (): QrSessionDto => {
+  const createdAt = new Date();
+  const expiresAt = new Date(createdAt.getTime() + 10 * 60 * 1000);
+
+  return {
+    session_id: `qr-session-${Math.random().toString(36).slice(2, 8)}`,
+    qr_value: `FP-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+    created_at: createdAt.toISOString(),
+    expires_at: expiresAt.toISOString(),
+    ttl_seconds: 600,
+    status: QR_STATUSES.ACTIVE,
+  };
 };
+
+export const mockQrSessionDto = createMockQrSessionDto();

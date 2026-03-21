@@ -8,6 +8,13 @@ interface QrViewerProps {
   session: QrSession | null;
 }
 
+const statusLabels: Record<QrSession['status'], string> = {
+  active: 'Активна',
+  expired: 'Истекла',
+  rotated: 'Обновлена',
+  blocked: 'Заблокирована',
+};
+
 export function QrViewer({ session }: QrViewerProps) {
   return (
     <Card className="space-y-5">
@@ -21,21 +28,23 @@ export function QrViewer({ session }: QrViewerProps) {
         </div>
       </div>
       <div className="grid place-items-center rounded-[28px] border border-white/10 bg-white p-5 shadow-soft-sm">
-        {session ? <QRCodeSVG value={session.code} size={190} /> : <div className="h-[190px] w-[190px] animate-pulse rounded-3xl bg-slate-200" />}
+        {session ? <QRCodeSVG value={session.qrValue} size={190} /> : <div className="h-[190px] w-[190px] animate-pulse rounded-3xl bg-slate-200" />}
       </div>
       <div className="grid gap-3 text-sm text-slate-300">
         <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">
           <span className="text-slate-500">Код</span>
-          <strong className="font-semibold text-white">{session?.code ?? 'Генерируем…'}</strong>
+          <strong className="font-semibold text-white">{session?.qrValue ?? 'Генерируем…'}</strong>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">
             <div className="flex items-center gap-2 text-slate-500"><Clock3 size={14} /> Истекает</div>
             <strong className="mt-2 block text-white">{session ? `${format(session.expiresAt, 'HH:mm')} · ${formatDistanceToNow(session.expiresAt, { addSuffix: true })}` : '--:--'}</strong>
+            <p className="mt-1 text-xs text-slate-500">Создана {session ? format(session.createdAt, 'HH:mm:ss') : '--:--:--'}</p>
           </div>
           <div className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">
-            <div className="flex items-center gap-2 text-slate-500"><ShieldCheck size={14} /> Точка доступа</div>
-            <strong className="mt-2 block text-white">{session?.location ?? 'Ожидаем данные'}</strong>
+            <div className="flex items-center gap-2 text-slate-500"><ShieldCheck size={14} /> Сессия доступа</div>
+            <strong className="mt-2 block text-white">{session ? `${statusLabels[session.status]} · ${session.ttlSeconds} сек.` : 'Ожидаем данные'}</strong>
+            <p className="mt-1 text-xs text-slate-500">Session ID: {session?.sessionId ?? '—'}</p>
           </div>
         </div>
       </div>
