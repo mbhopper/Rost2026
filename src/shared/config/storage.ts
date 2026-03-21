@@ -2,6 +2,7 @@ export const storageKeys = {
   authToken: 'auth_token',
   authSession: 'auth_session',
   qrSession: 'qr_session',
+  appSettings: 'app_settings',
 } as const;
 
 const isBrowser = typeof window !== 'undefined';
