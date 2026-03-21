@@ -7,11 +7,15 @@ import { RegisterPage } from './auth/register/RegisterPage';
 import { api } from '../shared/api/auth';
 import { AppApiError } from '../shared/api/appApi';
 import { useAppStore } from '../app/store';
+import { buildRequestSuccessPath } from '../shared/lib/requestId';
 
 const mockNavigate = vi.fn();
 
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  const actual =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom',
+    );
 
   return {
     ...actual,
@@ -50,35 +54,47 @@ describe('form submit error handling', () => {
       </MemoryRouter>,
     );
 
-    const submitButton = screen.getByRole('button', { name: 'Отправить заявку' });
+    const submitButton = screen.getByRole('button', {
+      name: 'Отправить заявку',
+    });
 
     await userEvent.click(submitButton);
 
     expect(submitRegistrationRequest).toHaveBeenCalledTimes(1);
-    expect(await screen.findByRole('alert')).toHaveTextContent('Нет подключения к сети');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Нет подключения к сети',
+    );
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Отправить заявку' })).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: 'Отправить заявку' }),
+    ).toBeEnabled();
 
     await userEvent.type(screen.getByPlaceholderText('Иван'), 'а');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Отправить заявку' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Отправить заявку' }),
+    );
 
     await waitFor(() => {
       expect(submitRegistrationRequest).toHaveBeenCalledTimes(2);
-      expect(mockNavigate).toHaveBeenCalledWith('/auth/register/success?requestId=request-123');
+      expect(mockNavigate).toHaveBeenCalledWith(
+        buildRequestSuccessPath('/auth/register/success', 'request-123'),
+      );
     });
   });
 
   it('shows a mapped support error and retries submission without leaving SupportPage', async () => {
-    let resolveRequest: ((value: {
-      id: string;
-      status: 'new' | 'received';
-      submittedAt: string;
-      email: string;
-      topic: string;
-      message: string;
-    }) => void) | null = null;
+    let resolveRequest:
+      | ((value: {
+          id: string;
+          status: 'new' | 'received';
+          submittedAt: string;
+          email: string;
+          topic: string;
+          message: string;
+        }) => void)
+      | null = null;
     const submitSupportRequest = vi
       .spyOn(api.requestService, 'submitSupportRequest')
       .mockImplementationOnce(
@@ -94,7 +110,8 @@ describe('form submit error handling', () => {
         submittedAt: '2026-03-21T00:00:00.000Z',
         email: 'help@futurepass.app',
         topic: 'Проблема с проходом',
-        message: 'Не проходит QR на входе в здание, нужна проверка статуса пропуска.',
+        message:
+          'Не проходит QR на входе в здание, нужна проверка статуса пропуска.',
       });
 
     render(
@@ -115,14 +132,17 @@ describe('form submit error handling', () => {
       submittedAt: '2026-03-21T00:00:00.000Z',
       email: 'help@futurepass.app',
       topic: 'Проблема с проходом',
-      message: 'Не проходит QR на входе в здание, нужна проверка статуса пропуска.',
+      message:
+        'Не проходит QR на входе в здание, нужна проверка статуса пропуска.',
     });
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Отправить' })).toBeEnabled();
     });
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/support/success?requestId=ignored');
+      expect(mockNavigate).toHaveBeenCalledWith(
+        buildRequestSuccessPath('/support/success', 'ignored'),
+      );
     });
 
     mockNavigate.mockReset();
@@ -130,7 +150,9 @@ describe('form submit error handling', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Отправить' }));
 
     expect(submitSupportRequest).toHaveBeenCalledTimes(2);
-    expect(await screen.findByRole('alert')).toHaveTextContent('Сервис временно недоступен');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Сервис временно недоступен',
+    );
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Отправить' })).toBeEnabled();
 
@@ -141,7 +163,9 @@ describe('form submit error handling', () => {
 
     await waitFor(() => {
       expect(submitSupportRequest).toHaveBeenCalledTimes(3);
-      expect(mockNavigate).toHaveBeenCalledWith('/support/success?requestId=support-456');
+      expect(mockNavigate).toHaveBeenCalledWith(
+        buildRequestSuccessPath('/support/success', 'support-456'),
+      );
     });
   });
 });

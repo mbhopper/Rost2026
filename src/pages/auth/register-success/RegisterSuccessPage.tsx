@@ -1,19 +1,11 @@
 import { ShieldCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { routes } from '../../../shared/config/routes';
-
-function getRequestIdFromHash() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get(
-    'requestId',
-  );
-}
+import { getRequestIdFromLocationSearch } from '../../../shared/lib/requestId';
 
 export function RegisterSuccessPage() {
-  const requestId = getRequestIdFromHash();
+  const location = useLocation();
+  const requestId = getRequestIdFromLocationSearch(location.search);
 
   return (
     <section className="rt-screen rt-screen--success motion-page-fade">
