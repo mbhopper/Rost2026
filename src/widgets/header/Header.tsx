@@ -1,7 +1,8 @@
 import { LogOut, Settings, ShieldCheck, Ticket, UserRound } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
-import { primaryNavigation, routes } from '../../shared/config/routes';
+import { routes, primaryNavigation } from '../../shared/config/routes';
+import { appContent } from '../../shared/constants/content';
 import { cn } from '../../shared/lib/cn';
 import { Button } from '../../shared/ui/button/Button';
 
@@ -11,18 +12,12 @@ const icons = {
   [routes.settings]: Settings,
 };
 
-const statusLabels = {
-  active: 'Активный сотрудник',
-  on_leave: 'В отпуске',
-  suspended: 'Доступ ограничен',
-  terminated: 'Доступ закрыт',
-} as const;
-
 export function Header() {
   const user = useAppStore((state) => state.user);
   const logout = useAppStore((state) => state.logout);
   const demoMode = useAppStore((state) => state.settings.demoMode);
   const navigate = useNavigate();
+  const content = appContent.header;
 
   const onLogout = async () => {
     await logout();
@@ -37,14 +32,12 @@ export function Header() {
             <ShieldCheck size={20} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">
-              FuturePass Access
-            </p>
+            <p className="text-sm font-semibold text-white">{content.brand}</p>
             <div className="flex flex-wrap items-center gap-2 text-sm text-slate-400">
-              <span>Кабинет сотрудника и управление пропуском</span>
+              <span>{content.subtitle}</span>
               {demoMode ? (
                 <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
-                  Демо-режим
+                  {content.hintsEnabled}
                 </span>
               ) : null}
             </div>
@@ -76,15 +69,15 @@ export function Header() {
         <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/8 bg-slate-950/30 px-4 py-3 lg:min-w-[280px]">
           <div>
             <p className="secure-sensitive text-sm font-semibold text-white">
-              {user?.fullName ?? 'Гость'}
+              {user?.fullName ?? content.userFallback}
             </p>
             <p className="text-sm text-slate-400">
-              {user ? statusLabels[user.status] : 'Доступ не выдан'}
+              {user ? content.statusLabels[user.status] : content.noAccess}
             </p>
           </div>
           <Button variant="secondary" onClick={() => void onLogout()}>
             <LogOut size={16} />
-            Выйти
+            {content.logout}
           </Button>
         </div>
       </div>

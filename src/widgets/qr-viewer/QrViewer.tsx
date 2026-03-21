@@ -10,6 +10,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 import type { QrSession } from '../../entities/qr/model';
 import type { QrScreenState } from '../../features/qr-session/model';
+import { appContent } from '../../shared/constants/content';
 import { Card } from '../../shared/ui/card/Card';
 
 interface QrViewerProps {
@@ -29,47 +30,37 @@ const stateMeta: Record<
   }
 > = {
   inactive: {
-    label: 'Не открыт',
-    description:
-      'Сначала создайте QR-сессию — код появится в безопасном sheet-окне.',
+    ...appContent.qrViewer.states.inactive,
     icon: QrCode,
     toneClass: 'qr-viewer--inactive',
   },
   active: {
-    label: 'Активен',
-    description: 'Покажите код охране или турникету, пока таймер ещё идёт.',
+    ...appContent.qrViewer.states.active,
     icon: ShieldCheck,
     toneClass: 'qr-viewer--active',
   },
   expired: {
-    label: 'Истёк',
-    description:
-      'Срок жизни QR завершён. Откройте новый код для следующего прохода.',
+    ...appContent.qrViewer.states.expired,
     icon: Clock3,
     toneClass: 'qr-viewer--expired',
   },
   scanned: {
-    label: 'Использован',
-    description: 'Demo-сценарий: код уже считан и больше не считается свежим.',
+    ...appContent.qrViewer.states.scanned,
     icon: Ticket,
     toneClass: 'qr-viewer--scanned',
   },
   regenerating: {
-    label: 'Обновляется',
-    description: 'Создаём новый QR с новым sessionId и пересчитанным TTL.',
+    ...appContent.qrViewer.states.regenerating,
     icon: BellRing,
     toneClass: 'qr-viewer--regenerating',
   },
   blocked: {
-    label: 'Заблокирован',
-    description: 'Сессия отозвана, поэтому код нельзя использовать для входа.',
+    ...appContent.qrViewer.states.blocked,
     icon: UserRound,
     toneClass: 'qr-viewer--blocked',
   },
   unavailable: {
-    label: 'Недоступен',
-    description:
-      'Нет активного пропуска или текущая сессия пользователя невалидна.',
+    ...appContent.qrViewer.states.unavailable,
     icon: BellRing,
     toneClass: 'qr-viewer--unavailable',
   },
@@ -85,6 +76,7 @@ export function QrViewer({
   const StateIcon = meta.icon;
   const createdAt = session ? new Date(session.createdAt) : null;
   const expiresAt = session ? new Date(session.expiresAt) : null;
+  const content = appContent.qrViewer;
 
   return (
     <Card
@@ -93,11 +85,9 @@ export function QrViewer({
     >
       <div className="qr-viewer-card__header">
         <div>
-          <p className="qr-viewer-card__eyebrow">QR access sheet</p>
+          <p className="qr-viewer-card__eyebrow">{content.eyebrow}</p>
           <h3>
-            {meta.label === 'Активен'
-              ? 'Ваш QR готов к показу'
-              : 'Экран QR-пропуска'}
+            {state === 'active' ? content.title.active : content.title.default}
           </h3>
           <p className="qr-viewer-card__copy">{meta.description}</p>
         </div>
@@ -117,9 +107,7 @@ export function QrViewer({
         ) : (
           <div className="qr-sheet__placeholder">
             <QrCode size={38} />
-            <p>
-              После нажатия на CTA здесь появится одноразовый код для прохода.
-            </p>
+            <p>{content.placeholder}</p>
           </div>
         )}
 
@@ -142,11 +130,8 @@ export function QrViewer({
           <div className="qr-sheet__overlay qr-sheet__overlay--masked">
             <div>
               <BellRing size={28} />
-              <strong>Экран скрыт</strong>
-              <p>
-                При потере фокуса QR маскируется как best-effort защита
-                браузерного интерфейса.
-              </p>
+              <strong>{content.maskedTitle}</strong>
+              <p>{content.maskedDescription}</p>
             </div>
           </div>
         ) : null}
@@ -155,38 +140,35 @@ export function QrViewer({
       <div className="qr-viewer-card__meta-grid">
         <div className="qr-viewer-card__meta-item">
           <span>
-            <Clock3 size={14} /> TTL / expiry
+            <Clock3 size={14} /> {content.meta.expiry}
           </span>
           <strong>
             {session && expiresAt
               ? `${format(expiresAt, 'HH:mm:ss')} · ${state === 'active' ? `${remainingSeconds} сек.` : meta.label}`
-              : 'Ожидает генерацию'}
+              : content.meta.expiryPending}
           </strong>
           <p>
             {createdAt
-              ? `Создан ${format(createdAt, 'HH:mm:ss')}`
-              : 'Сессия ещё не создана'}
+              ? content.meta.sessionCreated(format(createdAt, 'HH:mm:ss'))
+              : content.meta.sessionNotCreated}
           </p>
         </div>
         <div className="qr-viewer-card__meta-item">
           <span>
-            <ShieldCheck size={14} /> Session payload
+            <ShieldCheck size={14} /> {content.meta.session}
           </span>
           <strong>
-            {session ? session.sessionId : 'Сессия появится после открытия QR'}
+            {session ? session.sessionId : content.meta.sessionPending}
           </strong>
           <p>
             {session && expiresAt
-              ? `Истекает ${formatDistanceToNow(expiresAt)}.`
-              : 'Payload будет содержать employeeId, passId, sessionId и signature.'}
+              ? content.meta.expiresIn(formatDistanceToNow(expiresAt))
+              : content.meta.payloadDescription}
           </p>
         </div>
       </div>
 
-      <p className="qr-viewer-card__footnote">
-        Браузер не умеет жёстко запрещать скриншоты: для этого нужен
-        native-контур или интеграция уровня ОС.
-      </p>
+      <p className="qr-viewer-card__footnote">{content.footnote}</p>
     </Card>
   );
 }

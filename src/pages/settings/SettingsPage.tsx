@@ -1,7 +1,10 @@
 import { BellRing, Clock3, Settings, ShieldCheck } from 'lucide-react';
 import { useId } from 'react';
 import { useAppStore, type ThemeMode } from '../../app/store';
+import { appContent } from '../../shared/constants/content';
 import { Card } from '../../shared/ui/card/Card';
+
+const content = appContent.settings;
 
 const themeOptions: Array<{
   value: ThemeMode;
@@ -11,20 +14,20 @@ const themeOptions: Array<{
 }> = [
   {
     value: 'system',
-    label: 'Системная',
-    description: 'Следовать системной теме устройства.',
+    label: content.themes.system.label,
+    description: content.themes.system.description,
     icon: Settings,
   },
   {
     value: 'dark',
-    label: 'Тёмная',
-    description: 'Использовать тёмную тему для рабочего интерфейса.',
+    label: content.themes.dark.label,
+    description: content.themes.dark.description,
     icon: ShieldCheck,
   },
   {
     value: 'light',
-    label: 'Светлая',
-    description: 'Переключиться на светлую тему кабинета.',
+    label: content.themes.light.label,
+    description: content.themes.light.description,
     icon: Clock3,
   },
 ];
@@ -32,35 +35,37 @@ const themeOptions: Array<{
 const behaviorSettings = [
   {
     key: 'demoMode',
-    label: 'Демо-режим',
-    description: 'Показывать демо-маркеры и подсказки для презентации MVP.',
+    label: content.behavior.demoMode.label,
+    description: content.behavior.demoMode.description,
   },
   {
     key: 'secureScreenMode',
-    label: 'Защищённый экран',
-    description: 'Скрывать чувствительные данные до наведения или фокуса.',
+    label: content.behavior.secureScreenMode.label,
+    description: content.behavior.secureScreenMode.description,
   },
 ] as const;
 
 const notificationSettings = [
   {
     key: 'securityAlerts',
-    label: 'Оповещения безопасности',
-    description: 'Сообщать о входах с новых устройств и подозрительных активностях.',
+    label: content.notifications.securityAlerts.label,
+    description: content.notifications.securityAlerts.description,
   },
   {
     key: 'passUpdates',
-    label: 'Обновления пропуска',
-    description: 'Уведомлять об изменении статуса пропуска и новых уровнях доступа.',
+    label: content.notifications.passUpdates.label,
+    description: content.notifications.passUpdates.description,
   },
   {
     key: 'sessionReminders',
-    label: 'Напоминания о сессиях',
-    description: 'Напоминать о долгих сессиях и необходимости обновить QR-пропуск.',
+    label: content.notifications.sessionReminders.label,
+    description: content.notifications.sessionReminders.description,
   },
 ] as const;
 
-type ToggleKey = (typeof behaviorSettings)[number]['key'] | (typeof notificationSettings)[number]['key'];
+type ToggleKey =
+  | (typeof behaviorSettings)[number]['key']
+  | (typeof notificationSettings)[number]['key'];
 
 interface ToggleRowProps {
   checked: boolean;
@@ -76,7 +81,9 @@ function ToggleRow({ checked, description, label, onToggle }: ToggleRowProps) {
     <div className="settings-row">
       <div>
         <div className="text-sm font-semibold text-white">{label}</div>
-        <p id={descriptionId} className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+        <p id={descriptionId} className="mt-2 text-sm leading-6 text-slate-400">
+          {description}
+        </p>
       </div>
       <button
         type="button"
@@ -103,18 +110,28 @@ export function SettingsPage() {
     <Card className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-xs uppercase tracking-[0.24em] text-cyan-300">Настройки</div>
-          <h1 className="mt-2 text-3xl font-semibold text-white">Параметры кабинета сотрудника</h1>
+          <div className="text-xs uppercase tracking-[0.24em] text-cyan-300">
+            {content.eyebrow}
+          </div>
+          <h1 className="mt-2 text-3xl font-semibold text-white">
+            {content.title}
+          </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-            Управляйте темой интерфейса, режимом демонстрации, защитой чувствительных данных и уведомлениями MVP.
+            {content.description}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-cyan-300"><ShieldCheck size={20} /></div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-cyan-300">
+          <ShieldCheck size={20} />
+        </div>
       </div>
 
       <fieldset className="settings-fieldset">
-        <legend className="settings-legend">Тема интерфейса</legend>
-        <div className="grid gap-4 sm:grid-cols-3" role="radiogroup" aria-label="Выбор темы интерфейса">
+        <legend className="settings-legend">{content.themeLegend}</legend>
+        <div
+          className="grid gap-4 sm:grid-cols-3"
+          role="radiogroup"
+          aria-label={content.themeLegend}
+        >
           {themeOptions.map((item) => {
             const Icon = item.icon;
             const isActive = settings.themeMode === item.value;
@@ -133,7 +150,9 @@ export function SettingsPage() {
                 <span className="inline-flex items-center gap-2 text-sm font-semibold text-white">
                   <Icon size={16} /> {item.label}
                 </span>
-                <span className="mt-2 block text-sm leading-6 text-slate-400">{item.description}</span>
+                <span className="mt-2 block text-sm leading-6 text-slate-400">
+                  {item.description}
+                </span>
               </button>
             );
           })}
@@ -141,7 +160,7 @@ export function SettingsPage() {
       </fieldset>
 
       <fieldset className="settings-fieldset">
-        <legend className="settings-legend">Поведение интерфейса</legend>
+        <legend className="settings-legend">{content.behaviorLegend}</legend>
         <div className="space-y-4">
           {behaviorSettings.map((item) => (
             <ToggleRow
@@ -156,7 +175,9 @@ export function SettingsPage() {
       </fieldset>
 
       <fieldset className="settings-fieldset">
-        <legend className="settings-legend">Уведомления</legend>
+        <legend className="settings-legend">
+          {content.notificationsLegend}
+        </legend>
         <div className="space-y-4">
           {notificationSettings.map((item) => (
             <ToggleRow
@@ -169,7 +190,7 @@ export function SettingsPage() {
           ))}
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
-          <BellRing size={14} /> Настройки сохраняются автоматически в локальном профиле браузера.
+          <BellRing size={14} /> {content.autosave}
         </div>
       </fieldset>
     </Card>

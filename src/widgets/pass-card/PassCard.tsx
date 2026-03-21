@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { BellRing, Clock3, ShieldCheck, Ticket, UserRound } from 'lucide-react';
 import type { DigitalPass } from '../../entities/pass/model';
 import type { UserProfile } from '../../entities/user/model';
+import { appContent } from '../../shared/constants/content';
 import { cn } from '../../shared/lib/cn';
 import { Card } from '../../shared/ui/card/Card';
 
@@ -21,36 +22,31 @@ const statusMeta: Record<
   }
 > = {
   active: {
-    label: 'Active access',
-    message: 'Пропуск готов к проходу и синхронизирован с системой доступа.',
+    ...appContent.passCard.status.active,
     icon: ShieldCheck,
     accentClass: 'pass-badge-card--active',
     chipClass: 'pass-badge-status--active',
   },
   pending: {
-    label: 'Pending approval',
-    message: 'Пропуск выпущен, но ещё ожидает активацию в системе.',
+    ...appContent.passCard.status.pending,
     icon: Clock3,
     accentClass: 'pass-badge-card--pending',
     chipClass: 'pass-badge-status--pending',
   },
   expired: {
-    label: 'Expired',
-    message: 'Срок действия закончился — нужен перевыпуск или продление.',
+    ...appContent.passCard.status.expired,
     icon: BellRing,
     accentClass: 'pass-badge-card--expired',
     chipClass: 'pass-badge-status--expired',
   },
   revoked: {
-    label: 'Revoked',
-    message: 'Пропуск отозван службой безопасности и больше не действует.',
+    ...appContent.passCard.status.revoked,
     icon: BellRing,
     accentClass: 'pass-badge-card--revoked',
     chipClass: 'pass-badge-status--revoked',
   },
   blocked: {
-    label: 'Blocked',
-    message: 'Доступ временно заблокирован. Для прохода нужна ручная проверка.',
+    ...appContent.passCard.status.blocked,
     icon: BellRing,
     accentClass: 'pass-badge-card--blocked',
     chipClass: 'pass-badge-status--blocked',
@@ -59,7 +55,7 @@ const statusMeta: Record<
 
 function getInitials(user?: UserProfile | null) {
   if (!user) {
-    return 'FP';
+    return appContent.passCard.fallbackInitials;
   }
 
   return [user.firstName, user.lastName]
@@ -73,6 +69,7 @@ export function PassCard({ pass, user }: PassCardProps) {
   const meta = statusMeta[pass.status];
   const StatusIcon = meta.icon;
   const isBlockedState = pass.isBlocked || pass.status === 'blocked';
+  const content = appContent.passCard;
 
   return (
     <Card className={cn('pass-badge-card', meta.accentClass)}>
@@ -97,17 +94,17 @@ export function PassCard({ pass, user }: PassCardProps) {
               <StatusIcon size={14} />
               <span>{meta.label}</span>
             </div>
-            <p className="pass-badge-eyebrow">Virtual employee badge</p>
-            <h2>{user?.fullName ?? 'Сотрудник FuturePass'}</h2>
+            <p className="pass-badge-eyebrow">{content.eyebrow}</p>
+            <h2>{user?.fullName ?? content.employeeFallback}</h2>
             <p className="pass-badge-subtitle">
-              {user?.position ?? 'Corporate access holder'}
+              {user?.position ?? content.positionFallback}
               {user?.department ? ` · ${user.department}` : ''}
             </p>
           </div>
         </div>
 
         <div className="pass-badge-brand">
-          <span>FuturePass</span>
+          <span>{content.brand}</span>
           <strong>{pass.facilityName}</strong>
         </div>
       </div>
@@ -115,25 +112,25 @@ export function PassCard({ pass, user }: PassCardProps) {
       <div className="pass-badge-grid">
         <div className="pass-badge-field">
           <span>
-            <UserRound size={14} /> Employee ID
+            <UserRound size={14} /> {content.fields.employeeId}
           </span>
           <strong>{pass.employeeId}</strong>
         </div>
         <div className="pass-badge-field">
           <span>
-            <Ticket size={14} /> Department
+            <Ticket size={14} /> {content.fields.department}
           </span>
-          <strong>{user?.department ?? 'Operations'}</strong>
+          <strong>{user?.department ?? content.departmentFallback}</strong>
         </div>
         <div className="pass-badge-field">
           <span>
-            <ShieldCheck size={14} /> Access level
+            <ShieldCheck size={14} /> {content.fields.accessLevel}
           </span>
           <strong>{pass.accessLevel}</strong>
         </div>
         <div className="pass-badge-field">
           <span>
-            <Clock3 size={14} /> Last updated
+            <Clock3 size={14} /> {content.fields.updatedAt}
           </span>
           <strong>{format(new Date(pass.issuedAt), 'dd MMM yyyy')}</strong>
         </div>
@@ -141,7 +138,7 @@ export function PassCard({ pass, user }: PassCardProps) {
 
       <div className="pass-badge-banner">
         <div>
-          <p className="pass-badge-banner__label">Facility & status</p>
+          <p className="pass-badge-banner__label">{content.banner.label}</p>
           <p className="pass-badge-banner__value">{pass.facilityName}</p>
           <p className="pass-badge-banner__copy">{meta.message}</p>
         </div>
@@ -151,9 +148,7 @@ export function PassCard({ pass, user }: PassCardProps) {
             isBlockedState && 'pass-badge-state-pill--alert',
           )}
         >
-          {isBlockedState
-            ? 'Manual verification required'
-            : 'Ready for QR entry'}
+          {isBlockedState ? content.banner.blocked : content.banner.ready}
         </div>
       </div>
     </Card>
