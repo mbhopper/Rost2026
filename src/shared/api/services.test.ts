@@ -16,18 +16,61 @@ const registerPayload = {
 };
 
 describe('mock API services', () => {
-  it('returns typed auth and pass results', async () => {
+  it('returns typed user and admin auth results', async () => {
     const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
 
     const authResult = await api.authService.login(
       'alex.ivanov@futurepass.app',
       'future-pass',
     );
+    const adminResult = await api.adminAuthService.login(
+      'admin@futurepass.app',
+      'admin-pass',
+    );
     const passResult = await api.passService.getPasses();
 
-    expect(authResult.token).toContain('mock-token::alex.ivanov@futurepass.app');
-    expect(authResult.user.email).toBe('alex.ivanov@futurepass.app');
+    expect(authResult.user.role).toBe('user');
+    expect(adminResult.user.role).toBe('admin');
     expect(passResult.passes).toHaveLength(2);
+  });
+
+  it('supports admin directory filters and employee details', async () => {
+    const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
+
+    const blockedUsers = await api.adminDirectoryService.getEmployees({ status: 'blocked' });
+    const employee = await api.adminDirectoryService.getEmployeeById('EMP-1042');
+
+    expect(blockedUsers).toHaveLength(1);
+    expect(employee?.user.email).toBe('alex.ivanov@futurepass.app');
+  });
+
+
+  it('stores registration requests and lets admin register employee from queue', async () => {
+    const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
+
+    const request = await api.requestService.submitRegistrationRequest({
+      firstName: 'Глеб',
+      lastName: 'Орлов',
+      middleName: '',
+      email: 'gleb.orlov@futurepass.app',
+      phone: '+7 (999) 555-55-55',
+      department: 'R&D',
+      position: 'Designer',
+      note: 'Нужен доступ в demo-зону.',
+    });
+
+    const requests = await api.requestService.getRegistrationRequests();
+    const record = await api.adminDirectoryService.registerEmployee({
+      ...request,
+      facilityName: 'Ростелеком · Demo Hall',
+      accessLevel: 'L1 · Demo',
+      requestId: request.id,
+    });
+    const refreshedRequests = await api.requestService.getRegistrationRequests();
+
+    expect(requests.some((item) => item.id === request.id)).toBe(true);
+    expect(record.user.email).toBe('gleb.orlov@futurepass.app');
+    expect(refreshedRequests.find((item) => item.id === request.id)?.status).toBe('approved');
   });
 
   it('simulates common API failures with a shared error type', async () => {

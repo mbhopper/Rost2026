@@ -44,21 +44,19 @@ export function LoginPage() {
   });
 
   return (
-    <Card className="w-full max-w-[520px] space-y-6">
-      <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-cyan-200">
-        <ShieldCheck size={14} /> Secure sign in
+    <Card className="auth-form-card auth-form-card--login">
+      <div className="auth-form-card__badge">
+        <ShieldCheck size={14} /> Вход сотрудника
       </div>
-      <div className="space-y-3">
-        <h1 className="text-4xl font-semibold tracking-tight text-white">
-          Вход в кабинет пропуска
-        </h1>
-        <p className="text-base leading-7 text-slate-400">
+      <div className="auth-form-card__intro">
+        <h2>Вход в кабинет пропуска</h2>
+        <p>
           Используйте корпоративный email, чтобы открыть QR-пропуск, профиль
           сотрудника и настройки уведомлений.
         </p>
       </div>
       <AuthStatusBanner status={authStatus} message={authMessage} />
-      <form className="space-y-4" onSubmit={onSubmit} noValidate>
+      <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
         <label className="field-block">
           <span>Email</span>
           <Input
@@ -90,14 +88,15 @@ export function LoginPage() {
           {isSubmitting || authStatus === 'loading' ? 'Входим…' : 'Войти'}
         </Button>
       </form>
-      <p className="text-sm text-slate-400">
+      <p className="auth-form-card__footer">
         Нет аккаунта?{' '}
         <Link
           className="font-semibold text-cyan-300 hover:text-cyan-200"
           to={routes.register}
         >
-          Зарегистрируйтесь
-        </Link>
+          Оставьте заявку
+        </Link>{' '}
+        или <Link className="font-semibold text-cyan-300 hover:text-cyan-200" to={routes.support}>напишите в поддержку</Link>.
       </p>
     </Card>
   );

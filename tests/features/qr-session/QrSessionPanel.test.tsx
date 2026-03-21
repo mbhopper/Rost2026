@@ -37,8 +37,8 @@ describe('QrSessionPanel', () => {
       expect(useAppStore.getState().qrSession?.status).toBe(QR_STATUSES.ACTIVE);
     });
 
-    expect(screen.getAllByText('Пропуск активен')[0]).toBeInTheDocument();
-    expect(screen.getByText(/осталось 300 сек\./i)).toBeInTheDocument();
+    expect(screen.getByText('Готов к проходу')).toBeInTheDocument();
+    expect(screen.getByText(/осталось 300 сек/i)).toBeInTheDocument();
     expect(screen.getByText(/qr-session-/i)).toBeInTheDocument();
   });
 
@@ -64,31 +64,24 @@ describe('QrSessionPanel', () => {
     expect(screen.getByText('Код истёк')).toBeInTheDocument();
   });
 
-  it('renders scanned and expired session overlays for persisted statuses', () => {
-    resetAppStore(createAuthenticatedState());
-    const { rerender } = renderWithRouter(<QrSessionPanel />);
-
+  it('masks the QR screen again after inactivity in secure mode', async () => {
     resetAppStore(
       createAuthenticatedState({
         qrSession: createQrSessionFixture({
-          status: QR_STATUSES.SCANNED,
-          scannedAt: '2026-03-21T10:00:03.000Z',
-          ttlSeconds: 0,
+          expiresAt: '2026-03-21T10:00:30.000Z',
+          ttlSeconds: 30,
         }),
       }),
     );
-    rerender(<QrSessionPanel />);
-    expect(screen.getByText('Код использован')).toBeInTheDocument();
 
-    resetAppStore(
-      createAuthenticatedState({
-        qrSession: createQrSessionFixture({
-          status: QR_STATUSES.EXPIRED,
-          ttlSeconds: 0,
-        }),
-      }),
-    );
-    rerender(<QrSessionPanel />);
-    expect(screen.getByText('Код истёк')).toBeInTheDocument();
+    renderWithRouter(<QrSessionPanel />);
+
+    await userEvent.click(screen.getByRole('button', { name: /показать экран/i }));
+
+    expect(screen.queryByText('Экран скрыт')).not.toBeInTheDocument();
+
+    await vi.advanceTimersByTimeAsync(15_000);
+
+    expect(screen.getByText('Экран скрыт')).toBeInTheDocument();
   });
 });

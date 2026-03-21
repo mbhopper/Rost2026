@@ -10,14 +10,16 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 import type { QrSession } from '../../entities/qr/model';
 import type { QrScreenState } from '../../features/qr-session/model';
-import { appContent } from '../../shared/constants/content';
+import type { SecureViewInteractionProps } from '../../features/secure-view/useSecureView';
 import { Card } from '../../shared/ui/card/Card';
 
 interface QrViewerProps {
   isScreenMasked: boolean;
   remainingSeconds: number;
+  secureViewProps: SecureViewInteractionProps;
   session: QrSession | null;
   state: QrScreenState;
+  watermarkLabel: string;
 }
 
 const stateMeta: Record<
@@ -30,38 +32,45 @@ const stateMeta: Record<
   }
 > = {
   inactive: {
-    ...appContent.qrViewer.states.inactive,
+    description: 'Сгенерируйте код только перед турникетом.',
     icon: QrCode,
+    label: 'Ожидает генерации',
     toneClass: 'qr-viewer--inactive',
   },
   active: {
-    ...appContent.qrViewer.states.active,
+    description: 'Код активен и готов к проходу.',
     icon: ShieldCheck,
+    label: 'Готов к проходу',
     toneClass: 'qr-viewer--active',
   },
   expired: {
-    ...appContent.qrViewer.states.expired,
+    description: 'Срок действия QR истёк. Сгенерируйте новый код.',
     icon: Clock3,
+    label: 'Код истёк',
     toneClass: 'qr-viewer--expired',
   },
-  scanned: {
-    ...appContent.qrViewer.states.scanned,
+  used: {
+    description: 'Сессия уже использована на проходе.',
     icon: Ticket,
+    label: 'Код использован',
     toneClass: 'qr-viewer--scanned',
   },
   regenerating: {
-    ...appContent.qrViewer.states.regenerating,
+    description: 'Готовим новую QR-сессию.',
     icon: BellRing,
+    label: 'Обновляем QR',
     toneClass: 'qr-viewer--regenerating',
   },
   blocked: {
-    ...appContent.qrViewer.states.blocked,
+    description: 'Пропуск заблокирован или отозван администратором.',
     icon: UserRound,
+    label: 'Доступ заблокирован',
     toneClass: 'qr-viewer--blocked',
   },
   unavailable: {
-    ...appContent.qrViewer.states.unavailable,
+    description: 'Нет доступа к пользовательскому пропуску.',
     icon: BellRing,
+    label: 'Недоступно',
     toneClass: 'qr-viewer--unavailable',
   },
 };
@@ -69,26 +78,28 @@ const stateMeta: Record<
 export function QrViewer({
   isScreenMasked,
   remainingSeconds,
+  secureViewProps,
   session,
   state,
+  watermarkLabel,
 }: QrViewerProps) {
   const meta = stateMeta[state];
   const StateIcon = meta.icon;
   const createdAt = session ? new Date(session.createdAt) : null;
   const expiresAt = session ? new Date(session.expiresAt) : null;
-  const content = appContent.qrViewer;
+  const showQrPreview =
+    state === 'active' ||
+    state === 'used' ||
+    state === 'expired' ||
+    state === 'blocked' ||
+    state === 'regenerating';
 
   return (
-    <Card
-      className={`qr-viewer-card ${meta.toneClass}`}
-      onContextMenu={(event) => event.preventDefault()}
-    >
+    <Card className={`qr-viewer-card ${meta.toneClass}`} {...secureViewProps}>
       <div className="qr-viewer-card__header">
         <div>
-          <p className="qr-viewer-card__eyebrow">{content.eyebrow}</p>
-          <h3>
-            {state === 'active' ? content.title.active : content.title.default}
-          </h3>
+          <p className="qr-viewer-card__eyebrow">Secure QR mode</p>
+          <h3>{state === 'active' ? 'Покажите экран сотруднику охраны' : 'QR screen'}</h3>
           <p className="qr-viewer-card__copy">{meta.description}</p>
         </div>
         <div className="qr-viewer-card__state">
@@ -98,28 +109,27 @@ export function QrViewer({
       </div>
 
       <div className="qr-sheet">
-        {state === 'active' ||
-        state === 'scanned' ||
-        state === 'expired' ||
-        state === 'blocked' ||
-        state === 'regenerating' ? (
-          <QRCodeSVG value={session?.qrValue ?? 'qr-unavailable'} size={210} />
+        <div className="qr-sheet__watermark" aria-hidden="true">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <span key={`${watermarkLabel}-${index}`}>
+              {watermarkLabel} · {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          ))}
+        </div>
+
+        {showQrPreview ? (
+          <QRCodeSVG value={session?.qrValue ?? 'qr-unavailable'} size={220} />
         ) : (
           <div className="qr-sheet__placeholder">
-            <QrCode size={38} />
-            <p>{content.placeholder}</p>
+            <QrCode size={40} />
+            <p>QR появится после генерации сессии.</p>
           </div>
         )}
 
         {state !== 'active' ? (
           <div className="qr-sheet__overlay">
             <div>
-              <StateIcon
-                className={
-                  state === 'regenerating' ? 'animate-pulse' : undefined
-                }
-                size={28}
-              />
+              <StateIcon className={state === 'regenerating' ? 'animate-pulse' : undefined} size={28} />
               <strong>{meta.label}</strong>
               <p>{meta.description}</p>
             </div>
@@ -130,8 +140,8 @@ export function QrViewer({
           <div className="qr-sheet__overlay qr-sheet__overlay--masked">
             <div>
               <BellRing size={28} />
-              <strong>{content.maskedTitle}</strong>
-              <p>{content.maskedDescription}</p>
+              <strong>Экран скрыт</strong>
+              <p>Best-effort защита на web: код скрывается при blur, скрытии вкладки и бездействии.</p>
             </div>
           </div>
         ) : null}
@@ -139,36 +149,25 @@ export function QrViewer({
 
       <div className="qr-viewer-card__meta-grid">
         <div className="qr-viewer-card__meta-item">
-          <span>
-            <Clock3 size={14} /> {content.meta.expiry}
-          </span>
+          <span><Clock3 size={14} /> Срок действия</span>
           <strong>
             {session && expiresAt
               ? `${format(expiresAt, 'HH:mm:ss')} · ${state === 'active' ? `${remainingSeconds} сек.` : meta.label}`
-              : content.meta.expiryPending}
+              : 'Сессия не создана'}
           </strong>
-          <p>
-            {createdAt
-              ? content.meta.sessionCreated(format(createdAt, 'HH:mm:ss'))
-              : content.meta.sessionNotCreated}
-          </p>
+          <p>{createdAt ? `Создано в ${format(createdAt, 'HH:mm:ss')}` : 'Создайте сессию перед входом.'}</p>
         </div>
         <div className="qr-viewer-card__meta-item">
-          <span>
-            <ShieldCheck size={14} /> {content.meta.session}
-          </span>
-          <strong>
-            {session ? session.sessionId : content.meta.sessionPending}
-          </strong>
-          <p>
-            {session && expiresAt
-              ? content.meta.expiresIn(formatDistanceToNow(expiresAt))
-              : content.meta.payloadDescription}
-          </p>
+          <span><ShieldCheck size={14} /> Session ID</span>
+          <strong>{session ? session.sessionId : '—'}</strong>
+          <p>{session && expiresAt ? `Истекает ${formatDistanceToNow(expiresAt)}` : 'Mock payload готов к API-замене.'}</p>
         </div>
       </div>
 
-      <p className="qr-viewer-card__footnote">{content.footnote}</p>
+      <p className="qr-viewer-card__footnote">
+        <ShieldCheck size={14} /> Невозможно гарантированно запретить скриншоты/запись на web,
+        поэтому реализованы только best-effort меры маскирования и watermark.
+      </p>
     </Card>
   );
 }
