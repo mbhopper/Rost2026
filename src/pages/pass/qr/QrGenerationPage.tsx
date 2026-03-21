@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useQrSessionController } from '../../../features/qr-session/model';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
-import { Card } from '../../../shared/ui/card/Card';
 import { QrViewer } from '../../../widgets/qr-viewer/QrViewer';
 
 export function QrGenerationPage() {
@@ -29,16 +28,17 @@ export function QrGenerationPage() {
         <p>Выделенный экран для показа кода: меньше лишнего UI, крупнее QR и заметнее таймер прохода.</p>
       </div>
 
-      <Card className="qr-spotlight-card">
+      <div className="qr-spotlight-card">
         <QrViewer
           isScreenMasked={isScreenMasked}
+          mode="minimal"
           remainingSeconds={remainingSeconds}
           secureViewProps={secureViewProps}
           session={qrSession}
           state={state}
           watermarkLabel={watermarkLabel}
         />
-      </Card>
+      </div>
 
       <div className="poster-pedestal poster-pedestal--live poster-pedestal--actions">
         <span>{isIdle ? 'Сгенерировать QR-код' : `До конца: ${remainingSeconds} сек.`}</span>
