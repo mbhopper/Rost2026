@@ -6,6 +6,7 @@ interface GenerateQrSessionParams {
   employeeId: string;
   passId: string;
   ttlSeconds?: number;
+  delayMs?: number;
 }
 
 const delay = async (ms = 180) =>
@@ -39,8 +40,9 @@ export async function generateQrSession({
   employeeId,
   passId,
   ttlSeconds = QR_SESSION_TTL_SECONDS,
+  delayMs = 180,
 }: GenerateQrSessionParams): Promise<QrSession> {
-  await delay();
+  await delay(delayMs);
 
   const createdAt = new Date();
   const expiresAt = new Date(createdAt.getTime() + ttlSeconds * 1000);
@@ -65,8 +67,11 @@ export async function generateQrSession({
   };
 }
 
-export async function expireQrSession(session: QrSession): Promise<QrSession> {
-  await delay(60);
+export async function expireQrSession(
+  session: QrSession,
+  delayMs = 60,
+): Promise<QrSession> {
+  await delay(delayMs);
 
   return {
     ...session,
@@ -75,8 +80,11 @@ export async function expireQrSession(session: QrSession): Promise<QrSession> {
   };
 }
 
-export async function markQrAsScanned(session: QrSession): Promise<QrSession> {
-  await delay(80);
+export async function markQrAsScanned(
+  session: QrSession,
+  delayMs = 80,
+): Promise<QrSession> {
+  await delay(delayMs);
 
   return {
     ...session,
@@ -86,8 +94,11 @@ export async function markQrAsScanned(session: QrSession): Promise<QrSession> {
   };
 }
 
-export async function revokeQrSession(session: QrSession): Promise<QrSession> {
-  await delay(80);
+export async function revokeQrSession(
+  session: QrSession,
+  delayMs = 80,
+): Promise<QrSession> {
+  await delay(delayMs);
 
   return {
     ...session,
@@ -115,6 +126,8 @@ export function restoreQrSession(session: QrSession): QrSession {
   return {
     ...session,
     ttlSeconds:
-      session.status === QR_STATUSES.ACTIVE ? remainingSeconds : session.ttlSeconds,
+      session.status === QR_STATUSES.ACTIVE
+        ? remainingSeconds
+        : session.ttlSeconds,
   };
 }
