@@ -1,15 +1,22 @@
 import { ShieldCheck } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
 import { routes } from '../../shared/config/routes';
 import { Button } from '../../shared/ui/button/Button';
 import { Card } from '../../shared/ui/card/Card';
 
+function getRequestIdFromHash() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('requestId');
+}
+
 export function SupportSuccessPage() {
   const authStatus = useAppStore((state) => state.authStatus);
   const currentRole = useAppStore((state) => state.currentRole);
-  const [searchParams] = useSearchParams();
-  const requestId = searchParams.get('requestId');
+  const requestId = getRequestIdFromHash();
 
   return (
     <main className="poster-shell poster-shell--auth poster-shell--standalone">

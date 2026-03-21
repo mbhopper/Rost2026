@@ -1,12 +1,19 @@
 import { ShieldCheck } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 
+function getRequestIdFromHash() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('requestId');
+}
+
 export function RegisterSuccessPage() {
-  const [searchParams] = useSearchParams();
-  const requestId = searchParams.get('requestId');
+  const requestId = getRequestIdFromHash();
 
   return (
     <Card className="status-card status-card--poster motion-rise-in">

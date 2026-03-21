@@ -1,8 +1,6 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { ShieldCheck, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import {
   adminOnboardingSchema,
   type AdminOnboardingFormValues,
@@ -28,41 +26,77 @@ const defaultValues: AdminOnboardingFormValues = {
   requestId: '',
 };
 
+function mapIssuesToErrors(result: ReturnType<typeof adminOnboardingSchema.safeParse>) {
+  if (result.success) {
+    return {} as Partial<Record<keyof AdminOnboardingFormValues, string>>;
+  }
+
+  return result.error.issues.reduce<Partial<Record<keyof AdminOnboardingFormValues, string>>>(
+    (accumulator, issue) => {
+      const key = issue.path[0] as keyof AdminOnboardingFormValues | undefined;
+
+      if (key) {
+        accumulator[key] = issue.message;
+      }
+
+      return accumulator;
+    },
+    {},
+  );
+}
+
 export function AdminOnboardingPage() {
   const [requests, setRequests] = useState<RegistrationRequest[]>([]);
   const [createdRecord, setCreatedRecord] = useState<AdminEmployeeRecord | null>(null);
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<AdminOnboardingFormValues>({
-    resolver: zodResolver(adminOnboardingSchema),
-    defaultValues,
-  });
+  const [form, setForm] = useState<AdminOnboardingFormValues>(defaultValues);
+  const [errors, setErrors] = useState<Partial<Record<keyof AdminOnboardingFormValues, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     void mockApi.requestService.getRegistrationRequests().then(setRequests);
   }, [createdRecord]);
 
-  const fillFromRequest = (request: RegistrationRequest) => {
-    setValue('firstName', request.firstName);
-    setValue('lastName', request.lastName);
-    setValue('middleName', request.middleName ?? '');
-    setValue('email', request.email);
-    setValue('phone', request.phone);
-    setValue('department', request.department);
-    setValue('position', request.position);
-    setValue('note', request.note ?? '');
-    setValue('requestId', request.id);
+  const updateField = (field: keyof AdminOnboardingFormValues, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
-  const onSubmit = handleSubmit(async (values) => {
-    const record = await mockApi.adminDirectoryService.registerEmployee(values);
-    setCreatedRecord(record);
-    reset(defaultValues);
-  });
+  const fillFromRequest = (request: RegistrationRequest) => {
+    setForm((current) => ({
+      ...current,
+      firstName: request.firstName,
+      lastName: request.lastName,
+      middleName: request.middleName ?? '',
+      email: request.email,
+      phone: request.phone,
+      department: request.department,
+      position: request.position,
+      note: request.note ?? '',
+      requestId: request.id,
+    }));
+    setErrors({});
+  };
+
+  const onSubmit = async (event?: { preventDefault?: () => void }) => {
+    event?.preventDefault?.();
+    const parsed = adminOnboardingSchema.safeParse(form);
+
+    if (!parsed.success) {
+      setErrors(mapIssuesToErrors(parsed));
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const record = await mockApi.adminDirectoryService.registerEmployee(parsed.data);
+      setCreatedRecord(record);
+      setForm(defaultValues);
+      setErrors({});
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="page-stack">
@@ -87,58 +121,60 @@ export function AdminOnboardingPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <label className="field-block">
                 <span>Имя</span>
-                <Input {...register('firstName')} />
-                {errors.firstName && <span className="field-error">{errors.firstName.message}</span>}
+                <Input value={form.firstName} onChange={(event) => updateField('firstName', event.target.value)} />
+                {errors.firstName && <span className="field-error">{errors.firstName}</span>}
               </label>
               <label className="field-block">
                 <span>Фамилия</span>
-                <Input {...register('lastName')} />
-                {errors.lastName && <span className="field-error">{errors.lastName.message}</span>}
+                <Input value={form.lastName} onChange={(event) => updateField('lastName', event.target.value)} />
+                {errors.lastName && <span className="field-error">{errors.lastName}</span>}
               </label>
             </div>
             <label className="field-block">
               <span>Отчество</span>
-              <Input {...register('middleName')} />
+              <Input value={form.middleName ?? ''} onChange={(event) => updateField('middleName', event.target.value)} />
+              {errors.middleName && <span className="field-error">{errors.middleName}</span>}
             </label>
             <div className="grid gap-4 md:grid-cols-2">
               <label className="field-block">
                 <span>Email</span>
-                <Input type="email" {...register('email')} />
-                {errors.email && <span className="field-error">{errors.email.message}</span>}
+                <Input type="email" value={form.email} onChange={(event) => updateField('email', event.target.value)} />
+                {errors.email && <span className="field-error">{errors.email}</span>}
               </label>
               <label className="field-block">
                 <span>Телефон</span>
-                <Input {...register('phone')} />
-                {errors.phone && <span className="field-error">{errors.phone.message}</span>}
+                <Input value={form.phone} onChange={(event) => updateField('phone', event.target.value)} />
+                {errors.phone && <span className="field-error">{errors.phone}</span>}
               </label>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <label className="field-block">
                 <span>Подразделение</span>
-                <Input {...register('department')} />
-                {errors.department && <span className="field-error">{errors.department.message}</span>}
+                <Input value={form.department} onChange={(event) => updateField('department', event.target.value)} />
+                {errors.department && <span className="field-error">{errors.department}</span>}
               </label>
               <label className="field-block">
                 <span>Должность</span>
-                <Input {...register('position')} />
-                {errors.position && <span className="field-error">{errors.position.message}</span>}
+                <Input value={form.position} onChange={(event) => updateField('position', event.target.value)} />
+                {errors.position && <span className="field-error">{errors.position}</span>}
               </label>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <label className="field-block">
                 <span>Объект</span>
-                <Input {...register('facilityName')} />
-                {errors.facilityName && <span className="field-error">{errors.facilityName.message}</span>}
+                <Input value={form.facilityName} onChange={(event) => updateField('facilityName', event.target.value)} />
+                {errors.facilityName && <span className="field-error">{errors.facilityName}</span>}
               </label>
               <label className="field-block">
                 <span>Уровень доступа</span>
-                <Input {...register('accessLevel')} />
-                {errors.accessLevel && <span className="field-error">{errors.accessLevel.message}</span>}
+                <Input value={form.accessLevel} onChange={(event) => updateField('accessLevel', event.target.value)} />
+                {errors.accessLevel && <span className="field-error">{errors.accessLevel}</span>}
               </label>
             </div>
             <label className="field-block">
               <span>Комментарий</span>
-              <textarea className="textarea-field" {...register('note')} />
+              <textarea className="textarea-field" value={form.note ?? ''} onChange={(event) => updateField('note', event.target.value)} />
+              {errors.note && <span className="field-error">{errors.note}</span>}
             </label>
             <Button type="submit" disabled={isSubmitting}>
               <UserRound size={16} /> {isSubmitting ? 'Создаём запись…' : 'Зарегистрировать сотрудника'}

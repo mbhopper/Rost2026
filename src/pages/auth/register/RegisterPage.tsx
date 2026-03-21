@@ -1,6 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Ticket } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   registrationRequestSchema,
@@ -12,30 +11,65 @@ import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 import { Input } from '../../../shared/ui/input/Input';
 
+const initialForm: RegistrationRequestFormValues = {
+  firstName: 'Александр',
+  lastName: 'Иванов',
+  middleName: '',
+  email: 'alex@futurepass.app',
+  phone: '+7 (999) 123-45-67',
+  department: 'Platform Engineering',
+  position: 'Frontend engineer',
+  note: 'Нужен доступ в основное здание и переговорные.',
+};
+
+function mapIssuesToErrors(result: ReturnType<typeof registrationRequestSchema.safeParse>) {
+  if (result.success) {
+    return {} as Partial<Record<keyof RegistrationRequestFormValues, string>>;
+  }
+
+  return result.error.issues.reduce<Partial<Record<keyof RegistrationRequestFormValues, string>>>(
+    (accumulator, issue) => {
+      const key = issue.path[0] as keyof RegistrationRequestFormValues | undefined;
+
+      if (key) {
+        accumulator[key] = issue.message;
+      }
+
+      return accumulator;
+    },
+    {},
+  );
+}
+
 export function RegisterPage() {
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<RegistrationRequestFormValues>({
-    resolver: zodResolver(registrationRequestSchema),
-    defaultValues: {
-      firstName: 'Александр',
-      lastName: 'Иванов',
-      middleName: '',
-      email: 'alex@futurepass.app',
-      phone: '+7 (999) 123-45-67',
-      department: 'Platform Engineering',
-      position: 'Frontend engineer',
-      note: 'Нужен доступ в основное здание и переговорные.',
-    },
-  });
+  const [form, setForm] = useState<RegistrationRequestFormValues>(initialForm);
+  const [errors, setErrors] = useState<Partial<Record<keyof RegistrationRequestFormValues, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = handleSubmit(async (values) => {
-    const result = await mockApi.requestService.submitRegistrationRequest(values);
-    navigate(`${routes.registerSuccess}?requestId=${encodeURIComponent(result.id)}`);
-  });
+  const updateField = (field: keyof RegistrationRequestFormValues, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setErrors((current) => ({ ...current, [field]: undefined }));
+  };
+
+  const onSubmit = async (event?: { preventDefault?: () => void }) => {
+    event?.preventDefault?.();
+    const parsed = registrationRequestSchema.safeParse(form);
+
+    if (!parsed.success) {
+      setErrors(mapIssuesToErrors(parsed));
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await mockApi.requestService.submitRegistrationRequest(parsed.data);
+      navigate(`${routes.registerSuccess}?requestId=${encodeURIComponent(result.id)}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Card className="auth-form-card auth-form-card--register motion-rise-in">
@@ -54,48 +88,53 @@ export function RegisterPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <label className="field-block">
             <span>Имя</span>
-            <Input placeholder="Иван" {...register('firstName')} />
-            {errors.firstName && <span className="field-error">{errors.firstName.message}</span>}
+            <Input value={form.firstName} placeholder="Иван" onChange={(event) => updateField('firstName', event.target.value)} />
+            {errors.firstName && <span className="field-error">{errors.firstName}</span>}
           </label>
           <label className="field-block">
             <span>Фамилия</span>
-            <Input placeholder="Иванов" {...register('lastName')} />
-            {errors.lastName && <span className="field-error">{errors.lastName.message}</span>}
+            <Input value={form.lastName} placeholder="Иванов" onChange={(event) => updateField('lastName', event.target.value)} />
+            {errors.lastName && <span className="field-error">{errors.lastName}</span>}
           </label>
         </div>
         <label className="field-block">
           <span>Отчество</span>
-          <Input placeholder="Иванович" {...register('middleName')} />
-          {errors.middleName && <span className="field-error">{errors.middleName.message}</span>}
+          <Input value={form.middleName ?? ''} placeholder="Иванович" onChange={(event) => updateField('middleName', event.target.value)} />
+          {errors.middleName && <span className="field-error">{errors.middleName}</span>}
         </label>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="field-block">
             <span>Email</span>
-            <Input type="email" placeholder="name@company.ru" {...register('email')} />
-            {errors.email && <span className="field-error">{errors.email.message}</span>}
+            <Input type="email" value={form.email} placeholder="name@company.ru" onChange={(event) => updateField('email', event.target.value)} />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </label>
           <label className="field-block">
             <span>Телефон</span>
-            <Input type="tel" placeholder="+7 (___) ___-__-__" {...register('phone')} />
-            {errors.phone && <span className="field-error">{errors.phone.message}</span>}
+            <Input type="tel" value={form.phone} placeholder="+7 (___) ___-__-__" onChange={(event) => updateField('phone', event.target.value)} />
+            {errors.phone && <span className="field-error">{errors.phone}</span>}
           </label>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="field-block">
             <span>Подразделение</span>
-            <Input placeholder="Например, Platform" {...register('department')} />
-            {errors.department && <span className="field-error">{errors.department.message}</span>}
+            <Input value={form.department} placeholder="Например, Platform" onChange={(event) => updateField('department', event.target.value)} />
+            {errors.department && <span className="field-error">{errors.department}</span>}
           </label>
           <label className="field-block">
             <span>Должность</span>
-            <Input placeholder="Например, Product manager" {...register('position')} />
-            {errors.position && <span className="field-error">{errors.position.message}</span>}
+            <Input value={form.position} placeholder="Например, Product manager" onChange={(event) => updateField('position', event.target.value)} />
+            {errors.position && <span className="field-error">{errors.position}</span>}
           </label>
         </div>
         <label className="field-block">
           <span>Комментарий для СБ / админа</span>
-          <textarea className="textarea-field" placeholder="Какие зоны доступа нужны?" {...register('note')} />
-          {errors.note && <span className="field-error">{errors.note.message}</span>}
+          <textarea
+            className="textarea-field"
+            placeholder="Какие зоны доступа нужны?"
+            value={form.note ?? ''}
+            onChange={(event) => updateField('note', event.target.value)}
+          />
+          {errors.note && <span className="field-error">{errors.note}</span>}
         </label>
         <Button type="submit" fullWidth disabled={isSubmitting} aria-busy={isSubmitting}>
           {isSubmitting ? 'Отправляем заявку…' : 'Отправить заявку'}
