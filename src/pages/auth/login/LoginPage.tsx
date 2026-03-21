@@ -44,7 +44,7 @@ export function LoginPage() {
   });
 
   return (
-    <Card className="auth-form-card auth-form-card--login">
+    <Card className="auth-form-card auth-form-card--login motion-rise-in">
       <div className="auth-form-card__badge">
         <ShieldCheck size={14} /> Вход сотрудника
       </div>

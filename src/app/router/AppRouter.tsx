@@ -116,7 +116,7 @@ function AuthLayout() {
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
 
-      <div className="auth-shell__content motion-page-fade">
+      <div className="auth-shell__content auth-shell__content--landing motion-page-fade">
         <header className="poster-topbar auth-shell__topbar">
           <div className="poster-brand">
             <span className="poster-brand__mark" aria-hidden="true" />
@@ -159,13 +159,16 @@ function AuthLayout() {
           </nav>
         </header>
 
-        <section className="auth-stage">
+        <section className="auth-stage auth-stage--landing">
           <div className="auth-stage__hero">
             <div className="auth-stage__headline auth-entry-title motion-entry-title">
               <p className="poster-hero__eyebrow">
                 Корпоративный цифровой пропуск
               </p>
-              <h1>ТОЧКА ВХОДА</h1>
+              <h1 className="auth-entry-wordmark">
+                <span>ТОЧКА</span>
+                <span>ВХОДА</span>
+              </h1>
             </div>
             <div className="poster-hero__copy auth-stage__copy">
               <p>
@@ -176,7 +179,7 @@ function AuthLayout() {
             </div>
           </div>
 
-          <div className="poster-hero__panel auth-stage__panel">
+          <div className="poster-hero__panel auth-stage__panel auth-stage__panel--floating">
             <Outlet />
           </div>
         </section>

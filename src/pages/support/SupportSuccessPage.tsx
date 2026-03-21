@@ -26,7 +26,7 @@ export function SupportSuccessPage() {
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
 
-      <div className="auth-shell__content auth-shell__content--centered motion-page-fade">
+      <div className="auth-shell__content auth-shell__content--success auth-shell__content--centered motion-page-fade">
         <header className="poster-topbar auth-shell__topbar">
           <div className="poster-brand">
             <span className="poster-brand__mark" aria-hidden="true" />
@@ -36,7 +36,7 @@ export function SupportSuccessPage() {
 
         <section className="auth-stage auth-stage--success">
           <div className="auth-stage__panel auth-stage__panel--centered">
-            <Card className="status-card status-card--poster motion-rise-in">
+            <Card className="status-card status-card--poster status-card--auth motion-rise-in">
               <div className="success-orb">
                 <ShieldCheck size={44} />
               </div>

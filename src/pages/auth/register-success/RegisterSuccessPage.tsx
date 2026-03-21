@@ -19,7 +19,7 @@ export function RegisterSuccessPage() {
 
   return (
     <div className="auth-stage__panel auth-stage__panel--centered auth-stage__panel--success">
-      <Card className="status-card status-card--poster motion-rise-in">
+      <Card className="status-card status-card--poster status-card--auth motion-rise-in">
         <div className="success-orb">
           <ShieldCheck size={44} />
         </div>
