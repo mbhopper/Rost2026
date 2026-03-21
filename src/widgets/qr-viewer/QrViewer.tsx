@@ -1,5 +1,12 @@
 import { format, formatDistanceToNow } from 'date-fns';
-import { BellRing, Clock3, QrCode, ShieldCheck, Ticket, UserRound } from 'lucide-react';
+import {
+  BellRing,
+  Clock3,
+  QrCode,
+  ShieldCheck,
+  Ticket,
+  UserRound,
+} from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import type { QrSession } from '../../entities/qr/model';
 import type { QrScreenState } from '../../features/qr-session/model';
@@ -18,50 +25,53 @@ const stateMeta: Record<
     description: string;
     icon: typeof QrCode;
     label: string;
-    tone: string;
+    toneClass: string;
   }
 > = {
   inactive: {
-    label: 'Не сгенерирован',
-    description: 'Сгенерируйте mock QR перед проходом через турникет.',
+    label: 'Не открыт',
+    description:
+      'Сначала создайте QR-сессию — код появится в безопасном sheet-окне.',
     icon: QrCode,
-    tone: 'text-slate-300',
+    toneClass: 'qr-viewer--inactive',
   },
   active: {
     label: 'Активен',
-    description: 'Код готов к использованию и обновляется по TTL.',
+    description: 'Покажите код охране или турникету, пока таймер ещё идёт.',
     icon: ShieldCheck,
-    tone: 'text-emerald-300',
+    toneClass: 'qr-viewer--active',
   },
   expired: {
     label: 'Истёк',
-    description: 'Срок жизни QR-сессии закончился, нужен новый код.',
+    description:
+      'Срок жизни QR завершён. Откройте новый код для следующего прохода.',
     icon: Clock3,
-    tone: 'text-amber-300',
+    toneClass: 'qr-viewer--expired',
   },
   scanned: {
     label: 'Использован',
-    description: 'Mock/demo: код был помечен как отсканированный.',
+    description: 'Demo-сценарий: код уже считан и больше не считается свежим.',
     icon: Ticket,
-    tone: 'text-cyan-300',
+    toneClass: 'qr-viewer--scanned',
   },
   regenerating: {
-    label: 'Регенерируется',
-    description: 'Готовим новый mock QR-код с обновлённым sessionId.',
+    label: 'Обновляется',
+    description: 'Создаём новый QR с новым sessionId и пересчитанным TTL.',
     icon: BellRing,
-    tone: 'text-violet-300',
+    toneClass: 'qr-viewer--regenerating',
   },
   blocked: {
     label: 'Заблокирован',
-    description: 'Сессия отозвана и больше не должна приниматься.',
+    description: 'Сессия отозвана, поэтому код нельзя использовать для входа.',
     icon: UserRound,
-    tone: 'text-rose-300',
+    toneClass: 'qr-viewer--blocked',
   },
   unavailable: {
     label: 'Недоступен',
-    description: 'Нет активного пропуска или пользователь не авторизован.',
+    description:
+      'Нет активного пропуска или текущая сессия пользователя невалидна.',
     icon: BellRing,
-    tone: 'text-slate-400',
+    toneClass: 'qr-viewer--unavailable',
   },
 };
 
@@ -75,83 +85,107 @@ export function QrViewer({
   const StateIcon = meta.icon;
   const createdAt = session ? new Date(session.createdAt) : null;
   const expiresAt = session ? new Date(session.expiresAt) : null;
-  const statusValue = state === 'active' ? `${remainingSeconds} сек.` : '—';
 
   return (
-    <Card className="space-y-5" onContextMenu={(event) => event.preventDefault()}>
-      <div className="flex items-start justify-between gap-4">
+    <Card
+      className={`qr-viewer-card ${meta.toneClass}`}
+      onContextMenu={(event) => event.preventDefault()}
+    >
+      <div className="qr-viewer-card__header">
         <div>
-          <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">Live access token</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">QR для турникета и охраны</h2>
-          <p className="mt-2 text-sm text-slate-400">{meta.description}</p>
+          <p className="qr-viewer-card__eyebrow">QR access sheet</p>
+          <h3>
+            {meta.label === 'Активен'
+              ? 'Ваш QR готов к показу'
+              : 'Экран QR-пропуска'}
+          </h3>
+          <p className="qr-viewer-card__copy">{meta.description}</p>
         </div>
-        <div className={`rounded-2xl border border-white/10 bg-white/5 p-3 ${meta.tone}`}>
-          <StateIcon size={20} />
+        <div className="qr-viewer-card__state">
+          <StateIcon size={18} />
+          <span>{meta.label}</span>
         </div>
       </div>
 
-      <div className="relative grid place-items-center overflow-hidden rounded-[28px] border border-white/10 bg-white p-5 shadow-soft-sm">
-        {state === 'active' || state === 'scanned' || state === 'expired' || state === 'blocked' || state === 'regenerating' ? (
-          <QRCodeSVG value={session?.qrValue ?? 'qr-unavailable'} size={190} />
+      <div className="qr-sheet">
+        {state === 'active' ||
+        state === 'scanned' ||
+        state === 'expired' ||
+        state === 'blocked' ||
+        state === 'regenerating' ? (
+          <QRCodeSVG value={session?.qrValue ?? 'qr-unavailable'} size={210} />
         ) : (
-          <div className="flex h-[190px] w-[190px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 text-center text-slate-400">
-            <QrCode size={36} />
-            <p className="mt-3 max-w-[140px] text-sm">QR-код появится после генерации mock сессии.</p>
+          <div className="qr-sheet__placeholder">
+            <QrCode size={38} />
+            <p>
+              После нажатия на CTA здесь появится одноразовый код для прохода.
+            </p>
           </div>
         )}
 
         {state !== 'active' ? (
-          <div className="absolute inset-0 grid place-items-center bg-slate-950/65 text-center text-white backdrop-blur-[2px]">
-            <div className="space-y-2 px-6">
-              <StateIcon className={state === 'regenerating' ? 'animate-pulse' : undefined} size={26} />
-              <p className="text-base font-semibold">{meta.label}</p>
-              <p className="text-xs text-slate-300">{meta.description}</p>
+          <div className="qr-sheet__overlay">
+            <div>
+              <StateIcon
+                className={
+                  state === 'regenerating' ? 'animate-pulse' : undefined
+                }
+                size={28}
+              />
+              <strong>{meta.label}</strong>
+              <p>{meta.description}</p>
             </div>
           </div>
         ) : null}
 
         {isScreenMasked ? (
-          <div className="absolute inset-0 grid place-items-center bg-slate-950/85 px-6 text-center text-white backdrop-blur-md">
-            <div className="space-y-3">
-              <BellRing className="mx-auto" size={28} />
-              <p className="text-base font-semibold">Экран скрыт</p>
-              <p className="text-xs text-slate-300">
-                Best-effort защита: экран маскируется при потере фокуса или visibilitychange.
+          <div className="qr-sheet__overlay qr-sheet__overlay--masked">
+            <div>
+              <BellRing size={28} />
+              <strong>Экран скрыт</strong>
+              <p>
+                При потере фокуса QR маскируется как best-effort защита
+                браузерного интерфейса.
               </p>
             </div>
           </div>
         ) : null}
       </div>
 
-      <div className="grid gap-3 text-sm text-slate-300">
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">
-          <span className="text-slate-500">Статус</span>
-          <strong className={`font-semibold ${meta.tone}`}>{meta.label}</strong>
+      <div className="qr-viewer-card__meta-grid">
+        <div className="qr-viewer-card__meta-item">
+          <span>
+            <Clock3 size={14} /> TTL / expiry
+          </span>
+          <strong>
+            {session && expiresAt
+              ? `${format(expiresAt, 'HH:mm:ss')} · ${state === 'active' ? `${remainingSeconds} сек.` : meta.label}`
+              : 'Ожидает генерацию'}
+          </strong>
+          <p>
+            {createdAt
+              ? `Создан ${format(createdAt, 'HH:mm:ss')}`
+              : 'Сессия ещё не создана'}
+          </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">
-            <div className="flex items-center gap-2 text-slate-500"><Clock3 size={14} /> TTL / истекает</div>
-            <strong className="mt-2 block text-white">
-              {session && expiresAt
-                ? `${format(expiresAt, 'HH:mm:ss')} · ${state === 'active' ? formatDistanceToNow(expiresAt) : meta.label}`
-                : '—'}
-            </strong>
-            <p className="mt-1 text-xs text-slate-500">
-              {createdAt ? `Создана ${format(createdAt, 'HH:mm:ss')}` : 'Сессия ещё не создана'}
-            </p>
-          </div>
-          <div className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3">
-            <div className="flex items-center gap-2 text-slate-500"><ShieldCheck size={14} /> Сессия доступа</div>
-            <strong className="mt-2 block text-white">{session ? `${session.sessionId} · ${statusValue}` : 'Ожидаем запуск'}</strong>
-            <p className="mt-1 break-all text-xs text-slate-500">
-              {session ? session.qrValue : 'Mock payload будет включать employeeId, passId, sessionId и signature.'}
-            </p>
-          </div>
+        <div className="qr-viewer-card__meta-item">
+          <span>
+            <ShieldCheck size={14} /> Session payload
+          </span>
+          <strong>
+            {session ? session.sessionId : 'Сессия появится после открытия QR'}
+          </strong>
+          <p>
+            {session && expiresAt
+              ? `Истекает ${formatDistanceToNow(expiresAt)}.`
+              : 'Payload будет содержать employeeId, passId, sessionId и signature.'}
+          </p>
         </div>
       </div>
 
-      <p className="rounded-2xl border border-white/8 bg-slate-950/30 px-4 py-3 text-xs leading-5 text-slate-500">
-        Полноценная защита от скриншотов невозможна в браузере: для hard-block нужен native-shell уровень ОС.
+      <p className="qr-viewer-card__footnote">
+        Браузер не умеет жёстко запрещать скриншоты: для этого нужен
+        native-контур или интеграция уровня ОС.
       </p>
     </Card>
   );
