@@ -1,15 +1,17 @@
-export const QR_SESSION_STATUSES = {
+export const QR_STATUSES = {
   ACTIVE: 'active',
-  PENDING: 'pending',
   EXPIRED: 'expired',
+  ROTATED: 'rotated',
+  BLOCKED: 'blocked',
 } as const;
 
-export type QrSessionStatus = (typeof QR_SESSION_STATUSES)[keyof typeof QR_SESSION_STATUSES];
+export type QrStatus = (typeof QR_STATUSES)[keyof typeof QR_STATUSES];
 
 export interface QrSession {
-  id: string;
-  code: string;
+  sessionId: string;
+  qrValue: string;
+  createdAt: string;
   expiresAt: string;
-  location: string;
-  status: QrSessionStatus;
+  ttlSeconds: number;
+  status: QrStatus;
 }

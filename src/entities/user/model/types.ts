@@ -1,19 +1,24 @@
 export const USER_STATUSES = {
   ACTIVE: 'active',
-  PENDING: 'pending',
+  ON_LEAVE: 'on_leave',
   SUSPENDED: 'suspended',
+  TERMINATED: 'terminated',
 } as const;
 
 export type UserStatus = (typeof USER_STATUSES)[keyof typeof USER_STATUSES];
 
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  fullName: string;
   email: string;
-  city: string;
-  membershipLevel: 'Base' | 'Priority' | 'VIP';
+  phone: string;
   department: string;
   position: string;
+  employeeId: string;
+  avatarUrl: string;
   status: UserStatus;
 }
 
