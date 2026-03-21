@@ -10,7 +10,9 @@ function getRequestIdFromHash() {
     return null;
   }
 
-  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('requestId');
+  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get(
+    'requestId',
+  );
 }
 
 export function SupportSuccessPage() {
@@ -19,31 +21,49 @@ export function SupportSuccessPage() {
   const requestId = getRequestIdFromHash();
 
   return (
-    <main className="poster-shell poster-shell--auth poster-shell--standalone">
+    <main className="auth-shell auth-shell--standalone auth-shell--success">
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
-      <div className="poster-frame motion-page-fade poster-frame--centered">
-        <header className="poster-topbar">
+
+      <div className="auth-shell__content auth-shell__content--centered motion-page-fade">
+        <header className="poster-topbar auth-shell__topbar">
           <div className="poster-brand">
             <span className="poster-brand__mark" aria-hidden="true" />
             <span>Ростелеком</span>
           </div>
         </header>
 
-        <Card className="status-card status-card--poster motion-rise-in">
-          <div className="success-orb">
-            <ShieldCheck size={44} />
+        <section className="auth-stage auth-stage--success">
+          <div className="auth-stage__panel auth-stage__panel--centered">
+            <Card className="status-card status-card--poster motion-rise-in">
+              <div className="success-orb">
+                <ShieldCheck size={44} />
+              </div>
+              <h1>Заявка в службу поддержки отправлена</h1>
+              <p>
+                Оператор увидит обращение в очереди.{' '}
+                {requestId ? `Номер: ${requestId}.` : ''}
+              </p>
+              <div className="status-card__actions">
+                <Link
+                  to={
+                    authStatus === 'authenticated'
+                      ? currentRole === 'admin'
+                        ? routes.adminDashboard
+                        : routes.dashboard
+                      : routes.login
+                  }
+                >
+                  <Button>Назад</Button>
+                </Link>
+                <Link to={routes.support}>
+                  <Button variant="secondary">Ещё обращение</Button>
+                </Link>
+              </div>
+            </Card>
           </div>
-          <h1>Заявка в службу поддержки отправлена</h1>
-          <p>
-            Оператор увидит обращение в очереди. {requestId ? `Номер: ${requestId}.` : ''}
-          </p>
-          <div className="status-card__actions">
-            <Link to={authStatus === 'authenticated' ? (currentRole === 'admin' ? routes.adminDashboard : routes.dashboard) : routes.login}><Button>Назад</Button></Link>
-            <Link to={routes.support}><Button variant="secondary">Ещё обращение</Button></Link>
-          </div>
-        </Card>
+        </section>
       </div>
     </main>
   );

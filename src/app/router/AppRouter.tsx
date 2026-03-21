@@ -23,7 +23,11 @@ import { SettingsPage } from '../../pages/settings/SettingsPage';
 import { SupportPage } from '../../pages/support/SupportPage';
 import { SupportSuccessPage } from '../../pages/support/SupportSuccessPage';
 import { UnauthorizedPage } from '../../pages/unauthorized/UnauthorizedPage';
-import { defaultAdminRoute, defaultUserRoute, routes } from '../../shared/config/routes';
+import {
+  defaultAdminRoute,
+  defaultUserRoute,
+  routes,
+} from '../../shared/config/routes';
 import { Card } from '../../shared/ui/card/Card';
 import { AdminShell } from '../../widgets/admin-shell/AdminShell';
 import { UserShell } from '../../widgets/user-shell/UserShell';
@@ -52,7 +56,11 @@ function PublicOnlyRoute() {
   if (authStatus === 'authenticated') {
     return (
       <Navigate
-        to={currentRole === USER_ROLES.ADMIN ? defaultAdminRoute : defaultUserRoute}
+        to={
+          currentRole === USER_ROLES.ADMIN
+            ? defaultAdminRoute
+            : defaultUserRoute
+        }
         replace
       />
     );
@@ -103,21 +111,27 @@ function AdminRouteGuard() {
 
 function AuthLayout() {
   return (
-    <main className="poster-shell poster-shell--auth">
+    <main className="auth-shell">
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
-      <div className="poster-frame motion-page-fade">
-        <header className="poster-topbar">
+
+      <div className="auth-shell__content motion-page-fade">
+        <header className="poster-topbar auth-shell__topbar">
           <div className="poster-brand">
             <span className="poster-brand__mark" aria-hidden="true" />
             <span>Ростелеком</span>
           </div>
-          <nav className="poster-actions" aria-label="Авторизация">
+          <nav
+            className="poster-actions auth-shell__actions"
+            aria-label="Авторизация"
+          >
             <NavLink
               to={routes.login}
               className={({ isActive }) =>
-                isActive ? 'poster-action poster-action--active' : 'poster-action'
+                isActive
+                  ? 'poster-action poster-action--active'
+                  : 'poster-action'
               }
             >
               Вход
@@ -125,7 +139,9 @@ function AuthLayout() {
             <NavLink
               to={routes.register}
               className={({ isActive }) =>
-                isActive ? 'poster-action poster-action--active' : 'poster-action'
+                isActive
+                  ? 'poster-action poster-action--active'
+                  : 'poster-action'
               }
             >
               Регистрация
@@ -133,7 +149,9 @@ function AuthLayout() {
             <NavLink
               to={routes.support}
               className={({ isActive }) =>
-                isActive ? 'poster-action poster-action--active' : 'poster-action'
+                isActive
+                  ? 'poster-action poster-action--active'
+                  : 'poster-action'
               }
             >
               Поддержка
@@ -141,23 +159,27 @@ function AuthLayout() {
           </nav>
         </header>
 
-        <section className="poster-hero">
-          <div className="poster-hero__copy">
-            <p className="poster-hero__eyebrow">Корпоративный цифровой пропуск</p>
-            <h1>ТОЧКА ВХОДА</h1>
-            <p>
-              Цифровой пропуск сотрудника в визуальном стиле Ростелеком с отдельными зонами для пользователей и администраторов, заявками на регистрацию и поддержкой.
-            </p>
+        <section className="auth-stage">
+          <div className="auth-stage__hero">
+            <div className="auth-stage__headline auth-entry-title motion-entry-title">
+              <p className="poster-hero__eyebrow">
+                Корпоративный цифровой пропуск
+              </p>
+              <h1>ТОЧКА ВХОДА</h1>
+            </div>
+            <div className="poster-hero__copy auth-stage__copy">
+              <p>
+                Цифровой пропуск сотрудника в визуальном стиле Ростелеком с
+                отдельными зонами для пользователей и администраторов, заявками
+                на регистрацию и поддержкой.
+              </p>
+            </div>
           </div>
-          <div className="poster-hero__panel">
+
+          <div className="poster-hero__panel auth-stage__panel">
             <Outlet />
           </div>
         </section>
-
-        <div className="poster-pedestal">
-          <span>Сгенерировать QR-код</span>
-          <div className="poster-pedestal__badge">QR</div>
-        </div>
       </div>
     </main>
   );
@@ -207,7 +229,10 @@ const router = createHashRouter([
         children: [
           { path: 'dashboard', element: <AdminDashboardPage /> },
           { path: 'employees', element: <AdminEmployeesPage /> },
-          { path: 'employees/:employeeId', element: <AdminEmployeeDetailsPage /> },
+          {
+            path: 'employees/:employeeId',
+            element: <AdminEmployeeDetailsPage />,
+          },
           { path: 'onboarding', element: <AdminOnboardingPage /> },
         ],
       },

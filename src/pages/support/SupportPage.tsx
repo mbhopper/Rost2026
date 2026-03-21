@@ -91,18 +91,19 @@ export function SupportPage() {
   };
 
   return (
-    <main className="poster-shell poster-shell--auth poster-shell--standalone">
+    <main className="auth-shell auth-shell--standalone">
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
-      <div className="poster-frame motion-page-fade">
-        <header className="poster-topbar poster-topbar--private">
+
+      <div className="auth-shell__content motion-page-fade">
+        <header className="poster-topbar auth-shell__topbar">
           <div className="poster-brand">
             <span className="poster-brand__mark" aria-hidden="true" />
             <span>Ростелеком</span>
           </div>
           <nav
-            className="poster-actions"
+            className="poster-actions auth-shell__actions"
             aria-label="Навигация страницы поддержки"
           >
             {authStatus === 'authenticated' ? (
@@ -129,14 +130,18 @@ export function SupportPage() {
           </nav>
         </header>
 
-        <section className="poster-page poster-page--standalone">
-          <div className="poster-page__copy poster-page__copy--centered">
-            <p className="poster-page__eyebrow">Служба поддержки</p>
-            <h1>ОБРАТНАЯ СВЯЗЬ</h1>
-            <p>
-              Оставьте обращение по пропуску, QR или регистрации — обращение
-              будет передано в службу поддержки.
-            </p>
+        <section className="auth-stage auth-stage--standalone">
+          <div className="auth-stage__hero">
+            <div className="auth-stage__headline auth-entry-title motion-entry-title">
+              <p className="poster-page__eyebrow">Служба поддержки</p>
+              <h1>ОБРАТНАЯ СВЯЗЬ</h1>
+            </div>
+            <div className="poster-page__copy auth-stage__copy">
+              <p>
+                Оставьте обращение по пропуску, QR или регистрации — обращение
+                будет передано в службу поддержки.
+              </p>
+            </div>
           </div>
 
           <Card className="poster-form-card motion-rise-in">
@@ -205,22 +210,6 @@ export function SupportPage() {
               </Button>
             </form>
           </Card>
-
-          <div className="poster-pedestal poster-pedestal--backdrop">
-            <span>Назад на главную</span>
-            <Link
-              to={
-                authStatus === 'authenticated'
-                  ? currentRole === 'admin'
-                    ? routes.adminDashboard
-                    : routes.dashboard
-                  : routes.login
-              }
-              className="poster-pedestal__back-link"
-            >
-              <span className="poster-pedestal__badge">↩</span>
-            </Link>
-          </div>
         </section>
       </div>
     </main>

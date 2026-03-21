@@ -3,12 +3,13 @@ import { cva } from 'class-variance-authority';
 import { cn } from '../../lib/cn';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition focus-ring disabled:cursor-not-allowed disabled:opacity-60',
+  'ui-button inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold focus-ring disabled:cursor-not-allowed disabled:opacity-60',
   {
     variants: {
       variant: {
         primary: 'bg-gradient-primary text-white shadow-soft hover:opacity-95',
-        secondary: 'border border-white/10 bg-white/6 text-slate-100 hover:bg-white/10',
+        secondary:
+          'border border-white/10 bg-white/6 text-slate-100 hover:bg-white/10',
         ghost: 'bg-transparent text-cyan-300 hover:bg-cyan-400/10',
       },
       fullWidth: {
@@ -38,7 +39,10 @@ export function Button({
   ...props
 }: PropsWithChildren<ButtonProps>) {
   return (
-    <button className={cn(buttonVariants({ variant, fullWidth, className }))} {...props}>
+    <button
+      className={cn(buttonVariants({ variant, fullWidth, className }))}
+      {...props}
+    >
       {children}
     </button>
   );
