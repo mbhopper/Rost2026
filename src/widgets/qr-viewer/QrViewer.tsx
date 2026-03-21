@@ -8,6 +8,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { cn } from '../../shared/lib/cn';
 import type { QrSession } from '../../entities/qr/model';
 import type { QrScreenState } from '../../features/qr-session/model';
 import type { SecureViewInteractionProps } from '../../features/secure-view/useSecureView';
@@ -15,6 +16,7 @@ import { Card } from '../../shared/ui/card/Card';
 
 interface QrViewerProps {
   isScreenMasked: boolean;
+  mode?: 'default' | 'minimal';
   remainingSeconds: number;
   secureViewProps: SecureViewInteractionProps;
   session: QrSession | null;
@@ -77,6 +79,7 @@ const stateMeta: Record<
 
 export function QrViewer({
   isScreenMasked,
+  mode = 'default',
   remainingSeconds,
   secureViewProps,
   session,
@@ -87,12 +90,63 @@ export function QrViewer({
   const StateIcon = meta.icon;
   const createdAt = session ? new Date(session.createdAt) : null;
   const expiresAt = session ? new Date(session.expiresAt) : null;
+  const isMinimal = mode === 'minimal';
   const showQrPreview =
-    state === 'active' ||
-    state === 'used' ||
-    state === 'expired' ||
-    state === 'blocked' ||
-    state === 'regenerating';
+    !isScreenMasked &&
+    (state === 'active' ||
+      state === 'used' ||
+      state === 'expired' ||
+      state === 'blocked' ||
+      state === 'regenerating');
+
+  const statusText = isScreenMasked
+    ? 'Экран скрыт'
+    : state === 'active' && session && expiresAt
+      ? `Действует до ${format(expiresAt, 'HH:mm:ss')} · ${remainingSeconds} сек.`
+      : meta.description;
+
+  if (isMinimal) {
+    return (
+      <Card
+        className={cn(
+          'qr-viewer-card qr-viewer-card--minimal',
+          meta.toneClass,
+          isScreenMasked && 'qr-viewer-card--masked',
+        )}
+        {...secureViewProps}
+      >
+        <div
+          className={cn(
+            'qr-sheet qr-sheet--minimal',
+            isScreenMasked && 'qr-sheet--masked',
+            !showQrPreview && 'qr-sheet--placeholder-mode',
+          )}
+        >
+          {showQrPreview ? (
+            <QRCodeSVG value={session?.qrValue ?? 'qr-unavailable'} size={220} />
+          ) : (
+            <div className="qr-sheet__placeholder qr-sheet__placeholder--minimal">
+              <QrCode size={40} />
+            </div>
+          )}
+        </div>
+
+        <div
+          className={cn(
+            'qr-viewer-card__status-line',
+            isScreenMasked && 'qr-viewer-card__status-line--masked',
+          )}
+          aria-live="polite"
+        >
+          <span className="qr-viewer-card__status-pill">
+            <StateIcon className={state === 'regenerating' ? 'animate-pulse' : undefined} size={16} />
+            {isScreenMasked ? 'Экран скрыт' : meta.label}
+          </span>
+          <span className="qr-viewer-card__status-text">{statusText}</span>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className={`qr-viewer-card ${meta.toneClass}`} {...secureViewProps}>
@@ -112,7 +166,8 @@ export function QrViewer({
         <div className="qr-sheet__watermark" aria-hidden="true">
           {Array.from({ length: 12 }).map((_, index) => (
             <span key={`${watermarkLabel}-${index}`}>
-              {watermarkLabel} · {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+              {watermarkLabel} ·{' '}
+              {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
             </span>
           ))}
         </div>
