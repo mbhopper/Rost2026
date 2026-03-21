@@ -1,3 +1,5 @@
+import { appContent } from '../constants/content';
+
 export const routes = {
   login: '/auth/login',
   register: '/auth/register',
@@ -9,7 +11,19 @@ export const routes = {
 export const defaultPrivateRoute = routes.pass;
 
 export const primaryNavigation = [
-  { href: routes.pass, label: 'Пропуск', description: 'Активный QR и уровни доступа' },
-  { href: routes.profile, label: 'Профиль', description: 'Данные сотрудника и привязки' },
-  { href: routes.settings, label: 'Настройки', description: 'Уведомления и безопасность' },
+  {
+    href: routes.pass,
+    label: appContent.navigation.pass.label,
+    description: appContent.navigation.pass.description,
+  },
+  {
+    href: routes.profile,
+    label: appContent.navigation.profile.label,
+    description: appContent.navigation.profile.description,
+  },
+  {
+    href: routes.settings,
+    label: appContent.navigation.settings.label,
+    description: appContent.navigation.settings.description,
+  },
 ] as const;

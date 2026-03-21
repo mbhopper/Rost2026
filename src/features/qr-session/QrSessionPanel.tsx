@@ -1,14 +1,9 @@
 import { BellRing, Clock3, QrCode, ShieldCheck, Ticket } from 'lucide-react';
 import { useQrSessionController } from './model';
+import { appContent } from '../../shared/constants/content';
 import { Button } from '../../shared/ui/button/Button';
 import { Card } from '../../shared/ui/card/Card';
 import { QrViewer } from '../../widgets/qr-viewer/QrViewer';
-
-const compactTips = [
-  'QR-сессия живёт ограниченное время и автоматически истекает без ручного обновления.',
-  'После перезагрузки активная demo-сессия восстанавливается из sessionStorage.',
-  'Demo scan и revoke нужны только для проверки UX-сценариев used / blocked.',
-];
 
 export function QrSessionPanel() {
   const {
@@ -22,6 +17,7 @@ export function QrSessionPanel() {
     scanDemo,
     state,
   } = useQrSessionController();
+  const content = appContent.qrPanel;
 
   const canGenerate = state === 'inactive';
   const canRegenerate =
@@ -34,25 +30,22 @@ export function QrSessionPanel() {
     ? () => void generate()
     : () => void regenerate();
   const primaryLabel = canGenerate
-    ? 'Открыть QR-пропуск'
-    : 'Обновить и открыть новый QR';
+    ? content.primaryShow
+    : content.primaryRegenerate;
   const primaryIcon = canGenerate ? <QrCode size={18} /> : <Clock3 size={18} />;
   const secondaryLabel =
     state === 'active'
-      ? 'QR активен и готов к сканированию'
-      : 'Откройте код прямо перед турникетом';
+      ? content.secondaryStatusActive
+      : content.secondaryStatusIdle;
 
   return (
     <div className="pass-cta-stack">
       <Card className="qr-cta-card">
         <div className="qr-cta-card__header">
           <div>
-            <p className="qr-cta-card__eyebrow">Primary action</p>
-            <h2>Откройте QR только в момент прохода.</h2>
-            <p className="qr-cta-card__copy">
-              Основной сценарий экрана — быстро показать статус пропуска и
-              вывести QR без лишнего шума.
-            </p>
+            <p className="qr-cta-card__eyebrow">{content.eyebrow}</p>
+            <h2>{content.title}</h2>
+            <p className="qr-cta-card__copy">{content.description}</p>
           </div>
           <div className="qr-cta-card__icon">
             <Ticket size={22} />
@@ -61,20 +54,20 @@ export function QrSessionPanel() {
 
         <div className="qr-cta-card__summary">
           <div>
-            <span className="qr-cta-card__label">Активный пропуск</span>
+            <span className="qr-cta-card__label">{content.activePass}</span>
             <strong>
               {activePass
                 ? `${activePass.passId} · ${activePass.facilityName}`
-                : 'Доступный пропуск не найден'}
+                : content.passFallback}
             </strong>
           </div>
           <div>
-            <span className="qr-cta-card__label">Статус QR</span>
+            <span className="qr-cta-card__label">{content.qrStatus}</span>
             <strong>{secondaryLabel}</strong>
             <p>
               {state === 'active'
-                ? `Осталось ${remainingSeconds} сек.`
-                : 'Система создаст новую безопасную сессию.'}
+                ? content.timeLeft(remainingSeconds)
+                : content.sessionPending}
             </p>
           </div>
         </div>
@@ -95,21 +88,21 @@ export function QrSessionPanel() {
               onClick={() => void regenerate()}
               disabled={!canRegenerate}
             >
-              <Clock3 size={16} /> Обновить
+              <Clock3 size={16} /> {content.primaryRegenerate}
             </Button>
             <Button
               variant="secondary"
               onClick={() => void scanDemo()}
               disabled={!canDemoScan}
             >
-              <ShieldCheck size={16} /> Demo scan
+              <ShieldCheck size={16} /> {content.usedAction}
             </Button>
             <Button
               variant="secondary"
               onClick={() => void revoke()}
               disabled={!canRevoke}
             >
-              <BellRing size={16} /> Block session
+              <BellRing size={16} /> {content.blockAction}
             </Button>
           </div>
         </div>
@@ -125,12 +118,12 @@ export function QrSessionPanel() {
       <Card className="pass-info-block">
         <div className="pass-info-block__header">
           <span>
-            <BellRing size={14} /> Access notes
+            <BellRing size={14} /> {content.infoTitle}
           </span>
-          <strong>Вторичные советы сведены в компактный блок</strong>
+          <strong>{content.infoSubtitle}</strong>
         </div>
         <div className="pass-info-block__grid">
-          {compactTips.map((item) => (
+          {content.tips.map((item) => (
             <div key={item} className="pass-info-block__item">
               {item}
             </div>
