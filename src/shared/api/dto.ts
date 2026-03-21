@@ -30,11 +30,15 @@ export interface PassDto {
 
 export interface QrSessionDto {
   session_id: string;
+  employee_id: string;
+  pass_id: string;
   qr_value: string;
   created_at: string;
   expires_at: string;
   ttl_seconds: number;
   status: QrStatus;
+  scanned_at: string | null;
+  revoked_at: string | null;
 }
 
 const createFullName = (lastName: string, firstName: string, middleName: string) => [lastName, firstName, middleName].filter(Boolean).join(' ');
@@ -67,11 +71,15 @@ export const mapPassDtoToModel = (dto: PassDto): DigitalPass => ({
 
 export const mapQrSessionDtoToModel = (dto: QrSessionDto): QrSession => ({
   sessionId: dto.session_id,
+  employeeId: dto.employee_id,
+  passId: dto.pass_id,
   qrValue: dto.qr_value,
   createdAt: dto.created_at,
   expiresAt: dto.expires_at,
   ttlSeconds: dto.ttl_seconds,
   status: dto.status,
+  scannedAt: dto.scanned_at,
+  revokedAt: dto.revoked_at,
 });
 
 export const mapRegisterPayloadToUserDto = (payload: RegisterPayload, template: UserDto): UserDto => ({

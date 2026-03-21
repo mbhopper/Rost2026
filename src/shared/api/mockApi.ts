@@ -3,13 +3,18 @@ import type { QrSession } from '../../entities/qr/model';
 import type { UserProfile } from '../../entities/user/model';
 import type { RegisterPayload } from '../../app/store';
 import {
+  expireQrSession,
+  generateQrSession,
+  markQrAsScanned,
+  revokeQrSession,
+} from '../../features/qr-session/model/qrSession.service';
+import {
   mapEmailToUserDto,
   mapPassDtoToModel,
-  mapQrSessionDtoToModel,
   mapRegisterPayloadToUserDto,
   mapUserDtoToModel,
 } from './dto';
-import { createMockQrSessionDto, mockPassDtos, mockQrSessionDto, mockUserDto } from '../mocks/data';
+import { mockPassDtos, mockUserDto } from '../mocks/data';
 
 const delay = async (ms = 320) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,12 +31,16 @@ export const mockApi = {
     await delay(120);
     return mockPassDtos.map(mapPassDtoToModel);
   },
-  async getQrSession(): Promise<QrSession> {
-    await delay(120);
-    return mapQrSessionDtoToModel(mockQrSessionDto);
+  async generateQrSession(employeeId: string, passId: string): Promise<QrSession> {
+    return generateQrSession({ employeeId, passId });
   },
-  async rotateQrSession(): Promise<QrSession> {
-    await delay(200);
-    return mapQrSessionDtoToModel(createMockQrSessionDto());
+  async expireQrSession(session: QrSession): Promise<QrSession> {
+    return expireQrSession(session);
+  },
+  async markQrAsScanned(session: QrSession): Promise<QrSession> {
+    return markQrAsScanned(session);
+  },
+  async revokeQrSession(session: QrSession): Promise<QrSession> {
+    return revokeQrSession(session);
   },
 };

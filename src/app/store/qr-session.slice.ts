@@ -5,7 +5,9 @@ import {
   storageKeys,
   writeSessionStorage,
 } from '../../shared/config/storage';
-import type { AppStore, QrSessionSlice } from './types';
+import { QR_STATUSES, type QrSession } from '../../entities/qr/model';
+import { restoreQrSession } from '../../features/qr-session/model/qrSession.service';
+import type { AppStore, GenerateQrSessionPayload, QrSessionSlice } from './types';
 
 type SetState = (
   partial: Partial<AppStore> | ((state: AppStore) => Partial<AppStore>),
@@ -20,7 +22,7 @@ const readPersistedQrSession = () => {
   }
 
   try {
-    return JSON.parse(rawValue);
+    return restoreQrSession(JSON.parse(rawValue) as QrSession);
   } catch {
     removeSessionStorage(storageKeys.qrSession);
     return null;
@@ -31,23 +33,84 @@ const persistQrSession = (qrSession: NonNullable<AppStore['qrSession']>) => {
   writeSessionStorage(storageKeys.qrSession, JSON.stringify(qrSession));
 };
 
+const clearPersistedQrSession = () => {
+  removeSessionStorage(storageKeys.qrSession);
+};
+
+const withPersistedSession = async (
+  session: QrSession | null,
+  updater: (value: QrSession) => Promise<QrSession>,
+) => {
+  if (!session) {
+    return null;
+  }
+
+  const nextSession = await updater(session);
+  persistQrSession(nextSession);
+  return nextSession;
+};
+
 export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
   qrSession: readPersistedQrSession(),
   loadQrSession: async () => {
+    // Refresh strategy: restore the active mock QR session from sessionStorage and
+    // recalculate the remaining TTL on reload. If the TTL already elapsed while the
+    // page was closed, we keep the session shell but immediately mark it expired.
     const persistedQrSession = readPersistedQrSession();
 
-    if (persistedQrSession) {
-      set({ qrSession: persistedQrSession });
+    if (!persistedQrSession) {
+      set({ qrSession: null });
       return;
     }
 
-    const qrSession = await mockApi.getQrSession();
+    persistQrSession(persistedQrSession);
+    set({ qrSession: persistedQrSession });
+  },
+  generateQrSession: async ({ employeeId, passId }: GenerateQrSessionPayload) => {
+    const qrSession = await mockApi.generateQrSession(employeeId, passId);
     persistQrSession(qrSession);
     set({ qrSession });
   },
-  rotateQrSession: async () => {
-    const qrSession = await mockApi.rotateQrSession();
+  rotateQrSession: async ({ employeeId, passId }: GenerateQrSessionPayload) => {
+    set((state) => ({
+      qrSession: state.qrSession
+        ? { ...state.qrSession, status: QR_STATUSES.REGENERATING }
+        : state.qrSession,
+    }));
+
+    const qrSession = await mockApi.generateQrSession(employeeId, passId);
     persistQrSession(qrSession);
     set({ qrSession });
+  },
+  expireQrSession: async () => {
+    const currentSession = readPersistedQrSession();
+    const nextSession = await withPersistedSession(
+      currentSession,
+      mockApi.expireQrSession,
+    );
+
+    set({ qrSession: nextSession });
+  },
+  markQrAsScanned: async () => {
+    const currentSession = readPersistedQrSession();
+    const nextSession = await withPersistedSession(
+      currentSession,
+      mockApi.markQrAsScanned,
+    );
+
+    set({ qrSession: nextSession });
+  },
+  revokeQrSession: async () => {
+    const currentSession = readPersistedQrSession();
+    const nextSession = await withPersistedSession(
+      currentSession,
+      mockApi.revokeQrSession,
+    );
+
+    if (!nextSession) {
+      clearPersistedQrSession();
+    }
+
+    set({ qrSession: nextSession });
   },
 });

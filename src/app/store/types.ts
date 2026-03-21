@@ -45,10 +45,19 @@ export interface PassSlice {
   loadPasses: () => Promise<void>;
 }
 
+export interface GenerateQrSessionPayload {
+  employeeId: string;
+  passId: string;
+}
+
 export interface QrSessionSlice {
   qrSession: QrSession | null;
   loadQrSession: () => Promise<void>;
-  rotateQrSession: () => Promise<void>;
+  generateQrSession: (payload: GenerateQrSessionPayload) => Promise<void>;
+  rotateQrSession: (payload: GenerateQrSessionPayload) => Promise<void>;
+  expireQrSession: () => Promise<void>;
+  markQrAsScanned: () => Promise<void>;
+  revokeQrSession: () => Promise<void>;
 }
 
 export interface SettingsSlice {

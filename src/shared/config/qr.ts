@@ -1,0 +1,1 @@
+export const QR_SESSION_TTL_SECONDS = 300;
