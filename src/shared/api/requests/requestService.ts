@@ -60,7 +60,7 @@ export const createMockRequestService = (
     },
     async processRegistrationRequest(payload) {
       await delay.wait('request.list');
-      const request = requestRuntimeStore.approveRegistrationRequest(
+      const request = requestRuntimeStore.processRegistrationRequest(
         payload.requestId,
         payload.employeeId,
       );

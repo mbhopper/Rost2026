@@ -3,6 +3,7 @@ import type { DigitalPass } from '../../entities/pass/model';
 import type { QrSession } from '../../entities/qr/model';
 import type { UserProfile } from '../../entities/user/model';
 import type {
+  AdminApproveRegistrationPayload,
   AdminDirectoryFilters,
   AdminEmployeeRegistrationPayload,
   AdminEmployeeRecord,
@@ -66,7 +67,11 @@ export interface AdminDirectoryService {
   getOverview(): Promise<AdminOverview>;
   getEmployees(filters?: AdminDirectoryFilters): Promise<AdminEmployeeRecord[]>;
   getEmployeeById(employeeId: string): Promise<AdminEmployeeRecord | null>;
+  getRegistrationRequests(): Promise<RegistrationRequest[]>;
   registerEmployee(payload: AdminEmployeeRegistrationPayload): Promise<AdminEmployeeRecord>;
+  approveRegistrationRequest(
+    payload: AdminApproveRegistrationPayload,
+  ): Promise<AdminEmployeeRecord>;
 }
 
 export interface RequestService {

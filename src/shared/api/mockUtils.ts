@@ -8,7 +8,9 @@ export type MockApiOperation =
   | 'admin.overview'
   | 'admin.directory'
   | 'admin.employee'
+  | 'admin.registrationQueue'
   | 'admin.registerEmployee'
+  | 'admin.approveRegistrationRequest'
   | 'request.registration'
   | 'request.support'
   | 'request.list'
@@ -32,7 +34,9 @@ const DEFAULT_DELAYS: Record<MockApiOperation, number> = {
   'admin.overview': 180,
   'admin.directory': 220,
   'admin.employee': 140,
+  'admin.registrationQueue': 140,
   'admin.registerEmployee': 260,
+  'admin.approveRegistrationRequest': 320,
   'request.registration': 220,
   'request.support': 180,
   'request.list': 140,

@@ -59,18 +59,14 @@ describe('mock API services', () => {
       note: 'Нужен доступ в переговорную зону.',
     });
 
-    const requests = await api.requestService.getRegistrationRequests();
-    const record = await api.adminDirectoryService.registerEmployee({
+    const requests = await api.adminDirectoryService.getRegistrationRequests();
+    const record = await api.adminDirectoryService.approveRegistrationRequest({
       ...request,
       facilityName: 'Ростелеком · Башня B',
       accessLevel: 'L1 · Базовый доступ',
       requestId: request.id,
     });
-    await api.requestService.processRegistrationRequest({
-      requestId: request.id,
-      employeeId: record.user.employeeId,
-    });
-    const refreshedRequests = await api.requestService.getRegistrationRequests();
+    const refreshedRequests = await api.adminDirectoryService.getRegistrationRequests();
 
     expect(requests.some((item) => item.id === request.id)).toBe(true);
     expect(record.user.email).toBe('gleb.orlov@futurepass.app');

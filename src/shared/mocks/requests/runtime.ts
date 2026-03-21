@@ -100,7 +100,7 @@ export const requestRuntimeStore = {
     persistState();
     return item;
   },
-  approveRegistrationRequest(requestId: string, employeeId: string) {
+  processRegistrationRequest(requestId: string, employeeId: string) {
     const target = loadState().registrationRequests.find((item) => item.id === requestId);
 
     if (!target) {

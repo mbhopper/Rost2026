@@ -28,6 +28,10 @@ export interface AdminEmployeeRegistrationPayload {
   requestId?: string;
 }
 
+export interface AdminApproveRegistrationPayload extends AdminEmployeeRegistrationPayload {
+  requestId: string;
+}
+
 export interface AdminOverview {
   activeEmployees: number;
   activePasses: number;
@@ -40,3 +44,4 @@ export interface AdminOverview {
     tone: 'info' | 'warning' | 'danger';
   }>;
 }
+
