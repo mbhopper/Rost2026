@@ -2189,13 +2189,7 @@ body {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background:
-    radial-gradient(
-      circle at 18% 12%,
-      rgba(255, 255, 255, 0.12),
-      transparent 26%
-    ),
-    linear-gradient(102deg, #f13f56 0%, #df3f7e 54%, #9718ff 100%);
+  background: linear-gradient(100deg, #f24055 0%, #df3f7f 56%, #9718ff 100%);
 }
 
 .poster-frame,
@@ -2220,23 +2214,19 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  width: min(792px, calc(100vw - 64px));
+  width: min(760px, calc(100vw - 44px));
   min-height: calc(100vh - 12px);
   margin: 6px auto;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0)
-  );
-  box-shadow: 0 30px 80px rgba(69, 8, 62, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.015);
+  box-shadow: 0 20px 50px rgba(69, 8, 62, 0.16);
   overflow: hidden;
 }
 
 .auth-shell__content--landing,
 .auth-shell__content--standalone,
 .auth-shell__content--success {
-  width: min(792px, calc(100vw - 64px));
+  width: min(760px, calc(100vw - 44px));
 }
 
 .auth-shell__content--centered {
@@ -2354,22 +2344,22 @@ body {
 .ambient--left {
   width: 120px;
   height: 146px;
-  top: 54px;
-  left: calc(50% - 520px);
+  top: 52px;
+  left: calc(50% - 344px);
 }
 .poster-shell__blob--two,
 .ambient--right {
   width: 74px;
   height: 92px;
-  top: 52px;
-  left: calc(50% + 312px);
+  top: 44px;
+  left: calc(50% + 256px);
 }
 .poster-shell__blob--three,
 .ambient--bottom {
   width: 158px;
   height: 118px;
-  right: calc(50% - 540px);
-  bottom: 4px;
+  right: calc(50% - 392px);
+  bottom: -6px;
 }
 .ambient--center {
   width: 110px;
@@ -2505,7 +2495,7 @@ body {
 }
 
 .auth-stage__panel--floating {
-  margin-right: -12px;
+  margin-right: 12px;
 }
 
 .auth-stage__panel--centered,
