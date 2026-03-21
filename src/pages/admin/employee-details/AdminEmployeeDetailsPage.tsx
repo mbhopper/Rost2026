@@ -9,7 +9,8 @@ import { Card } from '../../../shared/ui/card/Card';
 
 export function AdminEmployeeDetailsPage() {
   const { pathname } = useLocation();
-  const employeeId = decodeURIComponent(pathname.split('/').filter(Boolean).at(-1) ?? '');
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const employeeId = decodeURIComponent(pathSegments[pathSegments.length - 1] ?? '');
   const [record, setRecord] = useState<AdminEmployeeRecord | null>(null);
 
   useEffect(() => {
