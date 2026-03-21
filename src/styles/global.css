@@ -3263,8 +3263,12 @@ body {
   content: '';
   position: absolute;
   inset: auto 0 0;
-  height: 18px;
-  background: rgba(60, 9, 29, 0.64);
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 16, 39, 0.58),
+    rgba(48, 7, 42, 0.42)
+  );
 }
 
 .rt-stage-shell__body {
@@ -3872,12 +3876,18 @@ body {
   }
 
   .rt-topbar {
-    min-height: 34px;
-    padding-inline: 8px;
+    min-height: 30px;
+    padding: 3px 6px 3px 5px;
   }
 
   .rt-topbar__brand {
-    font-size: 0.58rem;
+    font-size: 0.64rem;
+  }
+
+  .rt-topbar .poster-brand__mark {
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
   }
 
   .poster-action {
