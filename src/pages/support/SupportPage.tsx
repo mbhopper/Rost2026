@@ -26,23 +26,24 @@ const initialForm: SupportRequestFormValues = {
   message: '',
 };
 
-function mapIssuesToErrors(result: ReturnType<typeof supportRequestSchema.safeParse>) {
+function mapIssuesToErrors(
+  result: ReturnType<typeof supportRequestSchema.safeParse>,
+) {
   if (result.success) {
     return {} as Partial<Record<keyof SupportRequestFormValues, string>>;
   }
 
-  return result.error.issues.reduce<Partial<Record<keyof SupportRequestFormValues, string>>>(
-    (accumulator, issue) => {
-      const key = issue.path[0] as keyof SupportRequestFormValues | undefined;
+  return result.error.issues.reduce<
+    Partial<Record<keyof SupportRequestFormValues, string>>
+  >((accumulator, issue) => {
+    const key = issue.path[0] as keyof SupportRequestFormValues | undefined;
 
-      if (key) {
-        accumulator[key] = issue.message;
-      }
+    if (key) {
+      accumulator[key] = issue.message;
+    }
 
-      return accumulator;
-    },
-    {},
-  );
+    return accumulator;
+  }, {});
 }
 
 export function SupportPage() {
@@ -50,11 +51,16 @@ export function SupportPage() {
   const currentRole = useAppStore((state) => state.currentRole);
   const navigate = useNavigate();
   const [form, setForm] = useState<SupportRequestFormValues>(initialForm);
-  const [errors, setErrors] = useState<Partial<Record<keyof SupportRequestFormValues, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof SupportRequestFormValues, string>>
+  >({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateField = (field: keyof SupportRequestFormValues, value: string) => {
+  const updateField = (
+    field: keyof SupportRequestFormValues,
+    value: string,
+  ) => {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
     setSubmitError(null);
@@ -74,7 +80,9 @@ export function SupportPage() {
 
     try {
       const result = await api.requestService.submitSupportRequest(parsed.data);
-      navigate(`${routes.supportSuccess}?requestId=${encodeURIComponent(result.id)}`);
+      navigate(
+        `${routes.supportSuccess}?requestId=${encodeURIComponent(result.id)}`,
+      );
     } catch (error) {
       setSubmitError(mapAppApiErrorToMessage(error));
     } finally {
@@ -93,15 +101,29 @@ export function SupportPage() {
             <span className="poster-brand__mark" aria-hidden="true" />
             <span>Ростелеком</span>
           </div>
-          <nav className="poster-actions" aria-label="Навигация страницы поддержки">
+          <nav
+            className="poster-actions"
+            aria-label="Навигация страницы поддержки"
+          >
             {authStatus === 'authenticated' ? (
-              <Link to={currentRole === 'admin' ? routes.adminDashboard : routes.profile} className="poster-action">
+              <Link
+                to={
+                  currentRole === 'admin'
+                    ? routes.adminDashboard
+                    : routes.profile
+                }
+                className="poster-action"
+              >
                 <UserRound size={14} /> Профиль
               </Link>
             ) : (
               <>
-                <Link to={routes.login} className="poster-action">Вход</Link>
-                <Link to={routes.register} className="poster-action">Регистрация</Link>
+                <Link to={routes.login} className="poster-action">
+                  Вход
+                </Link>
+                <Link to={routes.register} className="poster-action">
+                  Регистрация
+                </Link>
               </>
             )}
           </nav>
@@ -111,49 +133,91 @@ export function SupportPage() {
           <div className="poster-page__copy poster-page__copy--centered">
             <p className="poster-page__eyebrow">Служба поддержки</p>
             <h1>ОБРАТНАЯ СВЯЗЬ</h1>
-            <p>Оставьте обращение по пропуску, QR или регистрации — обращение будет передано в службу поддержки.</p>
+            <p>
+              Оставьте обращение по пропуску, QR или регистрации — обращение
+              будет передано в службу поддержки.
+            </p>
           </div>
 
           <Card className="poster-form-card motion-rise-in">
-            <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
+            <form
+              className="auth-form-card__form"
+              onSubmit={onSubmit}
+              noValidate
+            >
               <label className="field-block">
                 <span>Email</span>
-                <Input type="email" placeholder="name@company.ru" value={form.email} onChange={(event) => updateField('email', event.target.value)} />
-                {errors.email && <span className="field-error">{errors.email}</span>}
+                <Input
+                  className="Input--poster"
+                  type="email"
+                  placeholder="name@company.ru"
+                  value={form.email}
+                  onChange={(event) => updateField('email', event.target.value)}
+                />
+                {errors.email && (
+                  <span className="field-error">{errors.email}</span>
+                )}
               </label>
               <label className="field-block">
                 <span>Тема</span>
-                <select className="select-field" value={form.topic} onChange={(event) => updateField('topic', event.target.value)}>
+                <select
+                  className="select-field select-field--poster"
+                  value={form.topic}
+                  onChange={(event) => updateField('topic', event.target.value)}
+                >
                   {topicOptions.map((option) => (
-                    <option key={option} value={option}>{option}</option>
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
                   ))}
                 </select>
-                {errors.topic && <span className="field-error">{errors.topic}</span>}
+                {errors.topic && (
+                  <span className="field-error">{errors.topic}</span>
+                )}
               </label>
               <label className="field-block">
                 <span>Обращение</span>
                 <textarea
-                  className="textarea-field textarea-field--large"
+                  className="textarea-field textarea-field--large textarea-field--poster"
                   placeholder="Опишите проблему"
                   value={form.message}
-                  onChange={(event) => updateField('message', event.target.value)}
+                  onChange={(event) =>
+                    updateField('message', event.target.value)
+                  }
                 />
-                {errors.message && <span className="field-error">{errors.message}</span>}
+                {errors.message && (
+                  <span className="field-error">{errors.message}</span>
+                )}
               </label>
               {submitError && (
                 <div className="field-error" role="alert" aria-live="polite">
                   {submitError}
                 </div>
               )}
-              <Button type="submit" fullWidth disabled={isSubmitting} aria-busy={isSubmitting}>
-                <BellRing size={16} /> {isSubmitting ? 'Отправляем…' : 'Отправить'}
+              <Button
+                type="submit"
+                fullWidth
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+              >
+                <BellRing size={16} />{' '}
+                {isSubmitting ? 'Отправляем…' : 'Отправить'}
               </Button>
             </form>
           </Card>
 
           <div className="poster-pedestal poster-pedestal--backdrop">
             <span>Назад на главную</span>
-            <Link to={authStatus === 'authenticated' ? (currentRole === 'admin' ? routes.adminDashboard : routes.dashboard) : routes.login} className="poster-pedestal__back-link">
+            <Link
+              to={
+                authStatus === 'authenticated'
+                  ? currentRole === 'admin'
+                    ? routes.adminDashboard
+                    : routes.dashboard
+                  : routes.login
+              }
+              className="poster-pedestal__back-link"
+            >
               <span className="poster-pedestal__badge">↩</span>
             </Link>
           </div>

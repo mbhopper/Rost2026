@@ -60,6 +60,7 @@ export function LoginPage() {
         <label className="field-block">
           <span>Email</span>
           <Input
+            className="Input--poster"
             type="email"
             placeholder="name@company.ru"
             {...register('email')}
@@ -71,6 +72,7 @@ export function LoginPage() {
         <label className="field-block">
           <span>Пароль</span>
           <Input
+            className="Input--poster"
             type="password"
             placeholder="Минимум 8 символов"
             {...register('password')}
@@ -96,7 +98,14 @@ export function LoginPage() {
         >
           Оставьте заявку
         </Link>{' '}
-        или <Link className="font-semibold text-cyan-300 hover:text-cyan-200" to={routes.support}>напишите в поддержку</Link>.
+        или{' '}
+        <Link
+          className="font-semibold text-cyan-300 hover:text-cyan-200"
+          to={routes.support}
+        >
+          напишите в поддержку
+        </Link>
+        .
       </p>
     </Card>
   );
