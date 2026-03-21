@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import type { AdminEmployeeRecord } from '../../../shared/api/admin/types';
 import { mockApi } from '../../../shared/api/mockApi';
 import { routes } from '../../../shared/config/routes';
@@ -8,7 +8,8 @@ import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 
 export function AdminEmployeeDetailsPage() {
-  const { employeeId = '' } = useParams();
+  const { pathname } = useLocation();
+  const employeeId = decodeURIComponent(pathname.split('/').filter(Boolean).at(-1) ?? '');
   const [record, setRecord] = useState<AdminEmployeeRecord | null>(null);
 
   useEffect(() => {

@@ -10,17 +10,13 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 import type { QrSession } from '../../entities/qr/model';
 import type { QrScreenState } from '../../features/qr-session/model';
+import type { SecureViewInteractionProps } from '../../features/secure-view/useSecureView';
 import { Card } from '../../shared/ui/card/Card';
 
 interface QrViewerProps {
   isScreenMasked: boolean;
   remainingSeconds: number;
-  secureViewProps: {
-    onContextMenu: (event: { preventDefault: () => void }) => void;
-    onDragStart: (event: { preventDefault: () => void }) => void;
-    onMouseDown: () => void;
-    onTouchStart: () => void;
-  };
+  secureViewProps: SecureViewInteractionProps;
   session: QrSession | null;
   state: QrScreenState;
   watermarkLabel: string;

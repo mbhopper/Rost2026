@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type MouseEvent } from 'react';
 
+export interface SecureViewInteractionProps {
+  onContextMenu: (event: MouseEvent<HTMLElement>) => void;
+  onDragStart: (event: DragEvent<HTMLElement>) => void;
+  onMouseDown: () => void;
+  onTouchStart: () => void;
+}
+
 interface SecureViewOptions {
   enabled: boolean;
   inactivityTimeoutMs?: number;
@@ -82,7 +89,7 @@ export function useSecureView({
     };
   }, [enabled, inactivityTimeoutMs, isMasked, lastInteractionAt]);
 
-  const secureProps = useMemo(
+  const secureProps = useMemo<SecureViewInteractionProps>(
     () => ({
       onContextMenu: (event: MouseEvent<HTMLElement>) => event.preventDefault(),
       onDragStart: (event: DragEvent<HTMLElement>) => event.preventDefault(),

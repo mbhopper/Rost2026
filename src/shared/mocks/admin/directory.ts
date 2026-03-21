@@ -4,7 +4,11 @@ import type { AdminEmployeeRecord, AdminOverview } from '../../api/admin/types';
 import { mapPassDtoToModel } from '../../api/dto';
 import type { PassDto } from '../../api/dto';
 
-const createUser = (user: Omit<UserProfile, 'fullName' | 'role'> & { middleName?: string }): UserProfile => ({
+type AdminDirectoryUserSeed = Omit<UserProfile, 'fullName' | 'role' | 'middleName'> & {
+  middleName?: string;
+};
+
+const createUser = (user: AdminDirectoryUserSeed): UserProfile => ({
   ...user,
   middleName: user.middleName ?? '',
   fullName: [user.lastName, user.firstName, user.middleName ?? ''].filter(Boolean).join(' '),
