@@ -7,6 +7,7 @@ import {
 import { api } from '../../../shared/api/auth';
 import { mapAppApiErrorToMessage } from '../../../shared/api/appApi';
 import { routes } from '../../../shared/config/routes';
+import { buildRequestSuccessPath } from '../../../shared/lib/requestId';
 import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
 import { Input } from '../../../shared/ui/input/Input';
@@ -65,22 +66,22 @@ export function RegisterPage() {
   const onSubmit = async (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
     setSubmitError(null);
-    const parsed = registrationRequestSchema.safeParse(form);
-
-    if (!parsed.success) {
-      setErrors(mapIssuesToErrors(parsed));
-      return;
-    }
-
-    setIsSubmitting(true);
+    setErrors({});
 
     try {
+      const parsed = registrationRequestSchema.safeParse(form);
+
+      if (!parsed.success) {
+        setErrors(mapIssuesToErrors(parsed));
+        return;
+      }
+
+      setIsSubmitting(true);
+
       const result = await api.requestService.submitRegistrationRequest(
         parsed.data,
       );
-      navigate(
-        `${routes.registerSuccess}?requestId=${encodeURIComponent(result.id)}`,
-      );
+      navigate(buildRequestSuccessPath(routes.registerSuccess, result.id));
     } catch (error) {
       setSubmitError(mapAppApiErrorToMessage(error));
     } finally {
