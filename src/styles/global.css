@@ -244,3 +244,398 @@ input {
 @media (min-width: 1280px) {
   .xl\:grid-cols-\[minmax\(0\,1\.4fr\)_380px\] { grid-template-columns: minmax(0, 1.4fr) 380px; }
 }
+
+.pass-page-shell {
+  display: grid;
+  gap: 1.5rem;
+}
+.pass-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at top left, rgba(244, 114, 182, 0.2), transparent 34%),
+    radial-gradient(circle at top right, rgba(251, 146, 60, 0.18), transparent 30%),
+    linear-gradient(135deg, rgba(91, 33, 182, 0.72), rgba(168, 85, 247, 0.32) 45%, rgba(249, 115, 22, 0.24));
+}
+.pass-hero-card__content {
+  display: grid;
+  gap: 1.5rem;
+}
+.pass-hero-card__eyebrow,
+.pass-section-heading__eyebrow,
+.qr-cta-card__eyebrow,
+.qr-viewer-card__eyebrow,
+.pass-badge-eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(253, 230, 255, 0.86);
+}
+.pass-hero-card h1,
+.qr-cta-card h2,
+.pass-section-heading h2,
+.qr-viewer-card h3,
+.pass-badge-heading h2 {
+  margin: 0.5rem 0 0;
+  color: #fff;
+}
+.pass-hero-card h1 {
+  max-width: 720px;
+  font-size: clamp(2.2rem, 4vw, 4.5rem);
+  line-height: 1;
+}
+.pass-hero-card__copy,
+.qr-cta-card__copy,
+.qr-viewer-card__copy,
+.pass-badge-subtitle,
+.pass-badge-banner__copy {
+  margin: 0.75rem 0 0;
+  max-width: 720px;
+  color: rgba(241, 245, 249, 0.78);
+  line-height: 1.7;
+}
+.pass-hero-card__stats {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.pass-hero-card__stats > div,
+.pass-meta-grid__item,
+.qr-cta-card__summary > div,
+.qr-viewer-card__meta-item,
+.pass-info-block__item,
+.pass-history-list__item,
+.pass-badge-field,
+.pass-badge-banner {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+}
+.pass-hero-card__stats > div,
+.pass-meta-grid__item,
+.qr-cta-card__summary > div,
+.qr-viewer-card__meta-item,
+.pass-info-block__item,
+.pass-history-list__item,
+.pass-badge-field {
+  padding: 1rem 1.1rem;
+}
+.pass-hero-card__stats span,
+.pass-meta-grid__item span,
+.pass-history-block__header span,
+.qr-cta-card__label,
+.qr-viewer-card__meta-item span,
+.pass-badge-field span,
+.pass-badge-banner__label,
+.pass-info-block__header span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.6);
+}
+.pass-hero-card__stats strong,
+.pass-meta-grid__item strong,
+.pass-history-list__item strong,
+.qr-cta-card__summary strong,
+.qr-viewer-card__meta-item strong,
+.pass-badge-field strong,
+.pass-badge-banner__value,
+.pass-info-block__header strong,
+.pass-badge-brand strong {
+  display: block;
+  margin-top: 0.6rem;
+  color: #fff;
+  font-size: 1rem;
+}
+.pass-main-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+.pass-main-column,
+.pass-cta-stack,
+.pass-meta-card,
+.pass-history-block,
+.pass-info-block,
+.pass-badge-card,
+.qr-viewer-card,
+.qr-cta-card {
+  display: grid;
+  gap: 1.25rem;
+}
+.pass-badge-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.15), transparent 26%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(88, 28, 135, 0.7) 58%, rgba(249, 115, 22, 0.28));
+}
+.pass-badge-card::before,
+.qr-cta-card::before,
+.qr-viewer-card::before {
+  content: '';
+  position: absolute;
+  inset: -30% auto auto 65%;
+  width: 220px;
+  height: 220px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 65%);
+  pointer-events: none;
+}
+.pass-badge-card--active { box-shadow: 0 24px 80px rgba(34, 197, 94, 0.12); }
+.pass-badge-card--pending { box-shadow: 0 24px 80px rgba(251, 191, 36, 0.12); }
+.pass-badge-card--expired { box-shadow: 0 24px 80px rgba(244, 114, 182, 0.12); }
+.pass-badge-card--revoked,
+.pass-badge-card--blocked { box-shadow: 0 24px 80px rgba(248, 113, 113, 0.14); }
+.pass-badge-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.pass-badge-identity {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.pass-badge-avatar-wrap {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+  overflow: hidden;
+}
+.pass-badge-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pass-badge-avatar--placeholder {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.35), rgba(249, 115, 22, 0.3));
+}
+.pass-badge-heading {
+  display: grid;
+  gap: 0.35rem;
+}
+.pass-badge-heading h2 {
+  font-size: clamp(1.9rem, 3.4vw, 2.8rem);
+  line-height: 1.02;
+}
+.pass-badge-status,
+.qr-viewer-card__state,
+.pass-badge-state-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  padding: 0.5rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.pass-badge-status--active { background: rgba(74, 222, 128, 0.14); color: #bbf7d0; }
+.pass-badge-status--pending { background: rgba(251, 191, 36, 0.14); color: #fde68a; }
+.pass-badge-status--expired { background: rgba(251, 113, 133, 0.14); color: #fecdd3; }
+.pass-badge-status--revoked,
+.pass-badge-status--blocked { background: rgba(248, 113, 113, 0.16); color: #fecaca; }
+.pass-badge-brand {
+  min-width: 200px;
+  padding: 1rem 1.1rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+.pass-badge-brand span,
+.pass-history-list__item p,
+.qr-cta-card__summary p,
+.qr-viewer-card__meta-item p,
+.pass-badge-banner__copy {
+  color: rgba(226, 232, 240, 0.66);
+}
+.pass-badge-grid,
+.pass-meta-grid,
+.qr-viewer-card__meta-grid,
+.pass-info-block__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.pass-badge-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+}
+.pass-badge-state-pill {
+  background: rgba(34, 211, 238, 0.16);
+  color: #a5f3fc;
+}
+.pass-badge-state-pill--alert {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fecaca;
+}
+.pass-meta-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(10, 15, 32, 0.86), rgba(88, 28, 135, 0.2));
+}
+.pass-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+}
+.pass-history-block {
+  gap: 0.9rem;
+}
+.pass-history-block__header,
+.pass-info-block__header,
+.qr-cta-card__header,
+.qr-viewer-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.pass-history-list {
+  display: grid;
+  gap: 0.85rem;
+}
+.pass-history-list__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+.pass-history-list__item span {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.9rem;
+}
+.qr-cta-card,
+.qr-viewer-card,
+.pass-info-block {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.13);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.88), rgba(88, 28, 135, 0.28) 55%, rgba(249, 115, 22, 0.16));
+}
+.qr-cta-card__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.qr-cta-card__summary,
+.qr-cta-card__secondary-actions {
+  display: grid;
+  gap: 0.9rem;
+}
+.qr-cta-card__summary {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.qr-cta-card__actions {
+  display: grid;
+  gap: 0.9rem;
+}
+.qr-cta-card__secondary-actions {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.qr-viewer-card__state {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.qr-viewer--active .qr-viewer-card__state { background: rgba(74, 222, 128, 0.18); color: #bbf7d0; }
+.qr-viewer--expired .qr-viewer-card__state { background: rgba(251, 191, 36, 0.16); color: #fde68a; }
+.qr-viewer--blocked .qr-viewer-card__state,
+.qr-viewer--unavailable .qr-viewer-card__state { background: rgba(248, 113, 113, 0.16); color: #fecaca; }
+.qr-sheet {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 340px;
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.86) 55%, rgba(244, 114, 182, 0.12));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.qr-sheet__placeholder {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  max-width: 260px;
+  text-align: center;
+  color: #64748b;
+}
+.qr-sheet__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(4px);
+}
+.qr-sheet__overlay > div {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 260px;
+}
+.qr-sheet__overlay--masked {
+  background: rgba(2, 6, 23, 0.85);
+}
+.qr-viewer-card__footnote {
+  margin: 0;
+  padding: 0.95rem 1rem;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 23, 0.3);
+  color: rgba(226, 232, 240, 0.68);
+  line-height: 1.6;
+}
+.pass-info-block__grid {
+  grid-template-columns: 1fr;
+}
+.pass-info-block__item {
+  color: rgba(226, 232, 240, 0.82);
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .pass-main-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 767px) {
+  .pass-badge-banner,
+  .pass-history-list__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

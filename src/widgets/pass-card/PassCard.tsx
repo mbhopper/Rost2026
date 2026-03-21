@@ -1,65 +1,161 @@
 import { format } from 'date-fns';
-import { Clock3, ShieldCheck, Ticket, UserRound } from 'lucide-react';
+import { BellRing, Clock3, ShieldCheck, Ticket, UserRound } from 'lucide-react';
 import type { DigitalPass } from '../../entities/pass/model';
+import type { UserProfile } from '../../entities/user/model';
 import { cn } from '../../shared/lib/cn';
 import { Card } from '../../shared/ui/card/Card';
 
 interface PassCardProps {
   pass: DigitalPass;
+  user?: UserProfile | null;
 }
 
-const statusClasses: Record<DigitalPass['status'], string> = {
-  active: 'bg-emerald-400/15 text-emerald-300',
-  pending: 'bg-amber-400/15 text-amber-300',
-  expired: 'bg-rose-400/15 text-rose-300',
-  revoked: 'bg-slate-400/15 text-slate-300',
-  blocked: 'bg-rose-500/15 text-rose-200',
+const statusMeta: Record<
+  DigitalPass['status'],
+  {
+    accentClass: string;
+    chipClass: string;
+    icon: typeof ShieldCheck;
+    label: string;
+    message: string;
+  }
+> = {
+  active: {
+    label: 'Active access',
+    message: 'Пропуск готов к проходу и синхронизирован с системой доступа.',
+    icon: ShieldCheck,
+    accentClass: 'pass-badge-card--active',
+    chipClass: 'pass-badge-status--active',
+  },
+  pending: {
+    label: 'Pending approval',
+    message: 'Пропуск выпущен, но ещё ожидает активацию в системе.',
+    icon: Clock3,
+    accentClass: 'pass-badge-card--pending',
+    chipClass: 'pass-badge-status--pending',
+  },
+  expired: {
+    label: 'Expired',
+    message: 'Срок действия закончился — нужен перевыпуск или продление.',
+    icon: BellRing,
+    accentClass: 'pass-badge-card--expired',
+    chipClass: 'pass-badge-status--expired',
+  },
+  revoked: {
+    label: 'Revoked',
+    message: 'Пропуск отозван службой безопасности и больше не действует.',
+    icon: BellRing,
+    accentClass: 'pass-badge-card--revoked',
+    chipClass: 'pass-badge-status--revoked',
+  },
+  blocked: {
+    label: 'Blocked',
+    message: 'Доступ временно заблокирован. Для прохода нужна ручная проверка.',
+    icon: BellRing,
+    accentClass: 'pass-badge-card--blocked',
+    chipClass: 'pass-badge-status--blocked',
+  },
 };
 
-const statusLabels: Record<DigitalPass['status'], string> = {
-  active: 'Активен',
-  pending: 'Ожидает активации',
-  expired: 'Истёк',
-  revoked: 'Отозван',
-  blocked: 'Заблокирован',
-};
+function getInitials(user?: UserProfile | null) {
+  if (!user) {
+    return 'FP';
+  }
 
-export function PassCard({ pass }: PassCardProps) {
+  return [user.firstName, user.lastName]
+    .filter(Boolean)
+    .map((value) => value.charAt(0).toUpperCase())
+    .join('')
+    .slice(0, 2);
+}
+
+export function PassCard({ pass, user }: PassCardProps) {
+  const meta = statusMeta[pass.status];
+  const StatusIcon = meta.icon;
+  const isBlockedState = pass.isBlocked || pass.status === 'blocked';
+
   return (
-    <Card className="space-y-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-3">
-          <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]', statusClasses[pass.status])}>
-            {statusLabels[pass.status]}
-          </span>
-          <div>
-            <h3 className="text-xl font-semibold text-white">{pass.facilityName}</h3>
-            <p className="mt-1 text-sm text-slate-400">Пропуск #{pass.passId}</p>
+    <Card className={cn('pass-badge-card', meta.accentClass)}>
+      <div className="pass-badge-card__header">
+        <div className="pass-badge-identity">
+          <div className="pass-badge-avatar-wrap">
+            {user?.avatarUrl ? (
+              <img
+                className="pass-badge-avatar"
+                src={user.avatarUrl}
+                alt={user.fullName}
+              />
+            ) : (
+              <div className="pass-badge-avatar pass-badge-avatar--placeholder">
+                {getInitials(user)}
+              </div>
+            )}
+          </div>
+
+          <div className="pass-badge-heading">
+            <div className={cn('pass-badge-status', meta.chipClass)}>
+              <StatusIcon size={14} />
+              <span>{meta.label}</span>
+            </div>
+            <p className="pass-badge-eyebrow">Virtual employee badge</p>
+            <h2>{user?.fullName ?? 'Сотрудник FuturePass'}</h2>
+            <p className="pass-badge-subtitle">
+              {user?.position ?? 'Corporate access holder'}
+              {user?.department ? ` · ${user.department}` : ''}
+            </p>
           </div>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-cyan-300">
-          <Ticket size={20} />
+
+        <div className="pass-badge-brand">
+          <span>FuturePass</span>
+          <strong>{pass.facilityName}</strong>
         </div>
       </div>
-      <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-white/8 bg-slate-950/30 p-4">
-          <dt className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500"><ShieldCheck size={14} />Уровень доступа</dt>
-          <dd className="mt-2 text-sm font-semibold text-slate-100">{pass.accessLevel}</dd>
+
+      <div className="pass-badge-grid">
+        <div className="pass-badge-field">
+          <span>
+            <UserRound size={14} /> Employee ID
+          </span>
+          <strong>{pass.employeeId}</strong>
         </div>
-        <div className="rounded-2xl border border-white/8 bg-slate-950/30 p-4">
-          <dt className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500"><UserRound size={14} />Сотрудник</dt>
-          <dd className="mt-2 text-sm font-semibold text-slate-100">{pass.employeeId}</dd>
+        <div className="pass-badge-field">
+          <span>
+            <Ticket size={14} /> Department
+          </span>
+          <strong>{user?.department ?? 'Operations'}</strong>
         </div>
-        <div className="rounded-2xl border border-white/8 bg-slate-950/30 p-4">
-          <dt className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500"><Ticket size={14} />Статус карты</dt>
-          <dd className="mt-2 text-sm font-semibold text-slate-100">{pass.isBlocked ? 'Заблокирована' : 'Доступна для прохода'}</dd>
+        <div className="pass-badge-field">
+          <span>
+            <ShieldCheck size={14} /> Access level
+          </span>
+          <strong>{pass.accessLevel}</strong>
         </div>
-        <div className="rounded-2xl border border-white/8 bg-slate-950/30 p-4">
-          <dt className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500"><Clock3 size={14} />Действует до</dt>
-          <dd className="mt-2 text-sm font-semibold text-slate-100">{format(pass.expiresAt, 'dd MMM yyyy')}</dd>
-          <p className="mt-1 text-xs text-slate-500">Выдан {format(pass.issuedAt, 'dd MMM yyyy')}</p>
+        <div className="pass-badge-field">
+          <span>
+            <Clock3 size={14} /> Last updated
+          </span>
+          <strong>{format(new Date(pass.issuedAt), 'dd MMM yyyy')}</strong>
         </div>
-      </dl>
+      </div>
+
+      <div className="pass-badge-banner">
+        <div>
+          <p className="pass-badge-banner__label">Facility & status</p>
+          <p className="pass-badge-banner__value">{pass.facilityName}</p>
+          <p className="pass-badge-banner__copy">{meta.message}</p>
+        </div>
+        <div
+          className={cn(
+            'pass-badge-state-pill',
+            isBlockedState && 'pass-badge-state-pill--alert',
+          )}
+        >
+          {isBlockedState
+            ? 'Manual verification required'
+            : 'Ready for QR entry'}
+        </div>
+      </div>
     </Card>
   );
 }
