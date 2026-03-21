@@ -1,4 +1,9 @@
-import { Navigate, Outlet, RouterProvider, createHashRouter } from 'react-router-dom';
+import {
+  Navigate,
+  Outlet,
+  RouterProvider,
+  createHashRouter,
+} from 'react-router-dom';
 import { useAppStore } from '../store';
 import { LoginPage } from '../../pages/auth/login/LoginPage';
 import { RegisterPage } from '../../pages/auth/register/RegisterPage';
@@ -9,8 +14,31 @@ import { SettingsPage } from '../../pages/settings/SettingsPage';
 import { Header } from '../../widgets/header/Header';
 import { defaultPrivateRoute, routes } from '../../shared/config/routes';
 
-function GuestGuard() {
+function RouteLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-[32px] border border-white/10 bg-panel p-8 text-center shadow-soft backdrop-blur">
+        <div className="text-xs uppercase tracking-[0.24em] text-cyan-300">
+          Auth bootstrap
+        </div>
+        <h1 className="mt-4 text-3xl font-semibold text-white">
+          Проверяем активную сессию
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-slate-400">
+          Восстанавливаем токен, профиль пользователя и доступ к приватным
+          маршрутам.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PublicOnlyRoute() {
   const authStatus = useAppStore((state) => state.authStatus);
+  const isAuthBootstrapped = useAppStore((state) => state.isAuthBootstrapped);
+  if (!isAuthBootstrapped || authStatus === 'loading') {
+    return <RouteLoader />;
+  }
 
   if (authStatus === 'authenticated') {
     return <Navigate to={defaultPrivateRoute} replace />;
@@ -19,10 +47,14 @@ function GuestGuard() {
   return <Outlet />;
 }
 
-function PrivateGuard() {
+function ProtectedRoute() {
   const authStatus = useAppStore((state) => state.authStatus);
+  const isAuthBootstrapped = useAppStore((state) => state.isAuthBootstrapped);
+  if (!isAuthBootstrapped || authStatus === 'loading') {
+    return <RouteLoader />;
+  }
 
-  if (authStatus === 'guest') {
+  if (authStatus !== 'authenticated') {
     return <Navigate to={routes.login} replace />;
   }
 
@@ -35,14 +67,31 @@ function AuthLayout() {
       <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(460px,680px)]">
         <section className="hidden rounded-[36px] border border-white/10 bg-panel p-8 shadow-soft backdrop-blur lg:flex lg:flex-col lg:justify-between">
           <div className="space-y-4">
-            <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">FuturePass</p>
-            <h2 className="text-5xl font-semibold leading-tight text-white">Единый MVP для пропуска, QR и настроек доступа.</h2>
-            <p className="max-w-xl text-base leading-7 text-slate-400">Мы сохранили FSD-структуру pages / features / widgets / entities / shared, но наполнили её целевым сценарием цифрового пропуска сотрудника.</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
+              FuturePass
+            </p>
+            <h2 className="text-5xl font-semibold leading-tight text-white">
+              Единый MVP для пропуска, QR и настроек доступа.
+            </h2>
+            <p className="max-w-xl text-base leading-7 text-slate-400">
+              Мы сохранили FSD-структуру pages / features / widgets / entities /
+              shared, но наполнили её целевым сценарием цифрового пропуска
+              сотрудника.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-3xl border border-white/8 bg-slate-950/30 p-5"><div className="text-3xl font-semibold text-white">3</div><p className="mt-2 text-sm text-slate-400">приватных сценария</p></div>
-            <div className="rounded-3xl border border-white/8 bg-slate-950/30 p-5"><div className="text-3xl font-semibold text-white">10m</div><p className="mt-2 text-sm text-slate-400">TTL для QR-сессии</p></div>
-            <div className="rounded-3xl border border-white/8 bg-slate-950/30 p-5"><div className="text-3xl font-semibold text-white">Hash</div><p className="mt-2 text-sm text-slate-400">router без сервера</p></div>
+            <div className="rounded-3xl border border-white/8 bg-slate-950/30 p-5">
+              <div className="text-3xl font-semibold text-white">3</div>
+              <p className="mt-2 text-sm text-slate-400">приватных сценария</p>
+            </div>
+            <div className="rounded-3xl border border-white/8 bg-slate-950/30 p-5">
+              <div className="text-3xl font-semibold text-white">10m</div>
+              <p className="mt-2 text-sm text-slate-400">TTL для QR-сессии</p>
+            </div>
+            <div className="rounded-3xl border border-white/8 bg-slate-950/30 p-5">
+              <div className="text-3xl font-semibold text-white">Hash</div>
+              <p className="mt-2 text-sm text-slate-400">router без сервера</p>
+            </div>
           </div>
         </section>
         <div className="flex items-center justify-center">
@@ -71,7 +120,7 @@ function PrivateLayout() {
 const router = createHashRouter([
   {
     path: '/',
-    element: <GuestGuard />,
+    element: <PublicOnlyRoute />,
     children: [
       {
         element: <AuthLayout />,
@@ -85,7 +134,7 @@ const router = createHashRouter([
   },
   {
     path: '/',
-    element: <PrivateGuard />,
+    element: <ProtectedRoute />,
     children: [
       {
         element: <PrivateLayout />,
