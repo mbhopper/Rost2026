@@ -17,6 +17,11 @@ export interface RegistrationRequest extends RegistrationRequestPayload {
   employeeId?: string;
 }
 
+export interface ProcessRegistrationRequestPayload {
+  requestId: string;
+  employeeId: string;
+}
+
 export interface SupportRequestPayload {
   email: string;
   message: string;

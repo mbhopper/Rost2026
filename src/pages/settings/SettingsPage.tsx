@@ -14,7 +14,7 @@ const themeOptions: Array<{ value: ThemeMode; label: string; description: string
   {
     value: 'dark',
     label: 'Тёмная',
-    description: 'Основной корпоративный режим для MVP.',
+    description: 'Основной корпоративный режим.',
     icon: ShieldCheck,
   },
   {
@@ -108,7 +108,7 @@ export function SettingsPage() {
           <ToggleCard
             checked={settings.demoMode}
             label="Demo labels"
-            description="Оставляет подсказки mock/MVP в интерфейсе, чтобы обозначить frontend-only режим." 
+            description="Показывает дополнительные пояснения и демонстрационные метки в интерфейсе."
             onChange={() => toggleSetting('demoMode')}
           />
           <div className="info-banner"><BellRing size={16} /> При печати QR и конфиденциальные блоки скрываются через print styles.</div>

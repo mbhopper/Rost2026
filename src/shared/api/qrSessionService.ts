@@ -9,6 +9,10 @@ import { AppApiError } from './appApi';
 import type { QrSessionService } from './contracts';
 import { findMockPassDtoById } from '../mocks/pass/passes';
 import { createMockDelayController, type MockApiConfig, simulateNetworkFailure } from './mockUtils';
+import { apiConfig, createAuthorizedRequestInit } from './config';
+import { httpClient } from './httpClient';
+import { mapQrSessionDtoToModel, type QrSessionDto } from './dto';
+import { readLocalStorage, storageKeys } from '../config/storage';
 
 const assertPassIsAvailable = (passId: string) => {
   const pass = findMockPassDtoById(passId);
@@ -17,6 +21,52 @@ const assertPassIsAvailable = (passId: string) => {
     throw new AppApiError('pass_blocked');
   }
 };
+
+const buildSessionActionPath = (sessionId: string, action: 'expire' | 'scan' | 'revoke') =>
+  `${apiConfig.endpoints.qrSessions}/${encodeURIComponent(sessionId)}/${action}`;
+
+const mapQrSessionResponse = ({ session }: { session: QrSessionDto }) => ({
+  session: mapQrSessionDtoToModel(session),
+});
+
+export const createHttpQrSessionService = (): QrSessionService => ({
+  async generateQrSession(employeeId, passId) {
+    const response = await httpClient.post<{ session: QrSessionDto }>(
+      apiConfig.endpoints.qrSessions,
+      { employeeId, passId },
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+
+    return mapQrSessionResponse(response);
+  },
+  async expireQrSession(session) {
+    const response = await httpClient.post<{ session: QrSessionDto }>(
+      buildSessionActionPath(session.sessionId, 'expire'),
+      { sessionId: session.sessionId },
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+
+    return mapQrSessionResponse(response);
+  },
+  async markQrAsScanned(session) {
+    const response = await httpClient.post<{ session: QrSessionDto }>(
+      buildSessionActionPath(session.sessionId, 'scan'),
+      { sessionId: session.sessionId },
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+
+    return mapQrSessionResponse(response);
+  },
+  async revokeQrSession(session) {
+    const response = await httpClient.post<{ session: QrSessionDto }>(
+      buildSessionActionPath(session.sessionId, 'revoke'),
+      { sessionId: session.sessionId },
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+
+    return mapQrSessionResponse(response);
+  },
+});
 
 export const createMockQrSessionService = (
   config: MockApiConfig = {},

@@ -1,5 +1,5 @@
 import { USER_ROLES, type UserRole } from '../../entities/user/model';
-import { mockApi } from '../../shared/api/mockApi';
+import { api } from '../../shared/api/auth';
 import {
   AppApiError,
   mapAppApiErrorToMessage,
@@ -99,7 +99,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     set({ authStatus: 'loading', authMessage: null });
 
     try {
-      const result = await mockApi.authService.login(email, password);
+      const result = await api.authService.login(email, password);
       setAuthenticatedState(set, result);
     } catch (error) {
       handleAuthFailure(set, error);
@@ -110,7 +110,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     set({ authStatus: 'loading', authMessage: null });
 
     try {
-      const result = await mockApi.adminAuthService.login(email, password);
+      const result = await api.adminAuthService.login(email, password);
       setAuthenticatedState(set, result);
     } catch (error) {
       handleAuthFailure(set, error);
@@ -121,7 +121,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     set({ authStatus: 'loading', authMessage: null });
 
     try {
-      const result = await mockApi.authService.register(payload);
+      const result = await api.authService.register(payload);
       setAuthenticatedState(set, result);
     } catch (error) {
       handleAuthFailure(set, error);
@@ -151,7 +151,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     });
 
     try {
-      const { user } = await mockApi.userProfileService.getCurrentProfile(token);
+      const { user } = await api.userProfileService.getCurrentProfile(token);
       persistAuth({ token, user });
       set({
         user,
@@ -178,7 +178,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
   },
   logout: async () => {
     clearPersistedAuth();
-    await mockApi.authService.logout();
+    await api.authService.logout();
     set({
       authStatus: 'guest',
       authMessage: null,

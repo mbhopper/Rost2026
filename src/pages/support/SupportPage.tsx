@@ -6,7 +6,7 @@ import {
   supportRequestSchema,
   type SupportRequestFormValues,
 } from '../../features/auth/lib/schemas';
-import { mockApi } from '../../shared/api/mockApi';
+import { api } from '../../shared/api/auth';
 import { routes } from '../../shared/config/routes';
 import { Button } from '../../shared/ui/button/Button';
 import { Card } from '../../shared/ui/card/Card';
@@ -69,7 +69,7 @@ export function SupportPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await mockApi.requestService.submitSupportRequest(parsed.data);
+      const result = await api.requestService.submitSupportRequest(parsed.data);
       navigate(`${routes.supportSuccess}?requestId=${encodeURIComponent(result.id)}`);
     } finally {
       setIsSubmitting(false);
@@ -105,7 +105,7 @@ export function SupportPage() {
           <div className="poster-page__copy poster-page__copy--centered">
             <p className="poster-page__eyebrow">Support desk</p>
             <h1>ОБРАТНАЯ СВЯЗЬ</h1>
-            <p>Оставьте обращение по пропуску, QR или регистрации — ответ вернётся в mock-support pipeline.</p>
+            <p>Оставьте обращение по пропуску, QR или регистрации — обращение будет передано в службу поддержки.</p>
           </div>
 
           <Card className="poster-form-card motion-rise-in">

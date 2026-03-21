@@ -9,6 +9,7 @@ import type {
   AdminOverview,
 } from './admin/types';
 import type {
+  ProcessRegistrationRequestPayload,
   RegistrationRequest,
   RegistrationRequestPayload,
   SupportRequest,
@@ -74,6 +75,9 @@ export interface RequestService {
   ): Promise<RegistrationRequest>;
   submitSupportRequest(payload: SupportRequestPayload): Promise<SupportRequest>;
   getRegistrationRequests(): Promise<RegistrationRequest[]>;
+  processRegistrationRequest(
+    payload: ProcessRegistrationRequestPayload,
+  ): Promise<RegistrationRequest>;
 }
 
 export interface ApiServices {
