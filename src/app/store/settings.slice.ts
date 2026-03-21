@@ -5,7 +5,6 @@ type SetState = (partial: Partial<AppStore> | ((state: AppStore) => Partial<AppS
 
 const defaultSettings: SettingsState = {
   themeMode: 'system',
-  demoMode: true,
   secureScreenMode: true,
 };
 
@@ -21,7 +20,6 @@ const readPersistedSettings = (): SettingsState => {
 
     return {
       themeMode: isThemeMode(parsed.themeMode) ? parsed.themeMode : defaultSettings.themeMode,
-      demoMode: typeof parsed.demoMode === 'boolean' ? parsed.demoMode : defaultSettings.demoMode,
       secureScreenMode:
         typeof parsed.secureScreenMode === 'boolean'
           ? parsed.secureScreenMode

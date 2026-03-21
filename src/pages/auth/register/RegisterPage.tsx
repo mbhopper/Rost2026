@@ -13,14 +13,14 @@ import { Card } from '../../../shared/ui/card/Card';
 import { Input } from '../../../shared/ui/input/Input';
 
 const initialForm: RegistrationRequestFormValues = {
-  firstName: 'Александр',
-  lastName: 'Иванов',
+  firstName: '',
+  lastName: '',
   middleName: '',
-  email: 'alex@futurepass.app',
-  phone: '+7 (999) 123-45-67',
-  department: 'Platform Engineering',
-  position: 'Frontend engineer',
-  note: 'Нужен доступ в основное здание и переговорные.',
+  email: '',
+  phone: '',
+  department: '',
+  position: '',
+  note: '',
 };
 
 function mapIssuesToErrors(result: ReturnType<typeof registrationRequestSchema.safeParse>) {

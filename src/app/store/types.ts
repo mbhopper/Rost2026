@@ -34,7 +34,6 @@ export interface NotificationSettings {
 
 export interface SettingsState {
   themeMode: ThemeMode;
-  demoMode: boolean;
   secureScreenMode: boolean;
 }
 
@@ -74,7 +73,7 @@ export interface QrSessionSlice {
 
 export interface SettingsSlice {
   settings: SettingsState;
-  toggleSetting: (key: keyof Pick<SettingsState, 'demoMode' | 'secureScreenMode'>) => void;
+  toggleSetting: (key: keyof Pick<SettingsState, 'secureScreenMode'>) => void;
   setThemeMode: (mode: ThemeMode) => void;
 }
 

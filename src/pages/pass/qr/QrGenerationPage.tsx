@@ -24,7 +24,7 @@ export function QrGenerationPage() {
   return (
     <div className="poster-page poster-page--qr-spotlight motion-page-fade">
       <div className="poster-page__copy poster-page__copy--centered">
-        <p className="poster-page__eyebrow">Generation flow</p>
+        <p className="poster-page__eyebrow">Экран прохода</p>
         <h1>ВАШ QR</h1>
         <p>Выделенный экран для показа кода: меньше лишнего UI, крупнее QR и заметнее таймер прохода.</p>
       </div>
@@ -41,7 +41,7 @@ export function QrGenerationPage() {
       </Card>
 
       <div className="poster-pedestal poster-pedestal--live poster-pedestal--actions">
-        <span>{isIdle ? 'Сгенерировать QR-code' : `До конца: ${remainingSeconds} сек.`}</span>
+        <span>{isIdle ? 'Сгенерировать QR-код' : `До конца: ${remainingSeconds} сек.`}</span>
         <div className="poster-inline-actions">
           <Button onClick={() => void (isIdle ? generate() : regenerate())}>
             {isIdle ? <QrCode size={16} /> : <Ticket size={16} />}

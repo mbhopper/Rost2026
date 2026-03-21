@@ -31,9 +31,9 @@ export function DashboardPage() {
           <p>Покажите QR-код сотруднику охраны непосредственно перед турникетом.</p>
         </Card>
         <Card className="poster-stat-card poster-stat-card--accent motion-rise-in">
-          <span><QrCode size={14} /> Secure QR mode</span>
-          <strong>Best-effort защита</strong>
-          <p>Маскирование при blur, watermark и авто-скрытие при бездействии.</p>
+          <span><QrCode size={14} /> Защищённый QR-код</span>
+          <strong>Защита экрана</strong>
+          <p>QR-код скрывается при переключении вкладки и автоматически маскируется после периода бездействия.</p>
         </Card>
         <Card className="poster-stat-card motion-rise-in">
           <span><BellRing size={14} /> Сервисные обращения</span>
@@ -44,7 +44,7 @@ export function DashboardPage() {
       </div>
 
       <div className="poster-pedestal poster-pedestal--live">
-        <span>Сгенерировать QR-code</span>
+        <span>Сгенерировать QR-код</span>
         <QrSessionPanel compact />
         <Link to={routes.qrGenerate} className="poster-inline-link">Открыть полноэкранный QR</Link>
       </div>
