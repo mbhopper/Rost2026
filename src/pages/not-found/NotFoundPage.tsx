@@ -1,14 +1,16 @@
+import { Link } from 'react-router-dom';
 import { routes } from '../../shared/config/routes';
+import { Card } from '../../shared/ui/card/Card';
 
 export function NotFoundPage() {
   return (
-    <section className="not-found-card app-panel">
-      <div className="section-label">404</div>
-      <h1>Page not found</h1>
-      <p>The requested route is outside the new app shell map.</p>
-      <a className="inline-link" href={`#${routes.pass}`}>
-        Return to dashboard
-      </a>
-    </section>
+    <Card className="mx-auto max-w-[560px] space-y-4 text-center">
+      <div className="text-xs uppercase tracking-[0.24em] text-cyan-300">404</div>
+      <h1 className="text-4xl font-semibold text-white">Маршрут не найден</h1>
+      <p className="text-base leading-7 text-slate-400">Похоже, эта страница не входит в текущий MVP кабинета пропуска.</p>
+      <Link className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950" to={routes.pass}>
+        Вернуться к пропуску
+      </Link>
+    </Card>
   );
 }

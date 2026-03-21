@@ -14,7 +14,17 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "react-router-dom": ["vendor/react-router-dom/index.d.ts"],
+      "zustand": ["vendor/zustand/index.d.ts"],
+      "clsx": ["vendor/clsx/index.d.ts"],
+      "class-variance-authority": ["vendor/class-variance-authority/index.d.ts"],
+      "qrcode.react": ["vendor/qrcode.react/index.d.ts"],
+      "date-fns": ["vendor/date-fns/index.d.ts"],
+      "lucide-react": ["vendor/lucide-react/index.d.ts"]
+    }
   },
   "include": ["src"]
 }

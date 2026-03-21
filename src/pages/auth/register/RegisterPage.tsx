@@ -1,12 +1,18 @@
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppStore } from '../../../app/store/AppStoreProvider';
+import { Ticket } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppStore } from '../../../app/store';
+import { registerSchema, type RegisterFormValues } from '../../../features/auth/lib/schemas';
 import { defaultPrivateRoute, routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
-import { registerSchema, type RegisterFormValues } from '../../../features/auth/lib/schemas';
+import { Card } from '../../../shared/ui/card/Card';
+import { Input } from '../../../shared/ui/input/Input';
 
 export function RegisterPage() {
-  const { register: registerUser } = useAppStore();
+  const registerUser = useAppStore((state) => state.register);
+  const authStatus = useAppStore((state) => state.authStatus);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -19,8 +25,8 @@ export function RegisterPage() {
       middleName: '',
       email: 'alex@futurepass.app',
       phone: '+7 (999) 123-45-67',
-      department: 'Разработка',
-      position: 'Frontend developer',
+      department: 'Platform Engineering',
+      position: 'Frontend engineer',
       password: 'future-pass',
       confirmPassword: 'future-pass',
     },
@@ -28,73 +34,82 @@ export function RegisterPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     await registerUser(values);
-    window.location.hash = `#${defaultPrivateRoute}`;
+    navigate(defaultPrivateRoute);
   });
 
   return (
-    <section className="auth-card app-panel">
-      <div className="section-label">Регистрация</div>
-      <h1>Создайте аккаунт сотрудника</h1>
-      <p>Заполните профиль, чтобы сразу попасть в приватную часть приложения после регистрации.</p>
-      <form className="auth-form" onSubmit={onSubmit} noValidate>
-        <div className="auth-form__grid auth-form__grid--double">
-          <label>
-            Имя
-            <input placeholder="Иван" {...register('firstName')} />
+    <Card className="w-full max-w-[680px] space-y-6">
+      <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-cyan-200">
+        <Ticket size={14} /> Employee onboarding
+      </div>
+      <div className="space-y-3">
+        <h1 className="text-4xl font-semibold tracking-tight text-white">Создайте пропуск сотрудника</h1>
+        <p className="text-base leading-7 text-slate-400">После регистрации вы сразу попадёте в приватную часть приложения и сможете использовать QR для прохода.</p>
+      </div>
+      <form className="space-y-4" onSubmit={onSubmit} noValidate>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="field-block">
+            <span>Имя</span>
+            <Input placeholder="Иван" {...register('firstName')} />
             {errors.firstName && <span className="field-error">{errors.firstName.message}</span>}
           </label>
-          <label>
-            Фамилия
-            <input placeholder="Иванов" {...register('lastName')} />
+          <label className="field-block">
+            <span>Фамилия</span>
+            <Input placeholder="Иванов" {...register('lastName')} />
             {errors.lastName && <span className="field-error">{errors.lastName.message}</span>}
           </label>
         </div>
-        <label>
-          Отчество
-          <input placeholder="Иванович" {...register('middleName')} />
+        <label className="field-block">
+          <span>Отчество</span>
+          <Input placeholder="Иванович" {...register('middleName')} />
           {errors.middleName && <span className="field-error">{errors.middleName.message}</span>}
         </label>
-        <label>
-          Email
-          <input type="email" placeholder="name@company.ru" {...register('email')} />
-          {errors.email && <span className="field-error">{errors.email.message}</span>}
-        </label>
-        <div className="auth-form__grid auth-form__grid--double">
-          <label>
-            Телефон
-            <input type="tel" placeholder="+7 (___) ___-__-__" {...register('phone')} />
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="field-block">
+            <span>Email</span>
+            <Input type="email" placeholder="name@company.ru" {...register('email')} />
+            {errors.email && <span className="field-error">{errors.email.message}</span>}
+          </label>
+          <label className="field-block">
+            <span>Телефон</span>
+            <Input type="tel" placeholder="+7 (___) ___-__-__" {...register('phone')} />
             {errors.phone && <span className="field-error">{errors.phone.message}</span>}
           </label>
-          <label>
-            Подразделение
-            <input placeholder="Например, IT" {...register('department')} />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="field-block">
+            <span>Подразделение</span>
+            <Input placeholder="Например, Platform" {...register('department')} />
             {errors.department && <span className="field-error">{errors.department.message}</span>}
           </label>
+          <label className="field-block">
+            <span>Должность</span>
+            <Input placeholder="Например, Product manager" {...register('position')} />
+            {errors.position && <span className="field-error">{errors.position.message}</span>}
+          </label>
         </div>
-        <label>
-          Должность
-          <input placeholder="Например, Product manager" {...register('position')} />
-          {errors.position && <span className="field-error">{errors.position.message}</span>}
-        </label>
-        <div className="auth-form__grid auth-form__grid--double">
-          <label>
-            Пароль
-            <input type="password" placeholder="Минимум 8 символов" {...register('password')} />
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="field-block">
+            <span>Пароль</span>
+            <Input type="password" placeholder="Минимум 8 символов" {...register('password')} />
             {errors.password && <span className="field-error">{errors.password.message}</span>}
           </label>
-          <label>
-            Повторите пароль
-            <input type="password" placeholder="Повторите пароль" {...register('confirmPassword')} />
+          <label className="field-block">
+            <span>Повторите пароль</span>
+            <Input type="password" placeholder="Повторите пароль" {...register('confirmPassword')} />
             {errors.confirmPassword && <span className="field-error">{errors.confirmPassword.message}</span>}
           </label>
         </div>
-        <Button type="submit" fullWidth disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Создаём аккаунт…' : 'Зарегистрироваться'}
+        <Button type="submit" fullWidth disabled={isSubmitting || authStatus === 'loading'} aria-busy={isSubmitting || authStatus === 'loading'}>
+          {isSubmitting || authStatus === 'loading' ? 'Создаём аккаунт…' : 'Зарегистрироваться'}
         </Button>
       </form>
-      <a className="inline-link" href={`#${routes.login}`}>
-        Уже есть аккаунт? Войдите
-      </a>
-    </section>
+      <p className="text-sm text-slate-400">
+        Уже есть аккаунт?{' '}
+        <Link className="font-semibold text-cyan-300 hover:text-cyan-200" to={routes.login}>
+          Войдите
+        </Link>
+      </p>
+    </Card>
   );
 }

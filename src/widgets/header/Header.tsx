@@ -1,38 +1,69 @@
-import { routes } from '../../shared/config/routes';
+import { LogOut, Settings, ShieldCheck, Ticket, UserRound } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAppStore } from '../../app/store';
+import { primaryNavigation, routes } from '../../shared/config/routes';
+import { cn } from '../../shared/lib/cn';
 import { Button } from '../../shared/ui/button/Button';
-import { useAppStore } from '../../app/store/AppStoreProvider';
 
-const navItems = [
-  { href: routes.pass, label: 'Pass' },
-  { href: routes.profile, label: 'Profile' },
-  { href: routes.settings, label: 'Settings' },
-];
+const icons = {
+  [routes.pass]: Ticket,
+  [routes.profile]: UserRound,
+  [routes.settings]: Settings,
+};
 
 export function Header() {
-  const { user, logout } = useAppStore();
+  const user = useAppStore((state) => state.user);
+  const logout = useAppStore((state) => state.logout);
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    logout();
+    navigate(routes.login);
+  };
 
   return (
-    <header className="app-header app-panel">
-      <div>
-        <a className="brand-mark" href={`#${routes.pass}`}>
-          FP
-        </a>
-      </div>
-      <nav className="header-nav" aria-label="Primary">
-        {navItems.map((item) => (
-          <a key={item.href} className="header-link" href={`#${item.href}`}>
-            {item.label}
-          </a>
-        ))}
-      </nav>
-      <div className="header-user">
-        <div>
-          <p className="header-user__name">{user?.name ?? 'Guest'}</p>
-          <p className="header-user__meta">{user?.membershipLevel ?? 'Base'} access</p>
+    <header className="rounded-[32px] border border-white/10 bg-panel px-5 py-4 shadow-soft backdrop-blur">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-primary text-white shadow-soft-sm">
+            <ShieldCheck size={20} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">FuturePass Access</p>
+            <p className="text-sm text-slate-400">MVP кабинета сотрудника и гостевого доступа</p>
+          </div>
         </div>
-        <Button variant="secondary" onClick={logout}>
-          Sign out
-        </Button>
+        <nav className="flex flex-wrap gap-2" aria-label="Primary">
+          {primaryNavigation.map((item) => {
+            const Icon = icons[item.href];
+            return (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition',
+                    isActive ? 'bg-white text-slate-950' : 'text-slate-400 hover:bg-white/8 hover:text-white',
+                  )
+                }
+                title={item.description}
+              >
+                <Icon size={16} />
+                {item.label}
+              </NavLink>
+            );
+          })}
+        </nav>
+        <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/8 bg-slate-950/30 px-4 py-3 lg:min-w-[280px]">
+          <div>
+            <p className="text-sm font-semibold text-white">{user?.name ?? 'Гость'}</p>
+            <p className="text-sm text-slate-400">{user?.membershipLevel ?? 'Base'} access</p>
+          </div>
+          <Button variant="secondary" onClick={onLogout}>
+            <LogOut size={16} />
+            Выйти
+          </Button>
+        </div>
       </div>
     </header>
   );

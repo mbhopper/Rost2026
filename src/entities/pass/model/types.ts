@@ -13,4 +13,5 @@ export interface DigitalPass {
   status: PassStatus;
   validUntil: string;
   sessionsLeft: number;
+  format: 'NFC + QR' | 'QR only';
 }
