@@ -69,7 +69,7 @@ describe('useQrSessionController', () => {
     expect(screen.getByTestId('remaining')).toHaveTextContent('0');
   });
 
-  it('transitions active sessions to scanned through the demo action', async () => {
+  it('transitions active sessions to used through the demo action', async () => {
     resetAppStore(
       createAuthenticatedState({
         qrSession: createQrSessionFixture({
@@ -87,7 +87,25 @@ describe('useQrSessionController', () => {
       expect(useAppStore.getState().qrSession?.status).toBe(QR_STATUSES.SCANNED);
     });
 
-    expect(screen.getByTestId('state')).toHaveTextContent('scanned');
+    expect(screen.getByTestId('state')).toHaveTextContent('used');
     expect(screen.getByTestId('remaining')).toHaveTextContent('0');
+  });
+
+  it('masks secure content when the tab becomes hidden', () => {
+    resetAppStore(
+      createAuthenticatedState({
+        qrSession: createQrSessionFixture(),
+      }),
+    );
+
+    render(<ControllerHarness />);
+
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'hidden',
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    expect(screen.getByTestId('masked')).toHaveTextContent('true');
   });
 });

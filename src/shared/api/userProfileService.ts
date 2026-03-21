@@ -1,7 +1,7 @@
 import { mapEmailToUserDto, mapUserDtoToModel } from './dto';
 import { AppApiError } from './appApi';
 import type { UserProfileService } from './contracts';
-import { mockUserDto } from '../mocks/auth/user';
+import { mockAdminDto, mockUserDto } from '../mocks/auth/user';
 import {
   createMockDelayController,
   parseEmailFromMockToken,
@@ -25,9 +25,10 @@ export const createMockUserProfileService = (
       }
 
       simulateNetworkFailure(email, token);
+      const template = email.toLowerCase().includes('admin') ? mockAdminDto : mockUserDto;
 
       return {
-        user: mapUserDtoToModel(mapEmailToUserDto(email, mockUserDto)),
+        user: mapUserDtoToModel(mapEmailToUserDto(email.replace(/^admin:/, ''), template)),
       };
     },
   };

@@ -16,18 +16,32 @@ const registerPayload = {
 };
 
 describe('mock API services', () => {
-  it('returns typed auth and pass results', async () => {
+  it('returns typed user and admin auth results', async () => {
     const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
 
     const authResult = await api.authService.login(
       'alex.ivanov@futurepass.app',
       'future-pass',
     );
+    const adminResult = await api.adminAuthService.login(
+      'admin@futurepass.app',
+      'admin-pass',
+    );
     const passResult = await api.passService.getPasses();
 
-    expect(authResult.token).toContain('mock-token::alex.ivanov@futurepass.app');
-    expect(authResult.user.email).toBe('alex.ivanov@futurepass.app');
+    expect(authResult.user.role).toBe('user');
+    expect(adminResult.user.role).toBe('admin');
     expect(passResult.passes).toHaveLength(2);
+  });
+
+  it('supports admin directory filters and employee details', async () => {
+    const api = createMockApiAdapters({ defaultDelayMs: 0, delays: {} });
+
+    const blockedUsers = await api.adminDirectoryService.getEmployees({ status: 'blocked' });
+    const employee = await api.adminDirectoryService.getEmployeeById('EMP-1042');
+
+    expect(blockedUsers).toHaveLength(1);
+    expect(employee?.user.email).toBe('alex.ivanov@futurepass.app');
   });
 
   it('simulates common API failures with a shared error type', async () => {

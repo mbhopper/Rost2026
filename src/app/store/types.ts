@@ -1,6 +1,6 @@
 import type { DigitalPass } from '../../entities/pass/model';
 import type { QrSession } from '../../entities/qr/model';
-import type { UserProfile } from '../../entities/user/model';
+import type { UserProfile, UserRole } from '../../entities/user/model';
 
 export interface RegisterPayload {
   firstName: string;
@@ -36,7 +36,6 @@ export interface SettingsState {
   themeMode: ThemeMode;
   demoMode: boolean;
   secureScreenMode: boolean;
-  notifications: NotificationSettings;
 }
 
 export interface AuthSlice {
@@ -44,7 +43,9 @@ export interface AuthSlice {
   authMessage: string | null;
   isAuthBootstrapped: boolean;
   user: UserProfile | null;
+  currentRole: UserRole | null;
   login: (email: string, password: string) => Promise<void>;
+  loginAdmin: (email: string, password: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   bootstrapAuth: () => Promise<void>;
   clearAuthFeedback: () => void;
@@ -73,9 +74,8 @@ export interface QrSessionSlice {
 
 export interface SettingsSlice {
   settings: SettingsState;
-  toggleSetting: (key: 'demoMode' | 'secureScreenMode') => void;
+  toggleSetting: (key: keyof Pick<SettingsState, 'demoMode' | 'secureScreenMode'>) => void;
   setThemeMode: (mode: ThemeMode) => void;
-  toggleNotification: (key: keyof NotificationSettings) => void;
 }
 
 export type AppStore = AuthSlice & PassSlice & QrSessionSlice & SettingsSlice;

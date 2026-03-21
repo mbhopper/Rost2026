@@ -1,4 +1,5 @@
 import { useEffect, type PropsWithChildren } from 'react';
+import { USER_ROLES } from '../../entities/user/model';
 import { useAppStore } from '../store';
 
 function resolveTheme(themeMode: 'system' | 'dark' | 'light') {
@@ -17,6 +18,7 @@ function BootstrapStore() {
   const authStatus = useAppStore((state) => state.authStatus);
   const bootstrapAuth = useAppStore((state) => state.bootstrapAuth);
   const isAuthBootstrapped = useAppStore((state) => state.isAuthBootstrapped);
+  const currentRole = useAppStore((state) => state.currentRole);
   const loadPasses = useAppStore((state) => state.loadPasses);
   const loadQrSession = useAppStore((state) => state.loadQrSession);
 
@@ -25,12 +27,16 @@ function BootstrapStore() {
   }, [bootstrapAuth]);
 
   useEffect(() => {
-    if (!isAuthBootstrapped || authStatus !== 'authenticated') {
+    if (
+      !isAuthBootstrapped ||
+      authStatus !== 'authenticated' ||
+      currentRole !== USER_ROLES.USER
+    ) {
       return;
     }
 
     void Promise.all([loadPasses(), loadQrSession()]);
-  }, [authStatus, isAuthBootstrapped, loadPasses, loadQrSession]);
+  }, [authStatus, currentRole, isAuthBootstrapped, loadPasses, loadQrSession]);
 
   return null;
 }
@@ -45,8 +51,9 @@ function SettingsEffects() {
 
     const root = document.documentElement;
     const body = document.body;
+    const resolvedTheme = resolveTheme(settings.themeMode);
 
-    root.dataset.theme = settings.themeMode;
+    root.dataset.theme = resolvedTheme;
     body.dataset.secureScreen = String(settings.secureScreenMode);
     body.dataset.demoMode = String(settings.demoMode);
   }, [settings.demoMode, settings.secureScreenMode, settings.themeMode]);

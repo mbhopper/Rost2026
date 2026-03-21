@@ -1,6 +1,7 @@
 export const storageKeys = {
   authToken: 'auth_token',
   authSession: 'auth_session',
+  authRole: 'auth_role',
   qrSession: 'qr_session',
   settings: 'app_settings',
 } as const;

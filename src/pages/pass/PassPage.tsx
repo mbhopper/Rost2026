@@ -2,14 +2,12 @@ import { format } from 'date-fns';
 import { BellRing, Clock3, ShieldCheck, Ticket } from 'lucide-react';
 import { useAppStore } from '../../app/store';
 import { QrSessionPanel } from '../../features/qr-session/QrSessionPanel';
-import { appContent } from '../../shared/constants/content';
 import { Card } from '../../shared/ui/card/Card';
 import { PassCard } from '../../widgets/pass-card/PassCard';
 
 export function PassPage() {
   const passes = useAppStore((state) => state.passes);
   const user = useAppStore((state) => state.user);
-  const content = appContent.passPage;
 
   const primaryPass =
     passes.find((item) => item.status === 'active' && !item.isBlocked) ??
@@ -21,127 +19,59 @@ export function PassPage() {
 
   if (!primaryPass) {
     return (
-      <Card className="space-y-4">
-        <p className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
-          <ShieldCheck size={14} /> {content.empty.eyebrow}
-        </p>
-        <h1 className="text-3xl font-semibold text-white">
-          {content.empty.title}
-        </h1>
-        <p className="max-w-2xl text-base leading-7 text-slate-400">
-          {content.empty.description}
-        </p>
+      <Card className="empty-card">
+        <h1>Пропуск пока не назначен</h1>
+        <p>После подключения backend здесь можно будет показать реальные статусы и доступы сотрудника.</p>
       </Card>
     );
   }
 
   return (
-    <div className="pass-page-shell">
-      <Card className="pass-hero-card">
-        <div className="pass-hero-card__content">
+    <div className="page-stack">
+      <Card className="hero-card hero-card--user">
+        <div className="hero-card__badge"><ShieldCheck size={14} /> Digital pass</div>
+        <div className="hero-card__content">
           <div>
-            <p className="pass-hero-card__eyebrow">{content.hero.eyebrow}</p>
-            <h1>
-              {user
-                ? content.hero.titleWithName(user.firstName)
-                : content.hero.titleFallback}
-            </h1>
-            <p className="pass-hero-card__copy">{content.hero.description}</p>
+            <h1>{user ? `${user.firstName}, покажите QR на турникете.` : 'Цифровой пропуск'}</h1>
+            <p>Экран оптимизирован под смартфоны: крупный QR, контрастная карточка и безопасный режим показа.</p>
           </div>
-          <div className="pass-hero-card__stats">
-            <div>
-              <span>{content.hero.stats.facility}</span>
-              <strong>{primaryPass.facilityName}</strong>
-            </div>
-            <div>
-              <span>{content.hero.stats.accessLevel}</span>
-              <strong>{primaryPass.accessLevel}</strong>
-            </div>
-            <div>
-              <span>{content.hero.stats.validUntil}</span>
-              <strong>
-                {format(new Date(primaryPass.expiresAt), 'dd MMM yyyy')}
-              </strong>
-            </div>
+          <div className="hero-card__metrics">
+            <article><span>Площадка</span><strong>{primaryPass.facilityName}</strong></article>
+            <article><span>Уровень</span><strong>{primaryPass.accessLevel}</strong></article>
+            <article><span>Действует до</span><strong>{format(new Date(primaryPass.expiresAt), 'dd.MM.yyyy')}</strong></article>
           </div>
         </div>
       </Card>
-
-      <div className="pass-main-grid">
-        <div className="pass-main-column">
+      <div className="dashboard-grid">
+        <div className="page-stack">
           <PassCard pass={primaryPass} user={user} />
-
-          <Card className="pass-meta-card">
-            <div className="pass-section-heading">
+          <Card className="panel-card">
+            <div className="section-heading">
               <div>
-                <p className="pass-section-heading__eyebrow">
-                  {content.metadata.eyebrow}
-                </p>
-                <h2>{content.metadata.title}</h2>
+                <p className="section-heading__eyebrow">Pass metadata</p>
+                <h2>Детали выпуска</h2>
               </div>
             </div>
-
-            <div className="pass-meta-grid">
-              <div className="pass-meta-grid__item">
-                <span>
-                  <Ticket size={14} /> {content.metadata.passNumber}
-                </span>
-                <strong>{primaryPass.passId}</strong>
-              </div>
-              <div className="pass-meta-grid__item">
-                <span>
-                  <ShieldCheck size={14} /> {content.metadata.issuedAt}
-                </span>
-                <strong>
-                  {format(new Date(primaryPass.issuedAt), 'dd MMM yyyy')}
-                </strong>
-              </div>
-              <div className="pass-meta-grid__item">
-                <span>
-                  <Clock3 size={14} /> {content.metadata.expiresAt}
-                </span>
-                <strong>
-                  {format(new Date(primaryPass.expiresAt), 'dd MMM yyyy')}
-                </strong>
-              </div>
-              <div className="pass-meta-grid__item">
-                <span>
-                  <ShieldCheck size={14} /> {content.metadata.accessLevel}
-                </span>
-                <strong>{primaryPass.accessLevel}</strong>
-              </div>
+            <div className="details-grid">
+              <article className="detail-card"><span><Ticket size={14} /> Номер</span><strong>{primaryPass.passId}</strong></article>
+              <article className="detail-card"><span><Clock3 size={14} /> Выдан</span><strong>{format(new Date(primaryPass.issuedAt), 'dd.MM.yyyy')}</strong></article>
+              <article className="detail-card"><span><Clock3 size={14} /> Истекает</span><strong>{format(new Date(primaryPass.expiresAt), 'dd.MM.yyyy')}</strong></article>
+              <article className="detail-card"><span><ShieldCheck size={14} /> Режим прохода</span><strong>{primaryPass.isBlocked ? 'Ограничен' : 'Готов к проходу'}</strong></article>
             </div>
-
             {relatedPasses.length > 0 ? (
-              <div className="pass-history-block">
-                <div className="pass-history-block__header">
-                  <span>
-                    <BellRing size={14} /> {content.metadata.extraAccess}
-                  </span>
-                  <strong>
-                    {content.metadata.itemsCount(relatedPasses.length)}
-                  </strong>
-                </div>
-                <div className="pass-history-list">
-                  {relatedPasses.map((item) => (
-                    <div key={item.passId} className="pass-history-list__item">
-                      <div>
-                        <strong>{item.facilityName}</strong>
-                        <p>
-                          {item.passId} · {item.accessLevel}
-                        </p>
-                      </div>
-                      <span>
-                        {format(new Date(item.expiresAt), 'dd MMM yyyy')}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+              <div className="timeline-list">
+                {relatedPasses.map((item) => (
+                  <article key={item.passId}>
+                    <strong>{item.facilityName}</strong>
+                    <p>{item.passId} · {item.accessLevel} · {format(new Date(item.expiresAt), 'dd.MM.yyyy')}</p>
+                  </article>
+                ))}
               </div>
-            ) : null}
+            ) : (
+              <div className="info-banner"><BellRing size={16} /> Дополнительных пропусков пока нет.</div>
+            )}
           </Card>
         </div>
-
         <QrSessionPanel />
       </div>
     </div>

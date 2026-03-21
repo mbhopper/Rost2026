@@ -5,6 +5,7 @@ import { AppRouter } from '../../src/app/router/AppRouter';
 import { routes } from '../../src/shared/config/routes';
 import {
   clearBrowserState,
+  createAdminAuthenticatedState,
   createAuthenticatedState,
   renderWithRouter,
   resetAppStore,
@@ -22,10 +23,11 @@ describe('AppRouter', () => {
     vi.useRealTimers();
   });
 
-  it('completes the login flow and navigates to the protected pass page', async () => {
+  it('completes the login flow and navigates to the user dashboard', async () => {
     resetAppStore({
       ...createAuthenticatedState(),
       authStatus: 'guest',
+      currentRole: null,
       user: null,
     });
     window.location.hash = `#${routes.login}`;
@@ -43,20 +45,21 @@ describe('AppRouter', () => {
     await vi.advanceTimersByTimeAsync(320);
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${routes.pass}`);
+      expect(window.location.hash).toBe(`#${routes.dashboard}`);
     });
 
     expect(
       await screen.findByRole('heading', {
-        name: /александр, ваш пропуск готов к проходу/i,
+        name: /александр, ваш цифровой пропуск готов/i,
       }),
     ).toBeInTheDocument();
   });
 
-  it('redirects guests away from protected routes to login', async () => {
+  it('redirects guests away from protected user routes to login', async () => {
     resetAppStore({
       ...createAuthenticatedState(),
       authStatus: 'guest',
+      currentRole: null,
       user: null,
       qrSession: null,
     });
@@ -71,5 +74,53 @@ describe('AppRouter', () => {
     expect(
       screen.getByRole('heading', { name: 'Вход в кабинет пропуска' }),
     ).toBeInTheDocument();
+  });
+
+  it('redirects guests away from admin routes to admin login', async () => {
+    resetAppStore({ authStatus: 'guest', isAuthBootstrapped: true, currentRole: null, user: null, passes: [], qrSession: null });
+    window.location.hash = `#${routes.adminDashboard}`;
+
+    renderWithRouter(<AppRouter />);
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${routes.adminLogin}`);
+    });
+
+    expect(screen.getByRole('heading', { name: /панель администрирования/i })).toBeInTheDocument();
+  });
+
+  it('redirects regular users away from admin routes to unauthorized', async () => {
+    resetAppStore(createAuthenticatedState());
+    window.location.hash = `#${routes.adminDashboard}`;
+
+    renderWithRouter(<AppRouter />);
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${routes.unauthorized}`);
+    });
+  });
+
+  it('allows admin login flow to reach admin dashboard', async () => {
+    resetAppStore({ ...createAdminAuthenticatedState(), authStatus: 'guest', currentRole: null, user: null });
+    window.location.hash = `#${routes.adminLogin}`;
+
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+
+    renderWithRouter(<AppRouter />);
+
+    await user.clear(screen.getByLabelText('Email'));
+    await user.type(screen.getByLabelText('Email'), 'admin@futurepass.app');
+    await user.clear(screen.getByLabelText('Пароль'));
+    await user.type(screen.getByLabelText('Пароль'), 'admin-pass');
+    await user.click(screen.getByRole('button', { name: /admin panel/i }));
+
+    await vi.advanceTimersByTimeAsync(320);
+    await vi.advanceTimersByTimeAsync(180);
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${routes.adminDashboard}`);
+    });
+
+    expect(screen.getByRole('heading', { name: /мониторинг цифровых пропусков/i })).toBeInTheDocument();
   });
 });

@@ -2,6 +2,11 @@ import type { RegisterPayload } from '../../app/store/types';
 import type { DigitalPass } from '../../entities/pass/model';
 import type { QrSession } from '../../entities/qr/model';
 import type { UserProfile } from '../../entities/user/model';
+import type {
+  AdminDirectoryFilters,
+  AdminEmployeeRecord,
+  AdminOverview,
+} from './admin/types';
 
 export interface AuthSessionResult {
   token: string;
@@ -30,6 +35,10 @@ export interface AuthService {
   logout(): Promise<LogoutResult>;
 }
 
+export interface AdminAuthService {
+  login(email: string, password: string): Promise<AuthSessionResult>;
+}
+
 export interface UserProfileService {
   getCurrentProfile(token: string): Promise<UserProfileResult>;
 }
@@ -45,9 +54,17 @@ export interface QrSessionService {
   revokeQrSession(session: QrSession): Promise<QrSessionResult>;
 }
 
+export interface AdminDirectoryService {
+  getOverview(): Promise<AdminOverview>;
+  getEmployees(filters?: AdminDirectoryFilters): Promise<AdminEmployeeRecord[]>;
+  getEmployeeById(employeeId: string): Promise<AdminEmployeeRecord | null>;
+}
+
 export interface ApiServices {
   authService: AuthService;
+  adminAuthService: AdminAuthService;
   userProfileService: UserProfileService;
   passService: PassService;
   qrSessionService: QrSessionService;
+  adminDirectoryService: AdminDirectoryService;
 }

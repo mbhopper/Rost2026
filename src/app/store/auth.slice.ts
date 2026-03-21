@@ -1,3 +1,4 @@
+import { USER_ROLES, type UserRole } from '../../entities/user/model';
 import { mockApi } from '../../shared/api/mockApi';
 import {
   AppApiError,
@@ -33,11 +34,13 @@ const authStatuses = new Set<AuthStatus>([
 
 const persistAuth = ({ token, user }: AuthResult) => {
   writeLocalStorage(storageKeys.authToken, token);
+  writeLocalStorage(storageKeys.authRole, user.role);
   writeSessionStorage(storageKeys.authSession, JSON.stringify(user));
 };
 
 const clearPersistedAuth = () => {
   removeLocalStorage(storageKeys.authToken);
+  removeLocalStorage(storageKeys.authRole);
   removeSessionStorage(storageKeys.authSession);
   removeSessionStorage(storageKeys.qrSession);
 };
@@ -58,32 +61,59 @@ const resolveAuthError = (
   };
 };
 
+const setAuthenticatedState = (set: SetState, result: AuthResult) => {
+  persistAuth(result);
+  set({
+    user: result.user,
+    currentRole: result.user.role,
+    authStatus: 'authenticated',
+    authMessage: null,
+    isAuthBootstrapped: true,
+  });
+};
+
+const handleAuthFailure = (set: SetState, error: unknown) => {
+  clearPersistedAuth();
+  const { status, message } = resolveAuthError(error);
+  set({
+    user: null,
+    currentRole: null,
+    authStatus: status,
+    authMessage: message,
+    isAuthBootstrapped: true,
+    passes: [],
+    qrSession: null,
+  });
+};
+
+const assertRole = (role: UserRole | null): role is UserRole =>
+  role === USER_ROLES.USER || role === USER_ROLES.ADMIN;
+
 export const createAuthSlice = (set: SetState): AuthSlice => ({
   authStatus: 'guest',
   authMessage: null,
   isAuthBootstrapped: false,
   user: null,
+  currentRole: null,
   login: async (email: string, password: string) => {
     set({ authStatus: 'loading', authMessage: null });
 
     try {
       const result = await mockApi.authService.login(email, password);
-      persistAuth(result);
-      set({
-        user: result.user,
-        authStatus: 'authenticated',
-        authMessage: null,
-        isAuthBootstrapped: true,
-      });
+      setAuthenticatedState(set, result);
     } catch (error) {
-      clearPersistedAuth();
-      const { status, message } = resolveAuthError(error);
-      set({
-        user: null,
-        authStatus: status,
-        authMessage: message,
-        isAuthBootstrapped: true,
-      });
+      handleAuthFailure(set, error);
+      throw error;
+    }
+  },
+  loginAdmin: async (email: string, password: string) => {
+    set({ authStatus: 'loading', authMessage: null });
+
+    try {
+      const result = await mockApi.adminAuthService.login(email, password);
+      setAuthenticatedState(set, result);
+    } catch (error) {
+      handleAuthFailure(set, error);
       throw error;
     }
   },
@@ -92,34 +122,23 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
 
     try {
       const result = await mockApi.authService.register(payload);
-      persistAuth(result);
-      set({
-        user: result.user,
-        authStatus: 'authenticated',
-        authMessage: null,
-        isAuthBootstrapped: true,
-      });
+      setAuthenticatedState(set, result);
     } catch (error) {
-      clearPersistedAuth();
-      const { status, message } = resolveAuthError(error);
-      set({
-        user: null,
-        authStatus: status,
-        authMessage: message,
-        isAuthBootstrapped: true,
-      });
+      handleAuthFailure(set, error);
       throw error;
     }
   },
   bootstrapAuth: async () => {
     const token = readLocalStorage(storageKeys.authToken);
+    const role = readLocalStorage(storageKeys.authRole) as UserRole | null;
 
-    if (!token) {
+    if (!token || !assertRole(role)) {
       clearPersistedAuth();
       set({
         authStatus: 'guest',
         authMessage: null,
         user: null,
+        currentRole: null,
         isAuthBootstrapped: true,
       });
       return;
@@ -136,21 +155,13 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
       persistAuth({ token, user });
       set({
         user,
+        currentRole: user.role,
         authStatus: 'authenticated',
         authMessage: null,
         isAuthBootstrapped: true,
       });
     } catch (error) {
-      clearPersistedAuth();
-      const { status, message } = resolveAuthError(error);
-      set({
-        user: null,
-        authStatus: status,
-        authMessage: message,
-        isAuthBootstrapped: true,
-        passes: [],
-        qrSession: null,
-      });
+      handleAuthFailure(set, error);
     }
   },
   clearAuthFeedback: () => {
@@ -172,6 +183,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
       authStatus: 'guest',
       authMessage: null,
       user: null,
+      currentRole: null,
       passes: [],
       qrSession: null,
       isAuthBootstrapped: true,

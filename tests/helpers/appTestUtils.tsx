@@ -4,7 +4,7 @@ import { AppRouter } from '../../src/app/router/AppRouter';
 import { useAppStore } from '../../src/app/store';
 import { mapPassDtoToModel, mapUserDtoToModel } from '../../src/shared/api/dto';
 import { defaultMockPassDtos } from '../../src/shared/mocks/pass/passes';
-import { mockUserDto } from '../../src/shared/mocks/auth/user';
+import { mockAdminDto, mockUserDto } from '../../src/shared/mocks/auth/user';
 import { QR_STATUSES, type QrSession } from '../../src/entities/qr/model';
 import type { AppStore } from '../../src/app/store';
 
@@ -28,7 +28,7 @@ export const resetAppStore = (overrides: Partial<AppStore> = {}) => {
       settings: overrides.settings
         ? { ...nextState.settings, ...overrides.settings }
         : nextState.settings,
-      user: overrides.user ? { ...overrides.user } : nextState.user,
+      user: overrides.user ? { ...overrides.user } : overrides.user === null ? null : nextState.user,
       qrSession: overrides.qrSession
         ? { ...overrides.qrSession }
         : overrides.qrSession === null
@@ -51,8 +51,22 @@ export const createAuthenticatedState = (
   authStatus: 'authenticated',
   authMessage: null,
   isAuthBootstrapped: true,
+  currentRole: 'user',
   user: mapUserDtoToModel(mockUserDto),
   passes: defaultMockPassDtos.map(mapPassDtoToModel),
+  qrSession: null,
+  ...overrides,
+});
+
+export const createAdminAuthenticatedState = (
+  overrides: Partial<AppStore> = {},
+): Partial<AppStore> => ({
+  authStatus: 'authenticated',
+  authMessage: null,
+  isAuthBootstrapped: true,
+  currentRole: 'admin',
+  user: mapUserDtoToModel(mockAdminDto),
+  passes: [],
   qrSession: null,
   ...overrides,
 });
