@@ -1,0 +1,38 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(162 138) rotate(61.5248) scale(236.721 204.122)">
+      <stop stop-color="#F6E8FF" stop-opacity="0.95"/>
+      <stop offset="0.24" stop-color="#A2B4FF" stop-opacity="0.82"/>
+      <stop offset="0.53" stop-color="#1A59FF" stop-opacity="0.95"/>
+      <stop offset="0.78" stop-color="#4311DA"/>
+      <stop offset="1" stop-color="#C21EF8" stop-opacity="0.96"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(500 218) rotate(130.914) scale(121.66 91.3365)">
+      <stop stop-color="#FFD9FF" stop-opacity="0.92"/>
+      <stop offset="0.5" stop-color="#EA56FF" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#EA56FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(430 440) rotate(124.255) scale(182.857 140.113)">
+      <stop stop-color="#34F7FF" stop-opacity="0.84"/>
+      <stop offset="0.52" stop-color="#1CBAFF" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#1CBAFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shadow" x1="96" y1="132" x2="520" y2="540" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#36BBFF"/>
+      <stop offset="0.23" stop-color="#2966FF"/>
+      <stop offset="0.52" stop-color="#1818E0"/>
+      <stop offset="0.84" stop-color="#6A11CB"/>
+      <stop offset="1" stop-color="#E524FF"/>
+    </linearGradient>
+    <filter id="blurSoft" x="28" y="44" width="584" height="552" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <g filter="url(#blurSoft)">
+    <path d="M161.735 99.1996C222.171 78.2742 300.408 118.035 346.894 101.871C420.44 76.2984 489.095 90.396 531.723 145.59C583.381 212.502 577.908 311.556 541.295 392.579C511.53 458.427 430.159 468.827 373.394 503.071C306.181 543.617 248.677 616.241 171.543 596.352C88.5458 574.943 69.7023 479.889 61.5975 401.001C55.2629 339.357 98.5095 286.163 95.3882 224.271C91.2532 142.276 84.2482 125.998 161.735 99.1996Z" fill="url(#shadow)"/>
+    <path d="M161.735 99.1996C222.171 78.2742 300.408 118.035 346.894 101.871C420.44 76.2984 489.095 90.396 531.723 145.59C583.381 212.502 577.908 311.556 541.295 392.579C511.53 458.427 430.159 468.827 373.394 503.071C306.181 543.617 248.677 616.241 171.543 596.352C88.5458 574.943 69.7023 479.889 61.5975 401.001C55.2629 339.357 98.5095 286.163 95.3882 224.271C91.2532 142.276 84.2482 125.998 161.735 99.1996Z" fill="url(#glow1)" fill-opacity="0.9"/>
+    <ellipse cx="476.026" cy="206.04" rx="103.322" ry="77.5184" transform="rotate(-13.3515 476.026 206.04)" fill="url(#glow2)"/>
+    <ellipse cx="428.841" cy="450.536" rx="125.95" ry="77.0874" transform="rotate(-28.7457 428.841 450.536)" fill="url(#glow3)"/>
+    <path d="M142.365 478.431C127.598 449.57 147.823 418.662 191.274 421.425C254.516 425.448 319.641 487.808 277.312 511.94C237.057 534.889 163.376 519.507 142.365 478.431Z" fill="black" fill-opacity="0.22"/>
+  </g>
+</svg>

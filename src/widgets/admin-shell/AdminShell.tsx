@@ -1,4 +1,4 @@
-import { LogOut, QrCode, ShieldCheck, Ticket } from 'lucide-react';
+import { LogOut, ShieldCheck, Ticket } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
 import { adminNavigation, routes } from '../../shared/config/routes';
@@ -24,7 +24,7 @@ export function AdminShell() {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-sidebar__brand">
-          <div className="admin-sidebar__logo"><QrCode size={18} /></div>
+          <div className="admin-sidebar__logo"><span className="poster-brand__mark" aria-hidden="true" /></div>
           <div>
             <strong>Security Console</strong>
             <p>Отдельный admin namespace</p>

@@ -212,6 +212,7 @@ input {
   margin-top: 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
+  color: var(--poster-topbar-text);
   color: #fff;
 }
 .field-block {
@@ -365,7 +366,7 @@ input {
 .pass-badge-brand strong {
   display: block;
   margin-top: 0.6rem;
-  color: #fff;
+  color: var(--poster-text);
   font-size: 1rem;
 }
 .pass-main-grid {
@@ -438,7 +439,7 @@ input {
 .pass-badge-avatar--placeholder {
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--poster-text);
   font-weight: 700;
   letter-spacing: 0.12em;
   background: linear-gradient(135deg, rgba(217, 70, 239, 0.35), rgba(249, 115, 22, 0.3));
@@ -560,7 +561,7 @@ input {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: var(--poster-text);
 }
 .qr-cta-card__summary,
 .qr-cta-card__secondary-actions {
@@ -579,7 +580,7 @@ input {
 }
 .qr-viewer-card__state {
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: var(--poster-text);
 }
 .qr-viewer--active .qr-viewer-card__state { background: rgba(74, 222, 128, 0.18); color: #bbf7d0; }
 .qr-viewer--expired .qr-viewer-card__state { background: rgba(251, 191, 36, 0.16); color: #fde68a; }
@@ -611,7 +612,7 @@ input {
   place-items: center;
   padding: 1.5rem;
   text-align: center;
-  color: #fff;
+  color: var(--poster-text);
   background: rgba(15, 23, 42, 0.58);
   backdrop-filter: blur(4px);
 }
@@ -752,7 +753,7 @@ input {
   font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--poster-text);
 }
 
 .settings-theme-grid {
@@ -1393,10 +1394,30 @@ body {
 }
 
 /* Rostelecom poster-style redesign */
+:root {
+  --poster-text: #ffffff;
+  --poster-muted: rgba(255,255,255,0.86);
+  --poster-topbar-text: #ffffff;
+  --poster-chip-bg: rgba(255,255,255,0.92);
+  --poster-chip-text: #201319;
+  --poster-panel-start: rgba(104, 20, 49, 0.84);
+  --poster-panel-end: rgba(88, 20, 73, 0.78);
+}
+
+:root[data-theme='light'] {
+  --poster-text: #180f18;
+  --poster-muted: rgba(24,15,24,0.82);
+  --poster-topbar-text: #130c13;
+  --poster-chip-bg: rgba(255,255,255,0.94);
+  --poster-chip-text: #201319;
+  --poster-panel-start: rgba(255, 255, 255, 0.68);
+  --poster-panel-end: rgba(255, 255, 255, 0.54);
+}
+
 body {
   background:
     linear-gradient(180deg, #1b1115 0, #1b1115 20px, #eb3e59 20px, #d62e7b 56%, #9b17ff 100%);
-  color: #fff;
+  color: var(--poster-text);
 }
 
 .poster-shell,
@@ -1431,6 +1452,7 @@ body {
   background: rgba(66, 22, 17, 0.68);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--poster-topbar-text);
 }
 
 .poster-brand {
@@ -1442,12 +1464,10 @@ body {
 }
 
 .poster-brand__mark {
-  width: 12px;
-  height: 12px;
-  transform: rotate(45deg);
-  border-radius: 2px;
-  background: linear-gradient(135deg, #5d10ff, #ff7d2b);
-  box-shadow: 0 0 20px rgba(135, 41, 255, 0.55);
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  background: center / contain no-repeat url('/rostelecom-mark.svg');
 }
 
 .poster-actions,
@@ -1466,14 +1486,14 @@ body {
   min-height: 34px;
   padding: 0 0.9rem;
   border-radius: 999px;
-  background: #ffffff;
-  color: #201319;
+  background: var(--poster-chip-bg);
+  color: var(--poster-chip-text);
   font-size: 0.9rem;
   font-weight: 500;
   box-shadow: 0 6px 18px rgba(31, 6, 34, 0.18);
 }
 
-.poster-action--nav { background: rgba(255,255,255,0.92); }
+.poster-action--nav { background: var(--poster-chip-bg); }
 .poster-action--active { background: #1b1115; color: #fff; }
 
 .poster-userbox {
@@ -1482,8 +1502,8 @@ body {
   gap: 0.65rem;
   padding: 0.25rem 0.35rem 0.25rem 0.45rem;
   border-radius: 999px;
-  background: rgba(255,255,255,0.92);
-  color: #201319;
+  background: var(--poster-chip-bg);
+  color: var(--poster-chip-text);
 }
 .poster-userbox__avatar {
   width: 28px;
@@ -1500,16 +1520,8 @@ body {
 .poster-shell__blob,
 .ambient {
   position: absolute;
-  border-radius: 43% 57% 60% 40% / 42% 35% 65% 58%;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.45), transparent 18%),
-    radial-gradient(circle at 62% 74%, rgba(62, 221, 255, 0.42), transparent 16%),
-    linear-gradient(135deg, rgba(119, 8, 255, 0.95), rgba(247, 96, 184, 0.82));
-  box-shadow:
-    inset 0 16px 40px rgba(255,255,255,0.22),
-    inset 0 -18px 48px rgba(59, 5, 93, 0.38),
-    0 25px 55px rgba(56, 12, 86, 0.28);
-  filter: blur(0.2px);
+  background: center / contain no-repeat url('/rt-blob.svg');
+  filter: drop-shadow(0 28px 48px rgba(56, 12, 86, 0.24));
   opacity: 0.95;
 }
 
@@ -1561,7 +1573,7 @@ body {
   line-height: 0.92;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--poster-text);
   text-shadow: 0 18px 40px rgba(64, 13, 58, 0.22);
 }
 
@@ -1570,14 +1582,14 @@ body {
   margin: -0.5rem 0 0;
   font-size: clamp(1.35rem, 3vw, 2.2rem);
   font-weight: 500;
-  color: #fff;
+  color: var(--poster-text);
 }
 
 .poster-hero__copy > p:last-child,
 .poster-page__copy > p:last-child {
   max-width: 620px;
   margin: 0;
-  color: rgba(255,255,255,0.86);
+  color: var(--poster-muted);
   font-size: 1.05rem;
   line-height: 1.5;
 }
@@ -1595,7 +1607,7 @@ body {
 .poster-stat-card,
 .qr-cta-card,
 .qr-viewer-card {
-  background: linear-gradient(180deg, rgba(104, 20, 49, 0.84), rgba(88, 20, 73, 0.78));
+  background: linear-gradient(180deg, var(--poster-panel-start), var(--poster-panel-end));
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 28px;
   box-shadow: 0 24px 48px rgba(53, 9, 47, 0.34);
@@ -1639,7 +1651,7 @@ body {
 .qr-viewer-card__meta-item p,
 .qr-viewer-card__footnote,
 .qr-cta-card__summary p {
-  color: rgba(255,255,255,0.86);
+  color: var(--poster-muted);
 }
 
 .auth-form-card__form {
@@ -1806,6 +1818,50 @@ body {
 .pass-cta-stack--compact .qr-cta-card__summary { display: none; }
 .pass-cta-stack--compact .qr-sheet { min-height: 160px; }
 
+
+
+@media (max-width: 640px) {
+  .poster-frame,
+  .app-shell__inner {
+    width: min(100%, calc(100% - 8px));
+    margin: 4px auto;
+    min-height: calc(100vh - 8px);
+  }
+  .poster-hero h1,
+  .poster-page h1 {
+    font-size: clamp(3.6rem, 22vw, 5.8rem);
+  }
+  .poster-page__headline {
+    font-size: 1.1rem;
+  }
+  .poster-topbar,
+  .poster-topbar--private {
+    padding: 0.5rem 0.75rem;
+  }
+  .poster-actions,
+  .poster-actions--private {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .poster-action {
+    min-height: 32px;
+    padding: 0 0.75rem;
+    font-size: 0.82rem;
+  }
+  .poster-userbox {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .profile-scene__identity,
+  .profile-scene__stats,
+  .entry-card {
+    width: 100%;
+  }
+  .profile-scene__stats-grid > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
 
 @media (max-width: 900px) {
   .poster-hero,
