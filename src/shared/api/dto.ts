@@ -1,4 +1,4 @@
-import type { RegisterPayload } from '../../app/store';
+import type { RegisterPayload } from '../../app/store/types';
 import type { DigitalPass, PassStatus } from '../../entities/pass/model';
 import type { QrSession, QrStatus } from '../../entities/qr/model';
 import type { UserProfile, UserStatus } from '../../entities/user/model';

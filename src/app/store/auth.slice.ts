@@ -1,8 +1,8 @@
+import { mockApi } from '../../shared/api/mockApi';
 import {
-  authApi,
-  AuthApiError,
-  type AuthErrorCode,
-} from '../../shared/api/auth';
+  AppApiError,
+  mapAppApiErrorToMessage,
+} from '../../shared/api/appApi';
 import {
   readLocalStorage,
   removeLocalStorage,
@@ -23,12 +23,13 @@ type AuthResult = {
   user: NonNullable<AuthSlice['user']>;
 };
 
-const authMessages: Record<AuthErrorCode, string> = {
-  auth_error: 'Не удалось выполнить вход. Проверьте email и пароль.',
-  session_expired: 'Сессия истекла. Войдите заново, чтобы продолжить.',
-  service_unavailable:
-    'Сервис авторизации временно недоступен. Попробуйте позже.',
-};
+const authStatuses = new Set<AuthStatus>([
+  'invalid_credentials',
+  'session_expired',
+  'service_unavailable',
+  'offline',
+  'unknown_error',
+]);
 
 const persistAuth = ({ token, user }: AuthResult) => {
   writeLocalStorage(storageKeys.authToken, token);
@@ -44,16 +45,16 @@ const clearPersistedAuth = () => {
 const resolveAuthError = (
   error: unknown,
 ): { status: AuthStatus; message: string } => {
-  if (error instanceof AuthApiError) {
+  if (error instanceof AppApiError && authStatuses.has(error.code as AuthStatus)) {
     return {
-      status: error.code,
-      message: authMessages[error.code] ?? error.message,
+      status: error.code as AuthStatus,
+      message: mapAppApiErrorToMessage(error),
     };
   }
 
   return {
-    status: 'service_unavailable',
-    message: authMessages.service_unavailable,
+    status: 'unknown_error',
+    message: mapAppApiErrorToMessage(error),
   };
 };
 
@@ -66,7 +67,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     set({ authStatus: 'loading', authMessage: null });
 
     try {
-      const result = await authApi.login(email, password);
+      const result = await mockApi.authService.login(email, password);
       persistAuth(result);
       set({
         user: result.user,
@@ -90,7 +91,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     set({ authStatus: 'loading', authMessage: null });
 
     try {
-      const result = await authApi.register(payload);
+      const result = await mockApi.authService.register(payload);
       persistAuth(result);
       set({
         user: result.user,
@@ -131,7 +132,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
     });
 
     try {
-      const user = await authApi.getCurrentUser(token);
+      const { user } = await mockApi.userProfileService.getCurrentProfile(token);
       persistAuth({ token, user });
       set({
         user,
@@ -166,7 +167,7 @@ export const createAuthSlice = (set: SetState): AuthSlice => ({
   },
   logout: async () => {
     clearPersistedAuth();
-    await authApi.logout();
+    await mockApi.authService.logout();
     set({
       authStatus: 'guest',
       authMessage: null,

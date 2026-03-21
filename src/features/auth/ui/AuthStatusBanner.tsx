@@ -15,10 +15,10 @@ const statusConfig: Record<
     tone: 'border-cyan-400/30 bg-cyan-400/10 text-cyan-100',
     title: 'Выполняем авторизацию',
   },
-  auth_error: {
+  invalid_credentials: {
     icon: Ticket,
     tone: 'border-rose-400/30 bg-rose-400/10 text-rose-100',
-    title: 'Ошибка авторизации',
+    title: 'Неверные данные',
   },
   session_expired: {
     icon: Clock3,
@@ -29,6 +29,16 @@ const statusConfig: Record<
     icon: BellRing,
     tone: 'border-violet-400/30 bg-violet-400/10 text-violet-100',
     title: 'Сервис недоступен',
+  },
+  offline: {
+    icon: BellRing,
+    tone: 'border-sky-400/30 bg-sky-400/10 text-sky-100',
+    title: 'Нет сети',
+  },
+  unknown_error: {
+    icon: Ticket,
+    tone: 'border-orange-400/30 bg-orange-400/10 text-orange-100',
+    title: 'Что-то пошло не так',
   },
 };
 

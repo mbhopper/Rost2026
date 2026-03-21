@@ -18,9 +18,11 @@ export type AuthStatus =
   | 'guest'
   | 'authenticated'
   | 'loading'
-  | 'auth_error'
+  | 'invalid_credentials'
   | 'session_expired'
-  | 'service_unavailable';
+  | 'service_unavailable'
+  | 'offline'
+  | 'unknown_error';
 
 export interface SettingsState {
   securityAlerts: boolean;
