@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { routes } from '../../shared/config/routes';
+import { routes } from '../../../shared/config/routes';
 
-export function DashboardPage() {
+export function EntryLandingPage() {
   return (
     <section className="rt-screen rt-screen--hero motion-page-fade">
       <div className="rt-hero-block motion-entry-title">
@@ -14,9 +14,9 @@ export function DashboardPage() {
       <div className="rt-pedestal rt-pedestal--qr">
         <span>СГЕНЕРИРОВАТЬ QR-CODE</span>
         <Link
-          to={routes.qrGenerate}
+          to={routes.login}
           className="rt-pedestal__badge"
-          aria-label="Открыть QR-код"
+          aria-label="Перейти ко входу для генерации QR-кода"
         >
           QR
         </Link>

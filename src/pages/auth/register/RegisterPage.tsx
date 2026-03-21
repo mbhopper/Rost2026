@@ -1,4 +1,3 @@
-import { Ticket } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -90,26 +89,18 @@ export function RegisterPage() {
   };
 
   return (
-    <Card className="auth-form-card auth-form-card--register motion-rise-in">
-      <div className="auth-form-card__badge">
-        <Ticket size={14} /> Заявка на регистрацию
-      </div>
-      <div className="auth-form-card__intro">
-        <h2>Оставьте заявку, и администратор создаст пропуск</h2>
-        <p>
-          Публичная форма больше не открывает личный кабинет напрямую: сначала
-          заявка попадает в админскую консоль, где сотрудника регистрируют и
-          выдают пропуск.
-        </p>
-      </div>
-      <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
-        <div className="grid gap-4 md:grid-cols-2">
+    <section className="rt-screen rt-screen--form motion-page-fade">
+      <Card className="auth-form-card auth-form-card--register rt-form-card rt-form-card--register motion-rise-in">
+        <div className="auth-form-card__intro rt-form-card__intro">
+          <h2>РЕГИСТРАЦИЯ</h2>
+        </div>
+        <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
           <label className="field-block">
             <span>Имя</span>
             <Input
               className="Input--poster"
               value={form.firstName}
-              placeholder="Иван"
+              placeholder="Имя"
               onChange={(event) => updateField('firstName', event.target.value)}
             />
             {errors.firstName && (
@@ -121,34 +112,20 @@ export function RegisterPage() {
             <Input
               className="Input--poster"
               value={form.lastName}
-              placeholder="Иванов"
+              placeholder="Фамилия"
               onChange={(event) => updateField('lastName', event.target.value)}
             />
             {errors.lastName && (
               <span className="field-error">{errors.lastName}</span>
             )}
           </label>
-        </div>
-        <label className="field-block">
-          <span>Отчество</span>
-          <Input
-            className="Input--poster"
-            value={form.middleName ?? ''}
-            placeholder="Иванович"
-            onChange={(event) => updateField('middleName', event.target.value)}
-          />
-          {errors.middleName && (
-            <span className="field-error">{errors.middleName}</span>
-          )}
-        </label>
-        <div className="grid gap-4 md:grid-cols-2">
           <label className="field-block">
             <span>Email</span>
             <Input
               className="Input--poster"
               type="email"
               value={form.email}
-              placeholder="name@company.ru"
+              placeholder="Почта"
               onChange={(event) => updateField('email', event.target.value)}
             />
             {errors.email && (
@@ -161,21 +138,19 @@ export function RegisterPage() {
               className="Input--poster"
               type="tel"
               value={form.phone}
-              placeholder="+7 (___) ___-__-__"
+              placeholder="Телефон"
               onChange={(event) => updateField('phone', event.target.value)}
             />
             {errors.phone && (
               <span className="field-error">{errors.phone}</span>
             )}
           </label>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
           <label className="field-block">
             <span>Подразделение</span>
             <Input
               className="Input--poster"
               value={form.department}
-              placeholder="Например, Platform"
+              placeholder="Подразделение"
               onChange={(event) =>
                 updateField('department', event.target.value)
               }
@@ -189,47 +164,51 @@ export function RegisterPage() {
             <Input
               className="Input--poster"
               value={form.position}
-              placeholder="Например, Product manager"
+              placeholder="Должность"
               onChange={(event) => updateField('position', event.target.value)}
             />
             {errors.position && (
               <span className="field-error">{errors.position}</span>
             )}
           </label>
-        </div>
-        <label className="field-block">
-          <span>Комментарий для СБ / админа</span>
-          <textarea
-            className="textarea-field textarea-field--poster"
-            placeholder="Какие зоны доступа нужны?"
-            value={form.note ?? ''}
-            onChange={(event) => updateField('note', event.target.value)}
-          />
-          {errors.note && <span className="field-error">{errors.note}</span>}
-        </label>
-        {submitError && (
-          <div className="field-error" role="alert" aria-live="polite">
-            {submitError}
-          </div>
-        )}
-        <Button
-          type="submit"
-          fullWidth
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
-          {isSubmitting ? 'Отправляем заявку…' : 'Отправить заявку'}
-        </Button>
-      </form>
-      <p className="auth-form-card__footer">
-        Уже есть аккаунт?{' '}
+          <label className="field-block">
+            <span>Комментарий</span>
+            <textarea
+              className="textarea-field textarea-field--poster"
+              placeholder="Комментарий"
+              value={form.note ?? ''}
+              onChange={(event) => updateField('note', event.target.value)}
+            />
+            {errors.note && <span className="field-error">{errors.note}</span>}
+          </label>
+          {submitError && (
+            <div className="field-error" role="alert" aria-live="polite">
+              {submitError}
+            </div>
+          )}
+          <p className="rt-form-card__legal">
+            Я ознакомлен(-а) с{' '}
+            <Link to={routes.login}>политикой конфиденциальности</Link>
+          </p>
+          <Button
+            type="submit"
+            className="rt-form-card__submit"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+          >
+            {isSubmitting ? 'ОТПРАВЛЯЕМ…' : 'ОТПРАВИТЬ'}
+          </Button>
+        </form>
+      </Card>
+      <div className="rt-pedestal rt-pedestal--back">
+        <span>НАЗАД НА ГЛАВНУЮ</span>
         <Link
-          className="font-semibold text-cyan-300 hover:text-cyan-200"
-          to={routes.login}
+          to={routes.root}
+          className="rt-pedestal__badge rt-pedestal__badge--back"
         >
-          Войдите
+          ↩
         </Link>
-      </p>
-    </Card>
+      </div>
+    </section>
   );
 }

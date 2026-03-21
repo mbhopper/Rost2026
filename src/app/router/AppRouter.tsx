@@ -5,7 +5,9 @@ import {
   RouterProvider,
   createHashRouter,
 } from 'react-router-dom';
+import { UserRound } from 'lucide-react';
 import { USER_ROLES } from '../../entities/user/model';
+import { EntryLandingPage } from '../../pages/auth/landing/EntryLandingPage';
 import { LoginPage } from '../../pages/auth/login/LoginPage';
 import { RegisterPage } from '../../pages/auth/register/RegisterPage';
 import { RegisterSuccessPage } from '../../pages/auth/register-success/RegisterSuccessPage';
@@ -111,79 +113,41 @@ function AdminRouteGuard() {
 
 function AuthLayout() {
   return (
-    <main className="auth-shell">
+    <main className="rt-stage-shell rt-stage-shell--public">
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
+      <div className="poster-shell__blob poster-shell__blob--four" />
 
-      <div className="auth-shell__content auth-shell__content--landing motion-page-fade">
-        <header className="poster-topbar auth-shell__topbar">
-          <div className="poster-brand">
-            <span className="poster-brand__mark" aria-hidden="true" />
-            <span>Ростелеком</span>
-          </div>
-          <nav
-            className="poster-actions auth-shell__actions"
-            aria-label="Авторизация"
+      <header className="rt-topbar">
+        <div className="poster-brand rt-topbar__brand">
+          <span className="poster-brand__mark" aria-hidden="true" />
+          <span>Ростелеком</span>
+        </div>
+        <nav className="rt-topbar__actions" aria-label="Авторизация">
+          <span className="rt-topbar__icon" aria-hidden="true">
+            <UserRound size={14} />
+          </span>
+          <NavLink
+            to={routes.login}
+            className={({ isActive }) =>
+              isActive ? 'poster-action poster-action--active' : 'poster-action'
+            }
           >
-            <NavLink
-              to={routes.login}
-              className={({ isActive }) =>
-                isActive
-                  ? 'poster-action poster-action--active'
-                  : 'poster-action'
-              }
-            >
-              Вход
-            </NavLink>
-            <NavLink
-              to={routes.register}
-              className={({ isActive }) =>
-                isActive
-                  ? 'poster-action poster-action--active'
-                  : 'poster-action'
-              }
-            >
-              Регистрация
-            </NavLink>
-            <NavLink
-              to={routes.support}
-              className={({ isActive }) =>
-                isActive
-                  ? 'poster-action poster-action--active'
-                  : 'poster-action'
-              }
-            >
-              Поддержка
-            </NavLink>
-          </nav>
-        </header>
+            Вход
+          </NavLink>
+          <NavLink
+            to={routes.register}
+            className={({ isActive }) =>
+              isActive ? 'poster-action poster-action--active' : 'poster-action'
+            }
+          >
+            Регистрация
+          </NavLink>
+        </nav>
+      </header>
 
-        <section className="auth-stage auth-stage--landing">
-          <div className="auth-stage__hero">
-            <div className="auth-stage__headline auth-entry-title motion-entry-title">
-              <p className="poster-hero__eyebrow">
-                Корпоративный цифровой пропуск
-              </p>
-              <h1 className="auth-entry-wordmark">
-                <span>ТОЧКА</span>
-                <span>ВХОДА</span>
-              </h1>
-            </div>
-            <div className="poster-hero__copy auth-stage__copy">
-              <p>
-                Цифровой пропуск сотрудника в визуальном стиле Ростелеком с
-                отдельными зонами для пользователей и администраторов, заявками
-                на регистрацию и поддержкой.
-              </p>
-            </div>
-          </div>
-
-          <div className="poster-hero__panel auth-stage__panel auth-stage__panel--floating">
-            <Outlet />
-          </div>
-        </section>
-      </div>
+      <Outlet />
     </main>
   );
 }
@@ -196,7 +160,7 @@ const router = createHashRouter([
       {
         element: <AuthLayout />,
         children: [
-          { index: true, element: <Navigate to={routes.login} replace /> },
+          { index: true, element: <EntryLandingPage /> },
           { path: 'auth/login', element: <LoginPage /> },
           { path: 'auth/register', element: <RegisterPage /> },
           { path: 'auth/register/success', element: <RegisterSuccessPage /> },
