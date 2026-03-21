@@ -12,6 +12,8 @@ export interface User {
   email: string;
   city: string;
   membershipLevel: 'Base' | 'Priority' | 'VIP';
+  department: string;
+  position: string;
   status: UserStatus;
 }
 

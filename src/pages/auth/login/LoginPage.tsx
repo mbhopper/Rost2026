@@ -1,12 +1,18 @@
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppStore } from '../../../app/store/AppStoreProvider';
+import { ShieldCheck } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppStore } from '../../../app/store';
+import { loginSchema, type LoginFormValues } from '../../../features/auth/lib/schemas';
 import { defaultPrivateRoute, routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
-import { loginSchema, type LoginFormValues } from '../../../features/auth/lib/schemas';
+import { Card } from '../../../shared/ui/card/Card';
+import { Input } from '../../../shared/ui/input/Input';
 
 export function LoginPage() {
-  const { login } = useAppStore();
+  const login = useAppStore((state) => state.login);
+  const authStatus = useAppStore((state) => state.authStatus);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -21,32 +27,39 @@ export function LoginPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     await login(values.email, values.password);
-    window.location.hash = `#${defaultPrivateRoute}`;
+    navigate(defaultPrivateRoute);
   });
 
   return (
-    <section className="auth-card app-panel">
-      <div className="section-label">Вход</div>
-      <h1>Войдите в личный кабинет</h1>
-      <p>Используйте рабочий email и пароль, чтобы перейти в приватную часть приложения.</p>
-      <form className="auth-form" onSubmit={onSubmit} noValidate>
-        <label>
-          Email
-          <input type="email" placeholder="name@company.ru" {...register('email')} />
+    <Card className="w-full max-w-[520px] space-y-6">
+      <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-cyan-200">
+        <ShieldCheck size={14} /> Secure sign in
+      </div>
+      <div className="space-y-3">
+        <h1 className="text-4xl font-semibold tracking-tight text-white">Вход в кабинет пропуска</h1>
+        <p className="text-base leading-7 text-slate-400">Используйте корпоративный email, чтобы открыть QR-пропуск, профиль сотрудника и настройки уведомлений.</p>
+      </div>
+      <form className="space-y-4" onSubmit={onSubmit} noValidate>
+        <label className="field-block">
+          <span>Email</span>
+          <Input type="email" placeholder="name@company.ru" {...register('email')} />
           {errors.email && <span className="field-error">{errors.email.message}</span>}
         </label>
-        <label>
-          Пароль
-          <input type="password" placeholder="Минимум 8 символов" {...register('password')} />
+        <label className="field-block">
+          <span>Пароль</span>
+          <Input type="password" placeholder="Минимум 8 символов" {...register('password')} />
           {errors.password && <span className="field-error">{errors.password.message}</span>}
         </label>
-        <Button type="submit" fullWidth disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Входим…' : 'Войти'}
+        <Button type="submit" fullWidth disabled={isSubmitting || authStatus === 'loading'} aria-busy={isSubmitting || authStatus === 'loading'}>
+          {isSubmitting || authStatus === 'loading' ? 'Входим…' : 'Войти'}
         </Button>
       </form>
-      <a className="inline-link" href={`#${routes.register}`}>
-        Нет аккаунта? Зарегистрируйтесь
-      </a>
-    </section>
+      <p className="text-sm text-slate-400">
+        Нет аккаунта?{' '}
+        <Link className="font-semibold text-cyan-300 hover:text-cyan-200" to={routes.register}>
+          Зарегистрируйтесь
+        </Link>
+      </p>
+    </Card>
   );
 }
