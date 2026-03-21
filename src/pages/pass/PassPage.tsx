@@ -2,12 +2,14 @@ import { format } from 'date-fns';
 import { BellRing, Clock3, ShieldCheck, Ticket } from 'lucide-react';
 import { useAppStore } from '../../app/store';
 import { QrSessionPanel } from '../../features/qr-session/QrSessionPanel';
+import { appContent } from '../../shared/constants/content';
 import { Card } from '../../shared/ui/card/Card';
 import { PassCard } from '../../widgets/pass-card/PassCard';
 
 export function PassPage() {
   const passes = useAppStore((state) => state.passes);
   const user = useAppStore((state) => state.user);
+  const content = appContent.passPage;
 
   const primaryPass =
     passes.find((item) => item.status === 'active' && !item.isBlocked) ??
@@ -21,14 +23,13 @@ export function PassPage() {
     return (
       <Card className="space-y-4">
         <p className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
-          <ShieldCheck size={14} /> Employee pass overview
+          <ShieldCheck size={14} /> {content.empty.eyebrow}
         </p>
         <h1 className="text-3xl font-semibold text-white">
-          Пропуск пока недоступен.
+          {content.empty.title}
         </h1>
         <p className="max-w-2xl text-base leading-7 text-slate-400">
-          Когда HR или security выдадут доступ, на этом экране появится
-          виртуальный корпоративный бейдж и CTA для открытия QR.
+          {content.empty.description}
         </p>
       </Card>
     );
@@ -39,29 +40,25 @@ export function PassPage() {
       <Card className="pass-hero-card">
         <div className="pass-hero-card__content">
           <div>
-            <p className="pass-hero-card__eyebrow">Employee pass overview</p>
+            <p className="pass-hero-card__eyebrow">{content.hero.eyebrow}</p>
             <h1>
               {user
-                ? `${user.firstName}, ваш пропуск готов к проходу.`
-                : 'Ваш корпоративный пропуск готов к использованию.'}
+                ? content.hero.titleWithName(user.firstName)
+                : content.hero.titleFallback}
             </h1>
-            <p className="pass-hero-card__copy">
-              Один главный сценарий: быстро проверить бейдж сотрудника,
-              убедиться в статусе доступа и открыть QR непосредственно перед
-              проходом.
-            </p>
+            <p className="pass-hero-card__copy">{content.hero.description}</p>
           </div>
           <div className="pass-hero-card__stats">
             <div>
-              <span>Facility</span>
+              <span>{content.hero.stats.facility}</span>
               <strong>{primaryPass.facilityName}</strong>
             </div>
             <div>
-              <span>Access level</span>
+              <span>{content.hero.stats.accessLevel}</span>
               <strong>{primaryPass.accessLevel}</strong>
             </div>
             <div>
-              <span>Valid until</span>
+              <span>{content.hero.stats.validUntil}</span>
               <strong>
                 {format(new Date(primaryPass.expiresAt), 'dd MMM yyyy')}
               </strong>
@@ -78,22 +75,22 @@ export function PassPage() {
             <div className="pass-section-heading">
               <div>
                 <p className="pass-section-heading__eyebrow">
-                  Pass history & metadata
+                  {content.metadata.eyebrow}
                 </p>
-                <h2>Детали выпуска и доступа</h2>
+                <h2>{content.metadata.title}</h2>
               </div>
             </div>
 
             <div className="pass-meta-grid">
               <div className="pass-meta-grid__item">
                 <span>
-                  <Ticket size={14} /> Номер пропуска
+                  <Ticket size={14} /> {content.metadata.passNumber}
                 </span>
                 <strong>{primaryPass.passId}</strong>
               </div>
               <div className="pass-meta-grid__item">
                 <span>
-                  <ShieldCheck size={14} /> Дата выпуска
+                  <ShieldCheck size={14} /> {content.metadata.issuedAt}
                 </span>
                 <strong>
                   {format(new Date(primaryPass.issuedAt), 'dd MMM yyyy')}
@@ -101,7 +98,7 @@ export function PassPage() {
               </div>
               <div className="pass-meta-grid__item">
                 <span>
-                  <Clock3 size={14} /> Срок действия
+                  <Clock3 size={14} /> {content.metadata.expiresAt}
                 </span>
                 <strong>
                   {format(new Date(primaryPass.expiresAt), 'dd MMM yyyy')}
@@ -109,7 +106,7 @@ export function PassPage() {
               </div>
               <div className="pass-meta-grid__item">
                 <span>
-                  <ShieldCheck size={14} /> Уровень доступа
+                  <ShieldCheck size={14} /> {content.metadata.accessLevel}
                 </span>
                 <strong>{primaryPass.accessLevel}</strong>
               </div>
@@ -119,9 +116,11 @@ export function PassPage() {
               <div className="pass-history-block">
                 <div className="pass-history-block__header">
                   <span>
-                    <BellRing size={14} /> Дополнительные записи доступа
+                    <BellRing size={14} /> {content.metadata.extraAccess}
                   </span>
-                  <strong>{relatedPasses.length} шт.</strong>
+                  <strong>
+                    {content.metadata.itemsCount(relatedPasses.length)}
+                  </strong>
                 </div>
                 <div className="pass-history-list">
                   {relatedPasses.map((item) => (

@@ -1,6 +1,18 @@
 import { useEffect, type PropsWithChildren } from 'react';
 import { useAppStore } from '../store';
 
+function resolveTheme(themeMode: 'system' | 'dark' | 'light') {
+  if (themeMode !== 'system') {
+    return themeMode;
+  }
+
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return 'dark';
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 function BootstrapStore() {
   const authStatus = useAppStore((state) => state.authStatus);
   const bootstrapAuth = useAppStore((state) => state.bootstrapAuth);

@@ -98,6 +98,7 @@ input {
 .w-64 { width: 16rem; }
 .h-72 { height: 18rem; }
 .w-72 { width: 18rem; }
+.object-cover { object-fit: cover; }
 .h-\[190px\] { height: 190px; }
 .w-\[190px\] { width: 190px; }
 .max-w-\[520px\] { max-width: 520px; }
@@ -250,6 +251,7 @@ input {
   .lg\:justify-between { justify-content: space-between; }
   .lg\:justify-center { justify-content: center; }
   .lg\:grid-cols-\[minmax\(0\,1fr\)_minmax\(460px\,680px\)\] { grid-template-columns: minmax(0,1fr) minmax(460px,680px); }
+  .lg\:grid-cols-\[minmax\(280px\,340px\)_minmax\(0\,1fr\)\] { grid-template-columns: minmax(280px,340px) minmax(0,1fr); }
   .lg\:min-w-\[280px\] { min-width: 280px; }
   .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
 }
