@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ShieldCheck } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -44,69 +43,62 @@ export function LoginPage() {
   });
 
   return (
-    <Card className="auth-form-card auth-form-card--login">
-      <div className="auth-form-card__badge">
-        <ShieldCheck size={14} /> Вход сотрудника
-      </div>
-      <div className="auth-form-card__intro">
-        <h2>Вход в кабинет пропуска</h2>
-        <p>
-          Используйте корпоративный email, чтобы открыть QR-пропуск, профиль
-          сотрудника и настройки уведомлений.
-        </p>
-      </div>
-      <AuthStatusBanner status={authStatus} message={authMessage} />
-      <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
-        <label className="field-block">
-          <span>Email</span>
-          <Input
-            className="Input--poster"
-            type="email"
-            placeholder="name@company.ru"
-            {...register('email')}
-          />
-          {errors.email && (
-            <span className="field-error">{errors.email.message}</span>
-          )}
-        </label>
-        <label className="field-block">
-          <span>Пароль</span>
-          <Input
-            className="Input--poster"
-            type="password"
-            placeholder="Минимум 8 символов"
-            {...register('password')}
-          />
-          {errors.password && (
-            <span className="field-error">{errors.password.message}</span>
-          )}
-        </label>
-        <Button
-          type="submit"
-          fullWidth
-          disabled={isSubmitting || authStatus === 'loading'}
-          aria-busy={isSubmitting || authStatus === 'loading'}
-        >
-          {isSubmitting || authStatus === 'loading' ? 'Входим…' : 'Войти'}
-        </Button>
-      </form>
-      <p className="auth-form-card__footer">
-        Нет аккаунта?{' '}
+    <section className="rt-screen rt-screen--form motion-page-fade">
+      <Card className="auth-form-card rt-form-card motion-rise-in">
+        <div className="auth-form-card__intro rt-form-card__intro">
+          <h2>ВХОД</h2>
+        </div>
+        <AuthStatusBanner status={authStatus} message={authMessage} />
+        <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
+          <label className="field-block">
+            <span>Email</span>
+            <Input
+              className="Input--poster"
+              type="email"
+              placeholder="Логин"
+              {...register('email')}
+            />
+            {errors.email && (
+              <span className="field-error">{errors.email.message}</span>
+            )}
+          </label>
+          <label className="field-block">
+            <span>Пароль</span>
+            <Input
+              className="Input--poster"
+              type="password"
+              placeholder="Пароль"
+              {...register('password')}
+            />
+            {errors.password && (
+              <span className="field-error">{errors.password.message}</span>
+            )}
+          </label>
+          <p className="rt-form-card__legal">
+            Я ознакомлен(-а) с{' '}
+            <Link to={routes.support}>политикой конфиденциальности</Link>
+          </p>
+          <Button
+            type="submit"
+            className="rt-form-card__submit"
+            disabled={isSubmitting || authStatus === 'loading'}
+            aria-busy={isSubmitting || authStatus === 'loading'}
+          >
+            {isSubmitting || authStatus === 'loading' ? 'Входим…' : 'ВОЙТИ'}
+          </Button>
+        </form>
+      </Card>
+
+      <div className="rt-pedestal rt-pedestal--back">
+        <span>НАЗАД НА ГЛАВНУЮ</span>
         <Link
-          className="font-semibold text-cyan-300 hover:text-cyan-200"
-          to={routes.register}
+          to={routes.root}
+          className="rt-pedestal__badge rt-pedestal__badge--back"
+          aria-label="Назад на главную"
         >
-          Оставьте заявку
-        </Link>{' '}
-        или{' '}
-        <Link
-          className="font-semibold text-cyan-300 hover:text-cyan-200"
-          to={routes.support}
-        >
-          напишите в поддержку
+          ↩
         </Link>
-        .
-      </p>
-    </Card>
+      </div>
+    </section>
   );
 }

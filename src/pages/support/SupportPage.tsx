@@ -1,4 +1,3 @@
-import { BellRing, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
@@ -48,7 +47,6 @@ function mapIssuesToErrors(
 
 export function SupportPage() {
   const authStatus = useAppStore((state) => state.authStatus);
-  const currentRole = useAppStore((state) => state.currentRole);
   const navigate = useNavigate();
   const [form, setForm] = useState<SupportRequestFormValues>(initialForm);
   const [errors, setErrors] = useState<
@@ -91,138 +89,107 @@ export function SupportPage() {
   };
 
   return (
-    <main className="poster-shell poster-shell--auth poster-shell--standalone">
+    <main className="rt-stage-shell rt-stage-shell--public">
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
-      <div className="poster-frame motion-page-fade">
-        <header className="poster-topbar poster-topbar--private">
-          <div className="poster-brand">
-            <span className="poster-brand__mark" aria-hidden="true" />
-            <span>Ростелеком</span>
-          </div>
-          <nav
-            className="poster-actions"
-            aria-label="Навигация страницы поддержки"
-          >
-            {authStatus === 'authenticated' ? (
-              <Link
-                to={
-                  currentRole === 'admin'
-                    ? routes.adminDashboard
-                    : routes.profile
-                }
-                className="poster-action"
-              >
-                <UserRound size={14} /> Профиль
-              </Link>
-            ) : (
-              <>
-                <Link to={routes.login} className="poster-action">
-                  Вход
-                </Link>
-                <Link to={routes.register} className="poster-action">
-                  Регистрация
-                </Link>
-              </>
-            )}
-          </nav>
-        </header>
-
-        <section className="poster-page poster-page--standalone">
-          <div className="poster-page__copy poster-page__copy--centered">
-            <p className="poster-page__eyebrow">Служба поддержки</p>
-            <h1>ОБРАТНАЯ СВЯЗЬ</h1>
-            <p>
-              Оставьте обращение по пропуску, QR или регистрации — обращение
-              будет передано в службу поддержки.
-            </p>
-          </div>
-
-          <Card className="poster-form-card motion-rise-in">
-            <form
-              className="auth-form-card__form"
-              onSubmit={onSubmit}
-              noValidate
-            >
-              <label className="field-block">
-                <span>Email</span>
-                <Input
-                  className="Input--poster"
-                  type="email"
-                  placeholder="name@company.ru"
-                  value={form.email}
-                  onChange={(event) => updateField('email', event.target.value)}
-                />
-                {errors.email && (
-                  <span className="field-error">{errors.email}</span>
-                )}
-              </label>
-              <label className="field-block">
-                <span>Тема</span>
-                <select
-                  className="select-field select-field--poster"
-                  value={form.topic}
-                  onChange={(event) => updateField('topic', event.target.value)}
-                >
-                  {topicOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                {errors.topic && (
-                  <span className="field-error">{errors.topic}</span>
-                )}
-              </label>
-              <label className="field-block">
-                <span>Обращение</span>
-                <textarea
-                  className="textarea-field textarea-field--large textarea-field--poster"
-                  placeholder="Опишите проблему"
-                  value={form.message}
-                  onChange={(event) =>
-                    updateField('message', event.target.value)
-                  }
-                />
-                {errors.message && (
-                  <span className="field-error">{errors.message}</span>
-                )}
-              </label>
-              {submitError && (
-                <div className="field-error" role="alert" aria-live="polite">
-                  {submitError}
-                </div>
-              )}
-              <Button
-                type="submit"
-                fullWidth
-                disabled={isSubmitting}
-                aria-busy={isSubmitting}
-              >
-                <BellRing size={16} />{' '}
-                {isSubmitting ? 'Отправляем…' : 'Отправить'}
-              </Button>
-            </form>
-          </Card>
-
-          <div className="poster-pedestal poster-pedestal--backdrop">
-            <span>Назад на главную</span>
-            <Link
-              to={
-                authStatus === 'authenticated'
-                  ? currentRole === 'admin'
-                    ? routes.adminDashboard
-                    : routes.dashboard
-                  : routes.login
-              }
-              className="poster-pedestal__back-link"
-            >
-              <span className="poster-pedestal__badge">↩</span>
+      <div className="poster-shell__blob poster-shell__blob--four" />
+      <header className="rt-topbar">
+        <div className="poster-brand rt-topbar__brand">
+          <span className="poster-brand__mark" aria-hidden="true" />
+          <span>Ростелеком</span>
+        </div>
+        <div className="rt-topbar__actions">
+          {authStatus === 'authenticated' ? (
+            <Link to={routes.profile} className="poster-action">
+              Профиль
             </Link>
+          ) : (
+            <>
+              <Link to={routes.login} className="poster-action">
+                Вход
+              </Link>
+              <Link to={routes.register} className="poster-action">
+                Регистрация
+              </Link>
+            </>
+          )}
+        </div>
+      </header>
+      <section className="rt-screen rt-screen--form motion-page-fade">
+        <Card className="auth-form-card rt-form-card motion-rise-in">
+          <div className="auth-form-card__intro rt-form-card__intro">
+            <h2>ОБРАТНАЯ СВЯЗЬ</h2>
           </div>
-        </section>
-      </div>
+          <form className="auth-form-card__form" onSubmit={onSubmit} noValidate>
+            <label className="field-block">
+              <span>Email</span>
+              <Input
+                className="Input--poster"
+                type="email"
+                placeholder="Почта"
+                value={form.email}
+                onChange={(event) => updateField('email', event.target.value)}
+              />
+              {errors.email && (
+                <span className="field-error">{errors.email}</span>
+              )}
+            </label>
+            <label className="field-block rt-hidden-field">
+              <span>Тема</span>
+              <select
+                className="select-field select-field--poster"
+                value={form.topic}
+                onChange={(event) => updateField('topic', event.target.value)}
+              >
+                {topicOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field-block">
+              <span>Обращение</span>
+              <textarea
+                className="textarea-field textarea-field--large textarea-field--poster"
+                placeholder="Обращение"
+                value={form.message}
+                onChange={(event) => updateField('message', event.target.value)}
+              />
+              {errors.message && (
+                <span className="field-error">{errors.message}</span>
+              )}
+            </label>
+            {submitError && (
+              <div className="field-error" role="alert" aria-live="polite">
+                {submitError}
+              </div>
+            )}
+            <p className="rt-form-card__legal">
+              Я ознакомлен(-а) с{' '}
+              <Link to={routes.login}>политикой конфиденциальности</Link>
+            </p>
+            <Button
+              type="submit"
+              className="rt-form-card__submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? 'ОТПРАВЛЯЕМ…' : 'ОТПРАВИТЬ'}
+            </Button>
+          </form>
+        </Card>
+        <div className="rt-pedestal rt-pedestal--back">
+          <span>НАЗАД НА ГЛАВНУЮ</span>
+          <Link
+            to={authStatus === 'authenticated' ? routes.dashboard : routes.root}
+            className="rt-pedestal__badge rt-pedestal__badge--back"
+          >
+            ↩
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

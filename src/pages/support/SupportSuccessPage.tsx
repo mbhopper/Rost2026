@@ -2,49 +2,67 @@ import { ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppStore } from '../../app/store';
 import { routes } from '../../shared/config/routes';
-import { Button } from '../../shared/ui/button/Button';
-import { Card } from '../../shared/ui/card/Card';
 
 function getRequestIdFromHash() {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('requestId');
+  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get(
+    'requestId',
+  );
 }
 
 export function SupportSuccessPage() {
   const authStatus = useAppStore((state) => state.authStatus);
-  const currentRole = useAppStore((state) => state.currentRole);
   const requestId = getRequestIdFromHash();
 
   return (
-    <main className="poster-shell poster-shell--auth poster-shell--standalone">
+    <main className="rt-stage-shell rt-stage-shell--public">
       <div className="poster-shell__blob poster-shell__blob--one" />
       <div className="poster-shell__blob poster-shell__blob--two" />
       <div className="poster-shell__blob poster-shell__blob--three" />
-      <div className="poster-frame motion-page-fade poster-frame--centered">
-        <header className="poster-topbar">
-          <div className="poster-brand">
-            <span className="poster-brand__mark" aria-hidden="true" />
-            <span>Ростелеком</span>
+      <div className="poster-shell__blob poster-shell__blob--four" />
+      <header className="rt-topbar">
+        <div className="poster-brand rt-topbar__brand">
+          <span className="poster-brand__mark" aria-hidden="true" />
+          <span>Ростелеком</span>
+        </div>
+        <div className="rt-topbar__actions">
+          {authStatus === 'authenticated' ? (
+            <Link to={routes.profile} className="poster-action">
+              Профиль
+            </Link>
+          ) : (
+            <>
+              <Link to={routes.login} className="poster-action">
+                Вход
+              </Link>
+              <Link to={routes.register} className="poster-action">
+                Регистрация
+              </Link>
+            </>
+          )}
+        </div>
+      </header>
+      <section className="rt-screen rt-screen--success motion-page-fade">
+        <div className="rt-success-card motion-rise-in">
+          <div className="rt-success-card__icon">
+            <ShieldCheck size={56} />
           </div>
-        </header>
-
-        <Card className="status-card status-card--poster motion-rise-in">
-          <div className="success-orb">
-            <ShieldCheck size={44} />
-          </div>
-          <h1>Заявка в службу поддержки отправлена</h1>
-          <p>
-            Оператор увидит обращение в очереди. {requestId ? `Номер: ${requestId}.` : ''}
-          </p>
-          <div className="status-card__actions">
-            <Link to={authStatus === 'authenticated' ? (currentRole === 'admin' ? routes.adminDashboard : routes.dashboard) : routes.login}><Button>Назад</Button></Link>
-            <Link to={routes.support}><Button variant="secondary">Ещё обращение</Button></Link>
-          </div>
-        </Card>
-      </div>
+          <h1>ЗАЯВКА В СЛУЖБУ ПОДДЕРЖКИ ОТПРАВЛЕНА</h1>
+          {requestId ? <p>Номер обращения: {requestId}</p> : null}
+        </div>
+        <div className="rt-pedestal rt-pedestal--back">
+          <span>НАЗАД НА ГЛАВНУЮ</span>
+          <Link
+            to={authStatus === 'authenticated' ? routes.dashboard : routes.root}
+            className="rt-pedestal__badge rt-pedestal__badge--back"
+          >
+            ↩
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

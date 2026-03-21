@@ -1,34 +1,38 @@
 import { ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { routes } from '../../../shared/config/routes';
-import { Button } from '../../../shared/ui/button/Button';
-import { Card } from '../../../shared/ui/card/Card';
 
 function getRequestIdFromHash() {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('requestId');
+  return new URLSearchParams(window.location.hash.split('?')[1] ?? '').get(
+    'requestId',
+  );
 }
 
 export function RegisterSuccessPage() {
   const requestId = getRequestIdFromHash();
 
   return (
-    <Card className="status-card status-card--poster motion-rise-in">
-      <div className="success-orb">
-        <ShieldCheck size={44} />
+    <section className="rt-screen rt-screen--success motion-page-fade">
+      <div className="rt-success-card motion-rise-in">
+        <div className="rt-success-card__icon">
+          <ShieldCheck size={56} />
+        </div>
+        <h1>ЗАЯВКА НА РЕГИСТРАЦИЮ ОТПРАВЛЕНА</h1>
+        {requestId ? <p>Номер заявки: {requestId}</p> : null}
       </div>
-      <h1>Заявка на регистрацию отправлена</h1>
-      <p>
-        Администратор проверит данные, заведёт сотрудника в системе и выпустит
-        пропуск. {requestId ? `Номер заявки: ${requestId}.` : ''}
-      </p>
-      <div className="status-card__actions">
-        <Link to={routes.login}><Button>Ко входу</Button></Link>
-        <Link to={routes.support}><Button variant="secondary">Связаться с поддержкой</Button></Link>
+      <div className="rt-pedestal rt-pedestal--back">
+        <span>НАЗАД НА ГЛАВНУЮ</span>
+        <Link
+          to={routes.root}
+          className="rt-pedestal__badge rt-pedestal__badge--back"
+        >
+          ↩
+        </Link>
       </div>
-    </Card>
+    </section>
   );
 }
