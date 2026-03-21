@@ -21,6 +21,7 @@ const statusLabels = {
 export function Header() {
   const user = useAppStore((state) => state.user);
   const logout = useAppStore((state) => state.logout);
+  const demoMode = useAppStore((state) => state.settings.demoMode);
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -39,12 +40,17 @@ export function Header() {
             <p className="text-sm font-semibold text-white">
               FuturePass Access
             </p>
-            <p className="text-sm text-slate-400">
-              MVP кабинета сотрудника и гостевого доступа
-            </p>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-400">
+              <span>Кабинет сотрудника и управление пропуском</span>
+              {demoMode ? (
+                <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
+                  Демо-режим
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
-        <nav className="flex flex-wrap gap-2" aria-label="Primary">
+        <nav className="flex flex-wrap gap-2" aria-label="Основная навигация">
           {primaryNavigation.map((item) => {
             const Icon = icons[item.href];
             return (
@@ -69,7 +75,7 @@ export function Header() {
         </nav>
         <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/8 bg-slate-950/30 px-4 py-3 lg:min-w-[280px]">
           <div>
-            <p className="text-sm font-semibold text-white">
+            <p className="secure-sensitive text-sm font-semibold text-white">
               {user?.fullName ?? 'Гость'}
             </p>
             <p className="text-sm text-slate-400">
