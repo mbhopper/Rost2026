@@ -5,7 +5,7 @@ import {
   registrationRequestSchema,
   type RegistrationRequestFormValues,
 } from '../../../features/auth/lib/schemas';
-import { mockApi } from '../../../shared/api/mockApi';
+import { api } from '../../../shared/api/auth';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
@@ -64,7 +64,7 @@ export function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await mockApi.requestService.submitRegistrationRequest(parsed.data);
+      const result = await api.requestService.submitRegistrationRequest(parsed.data);
       navigate(`${routes.registerSuccess}?requestId=${encodeURIComponent(result.id)}`);
     } finally {
       setIsSubmitting(false);

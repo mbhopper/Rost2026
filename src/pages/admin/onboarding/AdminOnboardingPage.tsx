@@ -1,11 +1,11 @@
 import { format } from 'date-fns';
 import { ShieldCheck, UserRound } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   adminOnboardingSchema,
   type AdminOnboardingFormValues,
 } from '../../../features/auth/lib/schemas';
-import { mockApi } from '../../../shared/api/mockApi';
+import { api } from '../../../shared/api/auth';
 import type { AdminEmployeeRecord } from '../../../shared/api/admin/types';
 import type { RegistrationRequest } from '../../../shared/api/requests/types';
 import { Button } from '../../../shared/ui/button/Button';
@@ -52,9 +52,14 @@ export function AdminOnboardingPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof AdminOnboardingFormValues, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const loadRequests = useCallback(async () => {
+    const nextRequests = await api.requestService.getRegistrationRequests();
+    setRequests(nextRequests);
+  }, []);
+
   useEffect(() => {
-    void mockApi.requestService.getRegistrationRequests().then(setRequests);
-  }, [createdRecord]);
+    void loadRequests();
+  }, [loadRequests]);
 
   const updateField = (field: keyof AdminOnboardingFormValues, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -89,10 +94,19 @@ export function AdminOnboardingPage() {
     setIsSubmitting(true);
 
     try {
-      const record = await mockApi.adminDirectoryService.registerEmployee(parsed.data);
+      const record = await api.adminDirectoryService.registerEmployee(parsed.data);
+
+      if (parsed.data.requestId) {
+        await api.requestService.processRegistrationRequest({
+          requestId: parsed.data.requestId,
+          employeeId: record.user.employeeId,
+        });
+      }
+
       setCreatedRecord(record);
       setForm(defaultValues);
       setErrors({});
+      await loadRequests();
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +120,7 @@ export function AdminOnboardingPage() {
             <p className="section-heading__eyebrow">Onboarding</p>
             <h1>Регистрация сотрудника администратором</h1>
             <p className="section-copy">
-              Админ может открыть вход по заявке или вручную завести нового сотрудника и сразу выпустить пропуск.
+              Администратор может обработать входящую заявку или вручную завести нового сотрудника и сразу выпустить пропуск.
             </p>
           </div>
           {createdRecord ? (

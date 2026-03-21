@@ -160,7 +160,7 @@ export function QrViewer({
         <div className="qr-viewer-card__meta-item">
           <span><ShieldCheck size={14} /> Session ID</span>
           <strong>{session ? session.sessionId : '—'}</strong>
-          <p>{session && expiresAt ? `Истекает ${formatDistanceToNow(expiresAt)}` : 'Mock payload готов к API-замене.'}</p>
+          <p>{session && expiresAt ? `Истекает ${formatDistanceToNow(expiresAt)}` : 'Сессия появится после генерации QR-кода.'}</p>
         </div>
       </div>
 

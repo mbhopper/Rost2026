@@ -1,4 +1,4 @@
-import { mockApi } from '../../shared/api/mockApi';
+import { api } from '../../shared/api/auth';
 import {
   readSessionStorage,
   removeSessionStorage,
@@ -53,7 +53,7 @@ const withPersistedSession = async (
 export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
   qrSession: readPersistedQrSession(),
   loadQrSession: async () => {
-    // Refresh strategy: restore the active mock QR session from sessionStorage and
+    // Refresh strategy: restore the active QR session from sessionStorage and
     // recalculate the remaining TTL on reload. If the TTL already elapsed while the
     // page was closed, we keep the session shell but immediately mark it expired.
     const persistedQrSession = readPersistedQrSession();
@@ -67,7 +67,7 @@ export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
     set({ qrSession: persistedQrSession });
   },
   generateQrSession: async ({ employeeId, passId }: GenerateQrSessionPayload) => {
-    const { session } = await mockApi.qrSessionService.generateQrSession(
+    const { session } = await api.qrSessionService.generateQrSession(
       employeeId,
       passId,
     );
@@ -81,7 +81,7 @@ export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
         : state.qrSession,
     }));
 
-    const { session } = await mockApi.qrSessionService.generateQrSession(
+    const { session } = await api.qrSessionService.generateQrSession(
       employeeId,
       passId,
     );
@@ -92,7 +92,7 @@ export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
     const currentSession = readPersistedQrSession();
     const nextSession = await withPersistedSession(
       currentSession,
-      mockApi.qrSessionService.expireQrSession,
+      api.qrSessionService.expireQrSession,
     );
 
     set({ qrSession: nextSession });
@@ -101,7 +101,7 @@ export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
     const currentSession = readPersistedQrSession();
     const nextSession = await withPersistedSession(
       currentSession,
-      mockApi.qrSessionService.markQrAsScanned,
+      api.qrSessionService.markQrAsScanned,
     );
 
     set({ qrSession: nextSession });
@@ -110,7 +110,7 @@ export const createQrSessionSlice = (set: SetState): QrSessionSlice => ({
     const currentSession = readPersistedQrSession();
     const nextSession = await withPersistedSession(
       currentSession,
-      mockApi.qrSessionService.revokeQrSession,
+      api.qrSessionService.revokeQrSession,
     );
 
     if (!nextSession) {

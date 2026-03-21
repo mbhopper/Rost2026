@@ -1,7 +1,7 @@
 import { QrCode, Ticket } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { mockApi } from '../../../shared/api/mockApi';
+import { api } from '../../../shared/api/auth';
 import type { AdminEmployeeRecord, AdminPassStatusFilter } from '../../../shared/api/admin/types';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
@@ -16,7 +16,7 @@ export function AdminEmployeesPage() {
   const [items, setItems] = useState<AdminEmployeeRecord[]>([]);
 
   useEffect(() => {
-    void mockApi.adminDirectoryService.getEmployees({ query, status }).then(setItems);
+    void api.adminDirectoryService.getEmployees({ query, status }).then(setItems);
   }, [query, status]);
 
   const emptyMessage = useMemo(() => {
@@ -34,7 +34,7 @@ export function AdminEmployeesPage() {
           <div>
             <p className="section-heading__eyebrow">Directory</p>
             <h1>Сотрудники и пропуска</h1>
-            <p className="section-copy">Поиск, фильтрация и просмотр карточек без обращения к backend.</p>
+            <p className="section-copy">Поиск, фильтрация и просмотр карточек сотрудников в едином каталоге.</p>
           </div>
           <Link to={routes.adminOnboarding}><Button><Ticket size={16} /> Новый сотрудник</Button></Link>
         </div>

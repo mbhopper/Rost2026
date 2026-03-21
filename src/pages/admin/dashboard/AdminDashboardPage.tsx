@@ -1,7 +1,7 @@
 import { BellRing, Clock3, ShieldCheck, Ticket } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { mockApi } from '../../../shared/api/mockApi';
+import { api } from '../../../shared/api/auth';
 import type { AdminOverview } from '../../../shared/api/admin/types';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
@@ -13,7 +13,7 @@ export function AdminDashboardPage() {
   const [overview, setOverview] = useState<AdminOverview | null>(null);
 
   useEffect(() => {
-    void mockApi.adminDirectoryService.getOverview().then(setOverview);
+    void api.adminDirectoryService.getOverview().then(setOverview);
   }, []);
 
   const summary = overview
@@ -33,8 +33,7 @@ export function AdminDashboardPage() {
           <div>
             <h1>Мониторинг цифровых пропусков</h1>
             <p>
-              Панель предназначена только для администраторов. Данные пока идут из
-              mock directory service и готовы к замене на backend adapter.
+              Панель предназначена только для администраторов и показывает сводку по сотрудникам, пропускам и событиям доступа.
             </p>
           </div>
           <Link to={routes.adminOnboarding}><Button><Ticket size={16} /> Оформить сотрудника</Button></Link>
@@ -48,7 +47,7 @@ export function AdminDashboardPage() {
             <Card key={item.label} className="stat-card motion-rise-in">
               <span><Icon size={16} /> {item.label}</span>
               <strong>{item.value}</strong>
-              <p>Mock KPI для MVP admin console.</p>
+              <p>Оперативный показатель по текущему состоянию системы.</p>
             </Card>
           );
         })}

@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import type { AdminEmployeeRecord } from '../../../shared/api/admin/types';
-import { mockApi } from '../../../shared/api/mockApi';
+import { api } from '../../../shared/api/auth';
 import { routes } from '../../../shared/config/routes';
 import { Button } from '../../../shared/ui/button/Button';
 import { Card } from '../../../shared/ui/card/Card';
@@ -14,14 +14,14 @@ export function AdminEmployeeDetailsPage() {
   const [record, setRecord] = useState<AdminEmployeeRecord | null>(null);
 
   useEffect(() => {
-    void mockApi.adminDirectoryService.getEmployeeById(employeeId).then(setRecord);
+    void api.adminDirectoryService.getEmployeeById(employeeId).then(setRecord);
   }, [employeeId]);
 
   if (!record) {
     return (
       <Card className="empty-card">
         <h1>Карточка не найдена</h1>
-        <p>Для этого employee ID нет записи в mock admin directory.</p>
+        <p>Для этого employee ID запись не найдена.</p>
         <Link to={routes.adminEmployees}><Button>Назад к списку</Button></Link>
       </Card>
     );
@@ -79,7 +79,7 @@ export function AdminEmployeeDetailsPage() {
                 <div><dt>Доступ</dt><dd>{pass.accessLevel}</dd></div>
                 <div><dt>Выдан</dt><dd>{format(new Date(pass.issuedAt), 'dd.MM.yyyy')}</dd></div>
                 <div><dt>Истекает</dt><dd>{format(new Date(pass.expiresAt), 'dd.MM.yyyy')}</dd></div>
-                <div><dt>Mock action</dt><dd>{pass.isBlocked ? 'Снять блокировку' : 'Заблокировать / отозвать'}</dd></div>
+                <div><dt>Действие</dt><dd>{pass.isBlocked ? 'Снять блокировку' : 'Заблокировать / отозвать'}</dd></div>
               </dl>
             </article>
           ))}

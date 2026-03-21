@@ -4,10 +4,14 @@ import type { AdminDirectoryService } from '../contracts';
 import type {
   AdminDirectoryFilters,
   AdminEmployeeRegistrationPayload,
+  AdminEmployeeRecord,
+  AdminOverview,
 } from './types';
 import { adminEmployeeDirectory, adminOverviewMock } from '../../mocks/admin/directory';
 import { createMockDelayController, type MockApiConfig } from '../mockUtils';
-import { requestRuntimeStore } from '../../mocks/requests/runtime';
+import { apiConfig, createAuthorizedRequestInit } from '../config';
+import { httpClient } from '../httpClient';
+import { readLocalStorage, storageKeys } from '../../config/storage';
 
 const matchesQuery = (value: string, query: string) =>
   value.toLowerCase().includes(query.toLowerCase());
@@ -85,6 +89,49 @@ const createRecord = (payload: AdminEmployeeRegistrationPayload) => {
   };
 };
 
+const createQueryString = (filters: AdminDirectoryFilters = {}) => {
+  const params = new URLSearchParams();
+
+  if (filters.query?.trim()) {
+    params.set('query', filters.query.trim());
+  }
+
+  if (filters.status && filters.status !== 'all') {
+    params.set('status', filters.status);
+  }
+
+  const query = params.toString();
+  return query ? `?${query}` : '';
+};
+
+export const createHttpAdminDirectoryService = (): AdminDirectoryService => ({
+  getOverview() {
+    return httpClient.get<AdminOverview>(
+      apiConfig.endpoints.adminOverview,
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+  },
+  getEmployees(filters = {}) {
+    return httpClient.get<AdminEmployeeRecord[]>(
+      `${apiConfig.endpoints.adminEmployees}${createQueryString(filters)}`,
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+  },
+  getEmployeeById(employeeId) {
+    return httpClient.get<AdminEmployeeRecord | null>(
+      `${apiConfig.endpoints.adminEmployees}/${encodeURIComponent(employeeId)}`,
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+  },
+  registerEmployee(payload) {
+    return httpClient.post<AdminEmployeeRecord>(
+      apiConfig.endpoints.adminEmployees,
+      payload,
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+  },
+});
+
 export const createMockAdminDirectoryService = (
   config: MockApiConfig = {},
 ): AdminDirectoryService => {
@@ -120,10 +167,6 @@ export const createMockAdminDirectoryService = (
         tone: 'info',
       });
       adminOverviewMock.recentAlerts = adminOverviewMock.recentAlerts.slice(0, 5);
-
-      if (payload.requestId) {
-        requestRuntimeStore.approveRegistrationRequest(payload.requestId, record.user.employeeId);
-      }
 
       return record;
     },

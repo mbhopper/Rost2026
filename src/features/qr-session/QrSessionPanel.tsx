@@ -37,8 +37,8 @@ export function QrSessionPanel({ compact = false }: QrSessionPanelProps) {
             <p className="section-heading__eyebrow">QR access session</p>
             <h2>Проход через цифровой пропуск</h2>
             <p className="section-copy">
-              QR генерируется локально в mock flow и автоматически скрывается при
-              blur/visibility change/inactivity.
+              QR-код создаётся для активного пропуска и автоматически скрывается при
+              blur, смене вкладки и бездействии.
             </p>
           </div>
           <div className="qr-cta-card__icon"><Ticket size={22} /></div>

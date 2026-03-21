@@ -1,4 +1,4 @@
-import { mapEmailToUserDto, mapUserDtoToModel } from './dto';
+import { mapEmailToUserDto, mapUserDtoToModel, type UserDto } from './dto';
 import { AppApiError } from './appApi';
 import type { UserProfileService } from './contracts';
 import { mockAdminDto, mockUserDto } from '../mocks/auth/user';
@@ -8,6 +8,21 @@ import {
   type MockApiConfig,
   simulateNetworkFailure,
 } from './mockUtils';
+import { apiConfig, createAuthorizedRequestInit } from './config';
+import { httpClient } from './httpClient';
+
+export const createHttpUserProfileService = (): UserProfileService => ({
+  async getCurrentProfile(token) {
+    const response = await httpClient.get<{ user: UserDto }>(
+      apiConfig.endpoints.authProfile,
+      createAuthorizedRequestInit(token),
+    );
+
+    return {
+      user: mapUserDtoToModel(response.user),
+    };
+  },
+});
 
 export const createMockUserProfileService = (
   config: MockApiConfig = {},

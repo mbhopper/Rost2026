@@ -56,15 +56,19 @@ describe('mock API services', () => {
       phone: '+7 (999) 555-55-55',
       department: 'R&D',
       position: 'Designer',
-      note: 'Нужен доступ в demo-зону.',
+      note: 'Нужен доступ в переговорную зону.',
     });
 
     const requests = await api.requestService.getRegistrationRequests();
     const record = await api.adminDirectoryService.registerEmployee({
       ...request,
-      facilityName: 'Ростелеком · Demo Hall',
-      accessLevel: 'L1 · Demo',
+      facilityName: 'Ростелеком · Башня B',
+      accessLevel: 'L1 · Базовый доступ',
       requestId: request.id,
+    });
+    await api.requestService.processRegistrationRequest({
+      requestId: request.id,
+      employeeId: record.user.employeeId,
     });
     const refreshedRequests = await api.requestService.getRegistrationRequests();
 

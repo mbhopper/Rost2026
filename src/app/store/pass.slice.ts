@@ -1,4 +1,4 @@
-import { mockApi } from '../../shared/api/mockApi';
+import { api } from '../../shared/api/auth';
 import type { AppStore, PassSlice } from './types';
 
 type SetState = (
@@ -9,7 +9,7 @@ type SetState = (
 export const createPassSlice = (set: SetState): PassSlice => ({
   passes: [],
   loadPasses: async () => {
-    const { passes } = await mockApi.passService.getPasses();
+    const { passes } = await api.passService.getPasses();
     set({ passes });
   },
 });

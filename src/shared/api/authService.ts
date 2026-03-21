@@ -1,5 +1,5 @@
 import type { RegisterPayload } from '../../app/store/types';
-import { mapEmailToUserDto, mapRegisterPayloadToUserDto, mapUserDtoToModel } from './dto';
+import { mapEmailToUserDto, mapRegisterPayloadToUserDto, mapUserDtoToModel, type UserDto } from './dto';
 import { AppApiError } from './appApi';
 import type { AdminAuthService, AuthService } from './contracts';
 import { mockAdminDto, mockUserDto } from '../mocks/auth/user';
@@ -9,6 +9,55 @@ import {
   type MockApiConfig,
   simulateNetworkFailure,
 } from './mockUtils';
+import { apiConfig, createAuthorizedRequestInit } from './config';
+import { httpClient } from './httpClient';
+import { readLocalStorage, storageKeys } from '../config/storage';
+
+interface AuthSessionDto {
+  token: string;
+  user: UserDto;
+}
+
+const mapAuthSessionDto = ({ token, user }: AuthSessionDto) => ({
+  token,
+  user: mapUserDtoToModel(user),
+});
+
+export const createHttpAuthService = (): AuthService => ({
+  async login(email, password) {
+    const session = await httpClient.post<AuthSessionDto>(apiConfig.endpoints.authLogin, {
+      email,
+      password,
+    });
+
+    return mapAuthSessionDto(session);
+  },
+  async register(payload: RegisterPayload) {
+    const session = await httpClient.post<AuthSessionDto>(apiConfig.endpoints.authRegister, payload);
+
+    return mapAuthSessionDto(session);
+  },
+  async logout() {
+    await httpClient.post<{ success?: true }>(
+      apiConfig.endpoints.authLogout,
+      undefined,
+      createAuthorizedRequestInit(readLocalStorage(storageKeys.authToken)),
+    );
+
+    return { success: true };
+  },
+});
+
+export const createHttpAdminAuthService = (): AdminAuthService => ({
+  async login(email, password) {
+    const session = await httpClient.post<AuthSessionDto>(apiConfig.endpoints.adminLogin, {
+      email,
+      password,
+    });
+
+    return mapAuthSessionDto(session);
+  },
+});
 
 export const createMockAuthService = (config: MockApiConfig = {}): AuthService => {
   const delay = createMockDelayController(config);
