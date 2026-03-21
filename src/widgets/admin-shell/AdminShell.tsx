@@ -27,8 +27,8 @@ export function AdminShell() {
         <div className="admin-sidebar__brand">
           <div className="admin-sidebar__logo"><span className="poster-brand__mark" aria-hidden="true" /></div>
           <div>
-            <strong>Security Console</strong>
-            <p>Отдельный admin namespace</p>
+            <strong>Консоль безопасности</strong>
+            <p>Отдельный раздел администрирования</p>
           </div>
         </div>
         <nav className="admin-sidebar__nav" aria-label="Навигация администратора">
@@ -53,7 +53,7 @@ export function AdminShell() {
         </nav>
         <div className="admin-sidebar__footer">
           <p>{user?.fullName ?? 'Администратор'}</p>
-          <span>{user?.position ?? 'Security operator'}</span>
+          <span>{user?.position ?? 'Оператор безопасности'}</span>
           <Button variant="secondary" onClick={() => void handleLogout()}>
             <LogOut size={16} /> Выйти
           </Button>

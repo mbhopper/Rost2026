@@ -118,7 +118,7 @@ export function useQrSessionController() {
     scanDemo,
     secureViewProps: secureView.secureProps,
     state,
-    watermarkLabel: user ? `${user.employeeId} · ${user.email}` : 'secure mode',
+    watermarkLabel: user ? `${user.employeeId} · ${user.email}` : 'защищённый экран',
   };
 }
 

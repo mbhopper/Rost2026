@@ -18,9 +18,9 @@ export function PassPage() {
     return (
       <div className="poster-page motion-page-fade">
         <div className="poster-page__copy poster-page__copy--centered">
-          <p className="poster-page__eyebrow">Digital pass</p>
+          <p className="poster-page__eyebrow">Цифровой пропуск</p>
           <h1>ТОЧКА ВХОДА</h1>
-          <p>Пропуск пока не назначен. После интеграции backend здесь появится реальный проходной статус.</p>
+          <p>Пропуск пока не назначен. После выдачи доступа здесь появится актуальный проходной статус.</p>
         </div>
       </div>
     );
@@ -29,7 +29,7 @@ export function PassPage() {
   return (
     <div className="poster-page motion-page-fade">
       <div className="poster-page__copy poster-page__copy--centered">
-        <p className="poster-page__eyebrow">Digital pass</p>
+        <p className="poster-page__eyebrow">Цифровой пропуск</p>
         <h1>ТОЧКА ВХОДА</h1>
         <p>Центральный экран прохода: карточка сотрудника, QR и статус доступа в одном мобильном сценарии.</p>
       </div>
@@ -39,7 +39,7 @@ export function PassPage() {
       </div>
 
       <div className="poster-pedestal poster-pedestal--live">
-        <span>Сгенерировать QR-code</span>
+        <span>Сгенерировать QR-код</span>
         <QrSessionPanel compact />
         <Link to={routes.qrGenerate}><Button variant="secondary">Отдельная страница QR</Button></Link>
       </div>

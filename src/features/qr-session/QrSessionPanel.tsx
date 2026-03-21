@@ -8,6 +8,8 @@ interface QrSessionPanelProps {
   compact?: boolean;
 }
 
+const isDevelopment = import.meta.env.DEV;
+
 export function QrSessionPanel({ compact = false }: QrSessionPanelProps) {
   const {
     activePass,
@@ -34,11 +36,11 @@ export function QrSessionPanel({ compact = false }: QrSessionPanelProps) {
       <Card className="qr-cta-card">
         <div className="section-heading section-heading--spread">
           <div>
-            <p className="section-heading__eyebrow">QR access session</p>
+            <p className="section-heading__eyebrow">Сеанс прохода</p>
             <h2>Проход через цифровой пропуск</h2>
             <p className="section-copy">
               QR-код создаётся для активного пропуска и автоматически скрывается при
-              blur, смене вкладки и бездействии.
+              потере фокуса, смене вкладки и бездействии.
             </p>
           </div>
           <div className="qr-cta-card__icon"><Ticket size={22} /></div>
@@ -70,9 +72,11 @@ export function QrSessionPanel({ compact = false }: QrSessionPanelProps) {
             <Button variant="secondary" onClick={() => revealSecureContent()}>
               <UserRound size={16} /> Показать экран
             </Button>
-            <Button variant="secondary" onClick={() => void scanDemo()} disabled={!canDemoScan}>
-              <ShieldCheck size={16} /> Отметить как used
-            </Button>
+            {isDevelopment ? (
+              <Button variant="secondary" onClick={() => void scanDemo()} disabled={!canDemoScan}>
+                <ShieldCheck size={16} /> Отметить как использованный
+              </Button>
+            ) : null}
             <Button variant="secondary" onClick={() => void revoke()} disabled={!canRevoke}>
               <BellRing size={16} /> Заблокировать
             </Button>

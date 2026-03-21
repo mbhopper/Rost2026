@@ -98,8 +98,8 @@ export function QrViewer({
     <Card className={`qr-viewer-card ${meta.toneClass}`} {...secureViewProps}>
       <div className="qr-viewer-card__header">
         <div>
-          <p className="qr-viewer-card__eyebrow">Secure QR mode</p>
-          <h3>{state === 'active' ? 'Покажите экран сотруднику охраны' : 'QR screen'}</h3>
+          <p className="qr-viewer-card__eyebrow">Защищённый QR-код</p>
+          <h3>{state === 'active' ? 'Покажите экран сотруднику охраны' : 'Экран QR-кода'}</h3>
           <p className="qr-viewer-card__copy">{meta.description}</p>
         </div>
         <div className="qr-viewer-card__state">
@@ -141,7 +141,7 @@ export function QrViewer({
             <div>
               <BellRing size={28} />
               <strong>Экран скрыт</strong>
-              <p>Best-effort защита на web: код скрывается при blur, скрытии вкладки и бездействии.</p>
+              <p>Код скрывается при переключении вкладки, потере фокуса и бездействии.</p>
             </div>
           </div>
         ) : null}
@@ -158,15 +158,15 @@ export function QrViewer({
           <p>{createdAt ? `Создано в ${format(createdAt, 'HH:mm:ss')}` : 'Создайте сессию перед входом.'}</p>
         </div>
         <div className="qr-viewer-card__meta-item">
-          <span><ShieldCheck size={14} /> Session ID</span>
+          <span><ShieldCheck size={14} /> Идентификатор сессии</span>
           <strong>{session ? session.sessionId : '—'}</strong>
           <p>{session && expiresAt ? `Истекает ${formatDistanceToNow(expiresAt)}` : 'Сессия появится после генерации QR-кода.'}</p>
         </div>
       </div>
 
       <p className="qr-viewer-card__footnote">
-        <ShieldCheck size={14} /> Невозможно гарантированно запретить скриншоты/запись на web,
-        поэтому реализованы только best-effort меры маскирования и watermark.
+        <ShieldCheck size={14} /> Браузер не может полностью запретить скриншоты или запись экрана,
+        поэтому для защиты используются маскирование и водяные знаки.
       </p>
     </Card>
   );

@@ -158,7 +158,7 @@ export const adminOverviewMock: AdminOverview = {
     {
       id: 'alert-3',
       title: 'Синхронизация справочника завершена',
-      detail: 'Mock-слой готов к замене на backend adapter без изменения UI.',
+      detail: 'Синхронизация подготовлена к подключению рабочего контура данных.',
       tone: 'info',
     },
   ],

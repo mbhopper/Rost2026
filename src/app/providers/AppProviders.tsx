@@ -55,8 +55,7 @@ function SettingsEffects() {
 
     root.dataset.theme = resolvedTheme;
     body.dataset.secureScreen = String(settings.secureScreenMode);
-    body.dataset.demoMode = String(settings.demoMode);
-  }, [settings.demoMode, settings.secureScreenMode, settings.themeMode]);
+  }, [settings.secureScreenMode, settings.themeMode]);
 
   return null;
 }

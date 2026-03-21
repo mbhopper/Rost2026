@@ -21,9 +21,9 @@ const topicOptions = [
 ];
 
 const initialForm: SupportRequestFormValues = {
-  email: 'help@futurepass.app',
+  email: '',
   topic: topicOptions[0],
-  message: 'Не проходит QR на входе в здание, нужна проверка статуса пропуска.',
+  message: '',
 };
 
 function mapIssuesToErrors(result: ReturnType<typeof supportRequestSchema.safeParse>) {
@@ -109,7 +109,7 @@ export function SupportPage() {
 
         <section className="poster-page poster-page--standalone">
           <div className="poster-page__copy poster-page__copy--centered">
-            <p className="poster-page__eyebrow">Support desk</p>
+            <p className="poster-page__eyebrow">Служба поддержки</p>
             <h1>ОБРАТНАЯ СВЯЗЬ</h1>
             <p>Оставьте обращение по пропуску, QR или регистрации — обращение будет передано в службу поддержки.</p>
           </div>

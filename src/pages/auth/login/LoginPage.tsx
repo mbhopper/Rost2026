@@ -27,8 +27,8 @@ export function LoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'alex@futurepass.app',
-      password: 'future-pass',
+      email: '',
+      password: '',
     },
   });
 

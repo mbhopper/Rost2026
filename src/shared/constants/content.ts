@@ -237,11 +237,6 @@ export const appContent = {
       },
     },
     behavior: {
-      demoMode: {
-        label: 'Служебные подсказки',
-        description:
-          'Показывать служебные подсказки по сценариям работы с пропуском.',
-      },
       secureScreenMode: {
         label: 'Защищённый экран',
         description:

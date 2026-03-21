@@ -155,7 +155,7 @@ function AuthLayout() {
         </section>
 
         <div className="poster-pedestal">
-          <span>Сгенерировать QR-code</span>
+          <span>Сгенерировать QR-код</span>
           <div className="poster-pedestal__badge">QR</div>
         </div>
       </div>

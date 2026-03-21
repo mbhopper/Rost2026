@@ -24,8 +24,8 @@ export function AdminLoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'admin@futurepass.app',
-      password: 'admin-pass',
+      email: '',
+      password: '',
     },
   });
 
@@ -43,12 +43,12 @@ export function AdminLoginPage() {
   return (
     <main className="auth-shell auth-shell--admin">
       <Card className="auth-card auth-card--admin">
-        <div className="auth-card__badge"><ShieldCheck size={14} /> Admin access</div>
+        <div className="auth-card__badge"><ShieldCheck size={14} /> Доступ администратора</div>
         <div className="auth-card__intro">
           <h1>Вход в панель администрирования</h1>
           <p>
-            Отдельный login flow для роли admin. На публичном сайте нет ссылок на
-            этот namespace — доступ только по прямому маршруту.
+            Вход предназначен для администраторов системы. Ссылка на этот раздел
+            не публикуется в основном пользовательском интерфейсе.
           </p>
         </div>
         <AuthStatusBanner status={authStatus} message={authMessage} />
@@ -64,7 +64,7 @@ export function AdminLoginPage() {
             {errors.password ? <span className="field-error">{errors.password.message}</span> : null}
           </label>
           <Button type="submit" fullWidth disabled={isSubmitting || authStatus === 'loading'}>
-            {isSubmitting || authStatus === 'loading' ? 'Проверяем доступ…' : 'Войти в admin panel'}
+            {isSubmitting || authStatus === 'loading' ? 'Проверяем доступ…' : 'Войти в панель администратора'}
           </Button>
         </form>
       </Card>
