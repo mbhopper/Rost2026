@@ -1,85 +1,159 @@
-# Employee Digital Pass MVP
+# Ростелеком — цифровой пропуск сотрудника
 
-Frontend-only MVP цифрового пропуска сотрудника на **React + TypeScript + Vite**.
+SPA-прототип личного кабинета сотрудника и административной панели для управления цифровыми пропусками. Проект реализован на **React + TypeScript + Vite** и в текущем состоянии работает как **frontend-first MVP**: пользовательские и административные сценарии уже собраны в интерфейсе, а серверная часть эмулируется через типизированный mock API-слой.
 
-## Что реализовано
+## Какой кейс реализован
 
-- публичная auth-зона: `#/auth/login`, `#/auth/register`;
-- отдельный admin login flow: `#/admin/login`;
-- приватная пользовательская зона:
-  - `#/dashboard`
-  - `#/pass`
-  - `#/profile`
-  - `#/settings`
-- отдельная admin panel:
-  - `#/admin/dashboard`
-  - `#/admin/employees`
-  - `#/admin/employees/:employeeId`
-- role-based routing и раздельные route guards для user/admin;
-- mock auth / profile / pass / qr / admin directory adapters;
-- responsive интерфейс под mobile-first сценарий;
-- secure QR mode c best-effort web protection.
+Проект закрывает сценарий оформления и использования цифрового пропуска сотрудника в корпоративной среде:
 
-## Best-effort secure mode
+- сотрудник может зарегистрироваться, войти в кабинет, открыть свой пропуск и показать одноразовый QR-код для прохода;
+- администратор может войти в отдельную админ-панель, просматривать сотрудников, фильтровать записи, открывать карточки сотрудников и оформлять новых сотрудников вручную или из очереди заявок;
+- гость или сотрудник может отправить обращение в поддержку;
+- приложение различает пользовательскую и административную роли и защищает маршруты под каждую из них.
 
-Web-приложение **не может гарантированно запретить скриншоты или запись экрана**. Поэтому реализованы только честные, best-effort меры:
+## Что уже реализовано в приложении
 
-- маскирование QR при `visibilitychange`, `blur`, `pagehide`;
-- повторное раскрытие QR только по явному действию пользователя;
-- авто-маскирование после бездействия;
-- watermark overlay поверх QR-экрана;
-- disable `contextmenu` и `dragstart` на чувствительном экране;
-- скрытие QR и sensitive-блоков в `@media print`.
+### Пользовательский контур
+
+- публичный landing и auth flow через hash-router;
+- формы входа и регистрации;
+- экран успешной отправки заявки на регистрацию;
+- личный кабинет сотрудника с разделами `dashboard`, `pass`, `profile`, `settings`;
+- экран генерации QR-кода пропуска перед проходом;
+- сохранение состояния сессии и пользовательских настроек в браузере.
+
+### Административный контур
+
+- отдельный admin login flow;
+- dashboard для мониторинга цифровых пропусков;
+- список сотрудников с фильтрацией и переходом в карточку сотрудника;
+- onboarding-экран для оформления нового сотрудника;
+- обработка очереди заявок на регистрацию прямо из админского интерфейса.
+
+### Mock backend / сервисный слой
+
+В репозитории **нет отдельного backend-сервиса** (нет `server/`, `api/`, `nest`, `express`, `fastify` и т.п.). Вместо него реализован контрактный сервисный слой, который имитирует ответы backend-системы:
+
+- `authService` и `adminAuthService` для пользовательской и административной авторизации;
+- `userProfileService` для загрузки профиля;
+- `passService` для цифровых пропусков;
+- `qrSessionService` для жизненного цикла QR-сессии;
+- `adminDirectoryService` для админ-списка сотрудников и онбординга;
+- `requestService` для заявок на регистрацию и обращений в поддержку.
+
+Такой слой уже отделён интерфейсами, поэтому при подключении реального backend нужно сохранить контракты и заменить только адаптеры.
+
+## Основные пользовательские маршруты
+
+### Публичные
+
+- `#/`
+- `#/auth/login`
+- `#/auth/register`
+- `#/auth/register/success`
+- `#/support`
+- `#/support/success`
+- `#/admin/login`
+
+### Сотрудник
+
+- `#/dashboard`
+- `#/pass`
+- `#/pass/qr`
+- `#/profile`
+- `#/settings`
+
+### Администратор
+
+- `#/admin/dashboard`
+- `#/admin/employees`
+- `#/admin/employees/:employeeId`
+- `#/admin/onboarding`
+
+## Защищённый показ QR-кода
+
+Для сценария прохода реализован best-effort secure view. В браузере невозможно полностью запретить скриншоты и запись экрана, поэтому проект использует только практические защитные меры:
+
+- маскирование чувствительного экрана при `visibilitychange`, `blur`, `pagehide` и бездействии;
+- повторное раскрытие QR только по действию пользователя;
+- одноразовые QR-сессии с ограниченным TTL;
+- водяной знак поверх QR-экрана;
+- служебные состояния QR: `inactive`, `active`, `expired`, `used`, `regenerating`, `blocked`, `unavailable`.
 
 ## Архитектура
 
 ```text
 src/
-  app/        # bootstrap, router, zustand store
-  pages/      # route-level screens
-  features/   # сценарии: auth, qr-session, secure-view, profile
-  widgets/    # крупные UI-блоки, user/admin shell
+  app/        # bootstrap, router, store, providers
+  pages/      # route-level экраны
+  features/   # бизнес-сценарии: auth, qr-session, secure-view, profile
+  widgets/    # крупные составные UI-блоки
   entities/   # доменные модели user / pass / qr
-  shared/     # api adapters, mocks, config, ui-kit, utils
+  shared/     # api, mocks, config, ui-kit, utils
+  tests/      # интеграционные и feature-level сценарии
 ```
 
-## Mock layer и точка замены на backend
+## Что покрыто тестами
 
-Текущий composition root находится в `src/shared/api/mockApi.ts`.
+В проекте уже есть тесты для ключевых сценариев frontend и mock backend:
 
-Для перехода на реальный backend:
+- роутинг, редиректы и user/admin login flow;
+- прямое открытие success-экранов по hash-router URL;
+- генерация QR-сессии, истечение TTL и маскирование экрана;
+- поведение `useQrSessionController`;
+- mock API: авторизация, список сотрудников, оформление сотрудника из очереди заявок и типовые ошибки.
 
-1. сохранить контракты из `src/shared/api/contracts.ts`;
-2. добавить реальные HTTP adapters рядом с mock-реализациями;
-3. заменить wiring в `mockApi.ts` или вынести отдельный `realApi.ts`;
-4. не менять route/pages/widgets — UI уже отвязан от источника данных.
+## Проверка работоспособности в текущем контейнере
 
-## Ключевые mock services
+Явно проверено в этой среде:
 
-- `src/shared/api/authService.ts`
-- `src/shared/api/userProfileService.ts`
-- `src/shared/api/passService.ts`
-- `src/shared/api/qrSessionService.ts`
-- `src/shared/api/admin/adminDirectoryService.ts`
+- `npm test` — **не выполнен**, потому что в контейнере отсутствует локально установленный `vitest`;
+- `npm run build` — **не выполнен**, потому что отсутствуют установленные зависимости `react`, `vite` и связанные типы;
+- `npm run lint` — **не выполнен**, потому что отсутствует пакет `@eslint/js`;
+- `npm install` — **не выполнен**, потому что доступ к `registry.npmjs.org` в этой среде возвращает `403 Forbidden`.
 
-## Demo credentials
+Итог: логика проекта частично подтверждается структурой кода и существующими тестами, но **полноценный прогон frontend-проверок в данном контейнере заблокирован ограничениями окружения**.
 
-### User
-- email: `alex.ivanov@futurepass.app`
-- password: `future-pass`
+## Как запустить и проверить проект в нормальном окружении
 
-### Admin
-- email: `admin@futurepass.app`
-- password: `admin-pass`
-
-## Команды
+Если запускать проект вне ограничений этого контейнера:
 
 ```bash
+npm install
 npm run build
 npm run lint
 npm run test
+npm run dev
 ```
 
-## Важное ограничение окружения
+После старта dev-сервера стоит вручную проверить:
 
-В текущем контейнере зависимости React/Vite/TypeScript не были предустановлены, а установка из registry может быть заблокирована политикой среды. Если `build/lint/test` не стартуют из-за отсутствующих пакетов, повторите проверку в окружении с установленными зависимостями.
+1. пользовательский логин и переход на `#/dashboard`;
+2. открытие `#/pass` и генерацию QR на `#/pass/qr`;
+3. маскирование QR после потери фокуса вкладки;
+4. admin login и переход в `#/admin/dashboard`;
+5. список сотрудников и карточку сотрудника;
+6. onboarding сотрудника из очереди заявок;
+7. отправку формы поддержки;
+8. success-страницы с параметром `requestId`.
+
+## Demo credentials
+
+### Сотрудник
+
+- email: `alex.ivanov@futurepass.app`
+- password: `future-pass`
+
+### Администратор
+
+- email: `admin@futurepass.app`
+- password: `admin-pass`
+
+## Как подключить реальный backend
+
+1. сохранить интерфейсы сервисов и DTO-контракты;
+2. добавить реальные HTTP-адаптеры вместо mock-реализаций;
+3. переключить composition root с mock API на real API;
+4. сохранить текущие страницы, widgets и feature-слой без переписывания UI.
+
+Практически это означает, что UI уже подготовлен для интеграции, но на текущем этапе поставки проект представляет собой **полнофункциональный frontend-прототип с mock backend**.
